@@ -1,2 +1,2 @@
-export { default as BasePage } from './BasePage';
+export { default as NormalPage } from './NormalPage';
 

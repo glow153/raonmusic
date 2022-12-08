@@ -1,0 +1,9 @@
+@font-face {
+  font-family: 'godoRounded R';
+  src: url('../fonts/godoRounded/godoRoundedR.woff2') format('woff2'),
+      url('../fonts/godoRounded/godoRoundedR.woff') format('woff');
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+@import url('https://fonts.googleapis.com/css2?family=Nanum+Gothic&display=swap');
