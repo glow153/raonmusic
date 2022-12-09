@@ -1,8 +1,8 @@
 export const Colors = {
-  primary: '#f5c96c4d',
-  primaryHover: '#ebbe604d',
-  secondary: '#fdfaf54d',
-  secondaryHover: '#ede9e14d',
+  primary: '#f5c96c',
+  primaryHover: '#f5c96c4d',
+  secondary: '#fdfaf5',
+  secondaryHover: '#ede9e1',
 
   background: '#fdfaf5',
   
