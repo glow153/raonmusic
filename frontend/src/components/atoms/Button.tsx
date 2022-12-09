@@ -6,11 +6,6 @@ const ButtonContainer = styled.button<Prop>`
   background-color: ${(p) => p.primary ? Colors.primary : Colors.secondary};
   height: 100%;
   font-family: NanumGothic;
-  width: 130px;
-  height: 45px;
-  border-radius: 12px;
-  border-width: 0px;
-  cursor: pointer;
   &:hover {
     background-color: ${(p) => p.primary ? Colors.primaryHover : Colors.secondaryHover};
   }

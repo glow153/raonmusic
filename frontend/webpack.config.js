@@ -3,7 +3,7 @@ module.exports = {
     dev: "./src/index.js",
   },
   output: {
-    filename: "./build/index.js",
+    filename: "./build/index.tsx",
   },
   devtool: "source-map",
   resolve: {

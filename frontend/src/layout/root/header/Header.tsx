@@ -1,7 +1,8 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import styled from 'styled-components';
-import { Button, Logo } from '../../../components/atoms';
+import { Logo } from '../../../components/atoms';
+import { NavButton } from '../../../components/molecules';
 
 const HeaderContainer = styled.header`
   position: relative;
@@ -26,9 +27,9 @@ const Header = () => {
     <HeaderContainer>
       <Logo text='raon music' />
       <Nav>
-        <Link to='/'><Button secondary>사용 방법</Button></Link>
-        <Link to='/about'><Button secondary>회사 소개</Button></Link>
-        <Link to='/login'><Button primary>로그인</Button></Link>
+        <Link to='/'><NavButton secondary>사용 방법</NavButton></Link>
+        <Link to='/about'><NavButton secondary>회사 소개</NavButton></Link>
+        <Link to='/login'><NavButton primary>로그인</NavButton></Link>
       </Nav>
     </HeaderContainer>
   );
