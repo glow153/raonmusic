@@ -2,20 +2,22 @@ import React from 'react';
 import styled from 'styled-components';
 
 const Section = styled.section`
-  height: 100%;
+  
 `;
 
-interface Prop { 
+interface Prop {
+  style?: any;
   children?: any;
 }
 
 const Page = ({
-  children
+  style,
+  children,
 }: Prop) => {
   return (
-    <Section>
+    <Section style={style}>
       {children}
-      </Section>
+    </Section>
   );
 };
 

@@ -4,6 +4,7 @@ import styled from 'styled-components';
 
 const RootContainer = styled.div`
   height: 100%;
+  flex-grow: 1;
 `;
 
 interface Prop {

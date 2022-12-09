@@ -26,10 +26,11 @@ body {
   -moz-osx-font-smoothing: grayscale;
 }
 
-#root {
+#app {
   display: flex;
   justify-content: center;
-  max-width: 1200px;
+  max-width: 960px;
+  flex-grow: 1;
 }
 
 code {

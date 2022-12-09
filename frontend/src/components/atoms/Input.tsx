@@ -3,15 +3,14 @@ import styled from 'styled-components';
 import { Colors } from '../../constants/color';
 import { isNumber } from '../../util';
 
-interface ContainerProp {
+interface ElementProp {
   width?: number;
   height?: number;
   padding?: number;
   marginTop?: number;
-  value?: string | number;
 } 
 
-const InputContainer = styled.input<ContainerProp>`
+const InputElement = styled.input<ElementProp>`
   background-color: ${Colors.inputBackground};
   font-family: NanumGothic;
   width: ${p => isNumber(p.width) ? p.width + 'px' : '100%'};
@@ -36,6 +35,8 @@ interface Prop {
   marginTop?: number;
   placeholder?: string;
   value?: string | number;
+  onChange?: () => void;
+  readonly?: boolean;
 } 
 
 const Input = ({
@@ -43,7 +44,7 @@ const Input = ({
   ...props
 }: Prop) => {
   return (
-    <InputContainer type='text' placeholder={placeholder} {...props} />
+    <InputElement type='text' placeholder={placeholder} {...props} />
   );
 };
 

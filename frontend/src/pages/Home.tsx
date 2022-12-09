@@ -1,6 +1,6 @@
 import React from 'react';
 import styled from 'styled-components';
-import { ButtonInput } from '../components/molecules';
+import { Button, Input, Link } from '../components/atoms';
 import { Page } from '../components/templates';
 
 interface TitleProp {
@@ -15,18 +15,16 @@ const Title = styled.div<TitleProp>`
   text-align: center;
 `;
 
-const SubTitle = styled.div<TitleProp>`
-  margin-top: ${p => p.marginTop}px;
-  font-size: 20px;
-  width: 100%;
-  text-align: center;
-`;
+interface TextProp {
+  marginTop?: number;
+  textAlign?: string;
+}
 
-const Text = styled.p<TitleProp>`
+const Text = styled.p<TextProp>`
   margin-top: ${p => p.marginTop}px;
   font-size: 20px;
   width: 100%;
-  text-align: left;
+  text-align: ${p => p.textAlign ?? 'left'};
 `;
 
 
@@ -34,16 +32,29 @@ const Home = () => {
   return (
     <Page>
       <Title marginTop={200}>아무 문장으로 나만의 노래를 만들어봐요</Title>
-      <SubTitle marginTop={36}>라온 뮤직은 학습에 지친 아이들을 위해 힐링 되고 재미 있는 공부 환경을 제공해드립니다.</SubTitle>
-      <ButtonInput
-        width={846}
-        padding={30}
-        marginTop={80}
-        placeholder='ex) 반짝 반짝 작은 별 아름답게 비치네'
-        buttonLabel='노래 편집하러 가기'
-      />
+      <Text marginTop={36} textAlign='center'>라온 뮤직은 학습에 지친 아이들을 위해 힐링 되고 재미 있는 공부 환경을 제공해드립니다.</Text>
+      
+      <div style={{display: 'flex', position: 'relative', alignItems: 'center'}}>
+        <Input padding={30} placeholder='ex) 반짝 반짝 작은 별 아름답게 비치네' />
+        <Link to='/repair' style={{position: 'absolute', right: 30}}>
+          <Button primary style={{fontFamily: 'BMJua'}}>노래 편집하러 가기</Button>
+        </Link>
+      </div>
+
       <Text marginTop={150}>예시로 바로 시작해봐요</Text>
       
+      <div style={{display: 'flex', position: 'relative', alignItems: 'center'}}>
+        <span style={{position: 'absolute', left: 22, fontFamily: 'BMJua', flex: 0}}>한국어)</span>
+        <Link to='/example' style={{flex: 1, display: 'flex'}}>
+          <Input value='반짝 반짝 작은 별 아름답게 비치네' style={{paddingLeft: 80, paddingRight: 30, paddingTop: 22, paddingBottom: 22, flex: 1}} readonly />
+        </Link>
+      </div>
+      <div style={{display: 'flex', position: 'relative', alignItems: 'center', marginTop: 20}}>
+        <span style={{position: 'absolute', left: 22, fontFamily: 'BMJua'}}>중국어)</span>
+        <Link to='/example' style={{flex: 1, display: 'flex'}}>
+          <Input value='一闪一闪亮晶晶满天都是小星星' style={{paddingLeft: 80, paddingRight: 30, paddingTop: 22, paddingBottom: 22, flex: 1}} readonly />
+        </Link>
+      </div>
     </Page>
   );
 };

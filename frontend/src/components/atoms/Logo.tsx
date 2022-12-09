@@ -1,9 +1,11 @@
 import React from 'react';
 import styled from "styled-components";
+import { Link } from '.';
+import { Colors } from '../../constants/color';
 
 const DEFAULT_LOGO_SIZE = 45;
 
-const LogoWrapper = styled.a`
+const LogoWrapper = styled.div`
   display: flex;
   flex-direction: row;
   text-decoration: none;
@@ -30,10 +32,12 @@ const Logo = ({
   text,
 }: Prop) => {
   return (
-    <LogoWrapper href='/'>
-      <LogoImg width={size} height={size} src='img/raonmusic_logo.svg' />
-      <LogoText>{text}</LogoText>
-    </LogoWrapper>
+    <Link to='/' style={{color: Colors.textDefault}}>
+      <LogoWrapper>
+        <LogoImg width={size} height={size} src='img/raonmusic_logo.svg' />
+        <LogoText>{text}</LogoText>
+      </LogoWrapper>
+    </Link>
   );
 };
 
