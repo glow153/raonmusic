@@ -29,6 +29,7 @@ const InputContainer = styled.input<ContainerProp>`
 `;
 
 interface Prop {
+  style?: any;
   width?: number;
   height?: number;
   padding?: number;

@@ -34,12 +34,13 @@ const ButtonInput = ({
   marginTop,
   placeholder,
   buttonLabel,
+  value,
   ...props
 }: Prop) => {
   return (
     <ButtonInputContainer width={width} height={height} marginTop={marginTop}>
-      <Input padding={padding} placeholder={placeholder} />
-      <Button primary style={{position: 'absolute', right: padding}}>{buttonLabel}</Button>
+      <Input padding={padding} placeholder={placeholder} value={value} />
+      <Button primary style={{position: 'absolute', right: padding, fontFamily: 'BMJua'}}>{buttonLabel}</Button>
     </ButtonInputContainer>
   );
 };

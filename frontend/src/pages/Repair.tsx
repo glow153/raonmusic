@@ -15,7 +15,7 @@ const Container = styled.div`
   align-items: center;
   justify-content: center;
 `;
-const TextWrapper = styled.div`margin-top: 1rem;`;
+const TextContainer = styled.div`margin-top: 1rem; width: 350px;`;
 const Text = styled.h1`text-align: center;`;
 
 
@@ -24,9 +24,9 @@ const Repair = () => {
     <Root>
       <Container>
         <MainImage alt='under construction' src='img/construction.png' />
-        <TextWrapper>
+        <TextContainer>
           <Text>👷‍♂️ 공사중입니다 🚧</Text>
-        </TextWrapper>
+        </TextContainer>
       </Container>
     </Root>
   );
