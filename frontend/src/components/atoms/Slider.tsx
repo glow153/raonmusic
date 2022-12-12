@@ -15,10 +15,12 @@ const SliderContainer = styled.div<ContainerProp>`
 `;
 
 const InputRange = styled.input`
-  width: ${p => p.width}px;
+  width: 100%;
+  height: 100%;
   -webkit-appearance: none;
   background: transparent;
   outline: none;
+  cursor: pointer;
 
   &::-webkit-slider-thumb {
     -webkit-appearance: none;
@@ -27,6 +29,13 @@ const InputRange = styled.input`
     background-color: #fdfaf5;
     border: 14px solid #0e3049;
     border-radius: 50%;
+    margin-top: -5.5px;
+  }
+  &::-webkit-slider-runnable-track {
+    width: 100%;
+    height: 25px;
+    border-radius: 13px;
+    background-color: #fbebcc;
   }
 `;
 
@@ -43,7 +52,7 @@ const Slider = ({
 }: Prop) => {
   return (
     <SliderContainer width={width}>
-      <InputRange type='range' {...props} />
+      <InputRange {...props} type='range' />
     </SliderContainer>
   );
 };

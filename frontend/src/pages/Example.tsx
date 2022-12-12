@@ -6,7 +6,6 @@ import { Colors } from '../constants/color';
 
 const Topbar = styled.section`
   display: flex;
-  margin-top: 30px;
 `;
 
 const NoteButtonGroup = styled.div`
@@ -89,11 +88,11 @@ const Example = () => {
       <div style={{display: 'flex', marginTop: 30, justifyContent: 'space-between'}}>
         <div style={{display: 'flex', justifyContent: 'space-between'}}>
           <InputGroup label='피치' value={'C2'} />
-          <Slider width={300} min={1} max={12} step={1} value={0} />
+          <Slider width={300} min={0} max={12} step={1} value={0} />
         </div>
         <div style={{display: 'flex', justifyContent: 'space-between'}}>
           <InputGroup label='길이' value={'1/4'} />
-          <Slider width={300} min={1} max={12} step={1} value={0} />
+          <Slider width={300} min={0} max={12} step={1} value={0} />
         </div>
       </div>
     </Page>
