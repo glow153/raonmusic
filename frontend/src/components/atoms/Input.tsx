@@ -1,7 +1,7 @@
-import React from 'react';
+import React, { useCallback } from 'react';
 import styled from 'styled-components';
 import { Colors } from '../../constants/color';
-import { isNumber } from '../../util';
+import { isNumber, tryCall } from '../../util';
 
 interface ElementProp {
   width?: number;
@@ -35,16 +35,21 @@ interface Prop {
   marginTop?: number;
   placeholder?: string;
   value?: string | number;
-  onChange?: () => void;
+  onChange?: React.ChangeEventHandler<HTMLInputElement>;
   readonly?: boolean;
 } 
 
 const Input = ({
   placeholder,
+  onChange: _onChange,
   ...props
 }: Prop) => {
+  const onChange = useCallback(() => {
+    tryCall(_onChange);
+  }, [_onChange]);
+  
   return (
-    <InputElement type='text' placeholder={placeholder} {...props} />
+    <InputElement type='text' placeholder={placeholder} {...props} onChange={onChange} />
   );
 };
 

@@ -1,4 +1,5 @@
-import React from 'react';
+import { useCallback } from 'react';
+import toast from 'react-hot-toast';
 import styled from 'styled-components';
 import { Button, Input, Link } from '../components/atoms';
 import { Page } from '../components/templates';
@@ -29,6 +30,10 @@ const Text = styled.p<TextProp>`
 
 
 const Home = () => {
+  const onButtonClick = useCallback(() => {
+    console.log('onClick')
+    toast('coming soon :)');
+  }, []);
   return (
     <Page>
       <Title marginTop={200}>아무 문장으로 나만의 노래를 만들어봐요</Title>
@@ -36,9 +41,14 @@ const Home = () => {
       
       <div style={{display: 'flex', position: 'relative', alignItems: 'center'}}>
         <Input padding={30} placeholder='ex) 반짝 반짝 작은 별 아름답게 비치네' />
-        <Link to='/repair' style={{position: 'absolute', right: 30}}>
-          <Button primary style={{fontFamily: 'BMJua'}}>노래 편집하러 가기</Button>
-        </Link>
+        {/* <Link to='/repair' style={{position: 'absolute', right: 30}}>
+        </Link> */}
+        <Button primary
+          style={{fontFamily: 'BMJua', padding: 20, position: 'absolute', right: 30}}
+          onClick={onButtonClick}
+        >
+          노래 편집하러 가기
+        </Button>
       </div>
 
       <Text marginTop={150}>예시로 바로 시작해봐요</Text>

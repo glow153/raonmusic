@@ -1,4 +1,3 @@
-import React from 'react';
 import { Link } from 'react-router-dom';
 import styled from 'styled-components';
 import { Logo } from '../../../components/atoms';
@@ -27,9 +26,9 @@ const Header = () => {
     <HeaderContainer>
       <Logo text='raon music' />
       <Nav>
-        <Link to='/'><NavButton secondary>사용 방법</NavButton></Link>
-        <Link to='/about'><NavButton secondary>회사 소개</NavButton></Link>
-        <Link to='/login'><NavButton primary>로그인</NavButton></Link>
+        <Link to='/'><NavButton>사용 방법</NavButton></Link>
+        <Link to='/about'><NavButton>회사 소개</NavButton></Link>
+        <Link to='/login'><NavButton secondary>로그인</NavButton></Link>
       </Nav>
     </HeaderContainer>
   );

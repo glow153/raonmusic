@@ -13,10 +13,12 @@ module.exports = (env, argv) => {
     output: {
       path: path.join(__dirname, "/dist"),
       filename: "[name].js",
+      publicPath: "/",
     },
     devServer: {
       port: 3000,
       hot: true,
+      historyApiFallback: true,
     },
     resolve: {
       extensions: [".js", ".jsx", ".ts", ".tsx"],

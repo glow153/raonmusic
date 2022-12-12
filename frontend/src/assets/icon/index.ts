@@ -4,10 +4,21 @@ import IcPlus from './plus.svg';
 import IcRefresh from './refresh.svg';
 import IcSong from './song.svg';
 
-export {
-  IcHome,
-  IcRefresh,
-  IcPlus,
-  IcMinus,
-  IcSong,
+type t = {
+  [index: string]: any;
+  home: any;
+  refresh: any;
+  plus: any;
+  minus: any;
+  song: any;
+}
+
+const m: t = {
+  home: IcHome,
+  refresh: IcRefresh,
+  plus: IcPlus,
+  minus: IcMinus,
+  song: IcSong,
 };
+
+export default m;
