@@ -1,6 +1,6 @@
-import React from 'react';
 import { Link } from 'react-router-dom';
 import styled from 'styled-components';
+import { IcHome } from '../assets/icon';
 import { SelectedNote } from '../components/atoms';
 import { Page } from '../components/templates';
 
@@ -13,8 +13,8 @@ const Example = () => {
     <Page>
       <div style={{display: 'flex'}}>
         <Link to='/' style={{textDecoration: 'none'}}>
-          {/* <IcHome /> */}
-          HOME
+          <IcHome />
+          {/* HOME */}
         </Link>
       </div>
       <div style={{display: 'flex', justifyContent: 'center', alignItems: 'flex-end'}}>
