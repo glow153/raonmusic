@@ -5,7 +5,7 @@ const ButtonContainer = styled(Button)`
   display: flex;
   justify-content: center;
   align-items: center;
-  padding: 11px;
+  padding: 10px;
 `;
 
 interface Prop extends ButtonProp {

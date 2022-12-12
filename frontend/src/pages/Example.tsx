@@ -1,8 +1,8 @@
 import styled from 'styled-components';
-// import { IcHome, IcMinus, IcPlus, IcRefresh } from '../assets/icon';
-import { Button, Link, SelectedNote } from '../components/atoms';
-import { IconButton } from '../components/molecules';
+import { Button, Link, SelectedNote, Slider } from '../components/atoms';
+import { IconButton, InputGroup } from '../components/molecules';
 import { Page } from '../components/templates';
+import { Colors } from '../constants/color';
 
 const Topbar = styled.section`
   display: flex;
@@ -41,10 +41,16 @@ const ConfigButton = styled(Button)`
   display: flex;
   align-items: center;
   flex-direction: column;
-  padding: 5px 12px;
+  padding: 6px 11px;
   span{font-family:BMJua;line-height:1.3;}
   .title{font-size:18px;}
   .subtitle{font-size:12px;}
+`;
+
+const Canvas = styled.canvas`
+  width: 100%;
+  height: 375px;
+  background-color: ${Colors.gray}
 `;
 
 const Example = () => {
@@ -61,16 +67,14 @@ const Example = () => {
           <IconButton secondary name='plus' />
           <IconButton secondary name='minus' />
         </NoteButtonGroup>
-
         <SelectedNote />
-
         <ConfigButtonGroup>
           <ConfigButton gray>
             <span className='title'>120</span>
             <span className='subtitle'>BPM</span>
           </ConfigButton>
           <ConfigButton gray>
-            <span className='title'>C1</span>
+            <span className='title'>C2</span>
             <span className='subtitle'>MAJOR</span>
           </ConfigButton>
           <ConfigButton gray>
@@ -78,6 +82,19 @@ const Example = () => {
             <span className='subtitle'>TIME</span>
           </ConfigButton>
         </ConfigButtonGroup>
+      </div>
+      <div style={{display: 'flex', marginTop: 25, justifyContent: 'center'}}>
+        <Canvas />
+      </div>
+      <div style={{display: 'flex', marginTop: 30, justifyContent: 'space-between'}}>
+        <div style={{display: 'flex', justifyContent: 'space-between'}}>
+          <InputGroup label='피치' value={'C2'} />
+          <Slider width={300} min={1} max={12} step={1} value={0} />
+        </div>
+        <div style={{display: 'flex', justifyContent: 'space-between'}}>
+          <InputGroup label='길이' value={'1/4'} />
+          <Slider width={300} min={1} max={12} step={1} value={0} />
+        </div>
       </div>
     </Page>
   );

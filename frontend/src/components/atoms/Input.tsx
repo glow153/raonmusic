@@ -28,6 +28,7 @@ const InputElement = styled.input<ElementProp>`
 `;
 
 interface Prop {
+  id?: string;
   style?: any;
   width?: number;
   height?: number;
