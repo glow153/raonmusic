@@ -4,7 +4,7 @@ export class Measure {
   public notes: Note[];
   get valid(): boolean {
     if (this.notes) {
-      return this.notes?.map(n => n.duration.length).reduce((n1, n2) => n1 + n2, 0) === 16;
+      return this.notes?.map(n => n.duration?.length).reduce((n1, n2) => (n1 ?? 0) + (n2 ?? 0), 0) === 16;
     } else {
       return false;
     }

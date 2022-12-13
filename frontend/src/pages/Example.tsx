@@ -5,7 +5,7 @@ import { IconButton } from '../components/molecules';
 import { InputSlider } from '../components/organisms';
 import { Page } from '../components/templates';
 import { Colors } from '../constants/color';
-import _riff from '../constants/riff-mockup.json';
+import _riff from '../constants/riff-example-ko.json';
 import { Duration } from '../model/Duration';
 import { Note } from '../model/Note';
 import { Pitch } from '../model/Pitch';
@@ -67,11 +67,13 @@ const Example = () => {
   const canvasRef = useRef<HTMLCanvasElement>();
   const [ctx, setCtx] = useState();
   const [riff, setRiff] = useState<Riff>(mockupRiff);
-  const [selectedNote, setSelectedNote] = useState<Note>(mockupNote);
+  const [selectedNote, setSelectedNote] = useState<Note>();
   const [selectedPitch, setSelectedPitch] = useState<Pitch>();
   const [selectedDuration, setSelectedDuration] = useState<Duration>();
 
   useEffect(() => {
+    setSelectedNote(mockupNote);
+
     const canvas = canvasRef.current;
     const context = canvas?.getContext('2d');
     if (context) {
@@ -83,8 +85,8 @@ const Example = () => {
   useEffect(() => {
     console.log('riff:', riff);
     console.log('selectedNote:', selectedNote);
-    setSelectedPitch(selectedNote.pitch);
-    setSelectedDuration(selectedDuration);
+    setSelectedPitch(selectedNote?.pitch);
+    setSelectedDuration(selectedNote?.duration);
   }, [selectedNote]);
 
   return (
@@ -100,7 +102,7 @@ const Example = () => {
           <IconButton secondary name='plus' />
           <IconButton secondary name='minus' />
         </NoteButtonGroup>
-        <SelectedNote word={selectedNote.phoneme} />
+        <SelectedNote word={selectedNote?.phoneme} />
         <ConfigButtonGroup>
           <ConfigButton gray>
             <span className='title'>120</span>
@@ -128,16 +130,17 @@ const Example = () => {
           sliderWidth={300}
           onChange={(evt) => {
             const val = parseInt(evt.target.value);
-            setSelectedNote(selectedNote.setPitch(val));
+            setSelectedNote(selectedNote?.setPitch(val));
           }}
         />
         <InputSlider label='길이'
-          min={0} max={16} step={1}
+          min={1} max={16} step={1}
           sliderWidth={300}
           text={selectedDuration?.fraction}
           value={selectedDuration?.length}
           onChange={(evt) => {
-            console.log(evt);
+            const val = parseInt(evt.target.value);
+            setSelectedNote(selectedNote?.setDuration(val));
           }}
         />
       </div>

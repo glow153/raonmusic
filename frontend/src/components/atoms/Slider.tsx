@@ -55,7 +55,7 @@ const Slider = ({
 }: Prop) => {
   return (
     <SliderContainer width={width}>
-      <InputRange {...props} type='range' onChange={onChange} />
+      <InputRange {...props} type='range' value={value} onChange={onChange} />
     </SliderContainer>
   );
 };

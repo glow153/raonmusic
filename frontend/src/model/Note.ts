@@ -3,13 +3,13 @@ import { Pitch } from "./Pitch";
 
 export class Note {
   public phoneme?: string;
-  public pitch: Pitch;
-  public duration: Duration;
+  public pitch?: Pitch;
+  public duration?: Duration;
 
-  constructor(phoneme: string, pitch: Pitch, duration: Duration) {
-    this.phoneme = phoneme;
-    this.pitch = pitch;
-    this.duration = duration;
+  constructor(phoneme?: string, pitch?: Pitch, duration?: Duration) {
+    this.phoneme = phoneme ?? '';
+    this.pitch = pitch ?? new Pitch();
+    this.duration = duration ?? new Duration();
   }
 
   static fromJson(obj: any) {
@@ -21,8 +21,13 @@ export class Note {
   }
 
   public setPitch(value: number) {
-    this.pitch = Pitch.fromCode(value);
-    return this;
+    const pitch = Pitch.fromCode(value);
+    return new Note(this.phoneme, pitch, this.duration);
+  }
+
+  public setDuration(value: number) {
+    const duration = Duration.fromLength(value);
+    return new Note(this.phoneme, this.pitch, duration);
   }
 
   public equals(note: Note): boolean {
