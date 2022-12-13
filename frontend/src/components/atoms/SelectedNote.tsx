@@ -1,4 +1,3 @@
-import React from "react";
 import styled from "styled-components";
 import { Colors } from "../../constants/color";
 
@@ -8,6 +7,10 @@ const SelectedNoteContainer = styled.div`
   font-family: BMJua;
   background-color: ${Colors.primary};
   border-radius: 17px;
+  font-size: 75px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 `;
 
 interface Prop {

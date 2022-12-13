@@ -1,0 +1,18 @@
+[
+  {"id": 1,  "length": 1,  "name": "sixteenth", "fraction": "1/16"},
+  {"id": 2,  "length": 2,  "name": "eighth", "fraction": "1/8"},
+  {"id": 3,  "length": 3,  "name": "dotted eighth note", "fraction": "3/16"},
+  {"id": 4,  "length": 4,  "name": "quarter note", "fraction": "1/4"},
+  {"id": 5,  "length": 5,  "name": "quarter and sixte enth note", "fraction": "5/16"},
+  {"id": 6,  "length": 6,  "name": "dotted quarter note", "fraction": "3/8"},
+  {"id": 7,  "length": 7,  "name": "seven/sixteenth note", "fraction": "7/16"},
+  {"id": 8,  "length": 8,  "name": "half note", "fraction": "1/2"},
+  {"id": 9,  "length": 9,  "name": "half and sixteenth note", "fraction": "9/16"},
+  {"id": 10, "length": 10, "name": "half and qarter note", "fraction": "5/8"},
+  {"id": 11, "length": 11, "name": "eleventh/sixteenth note", "fraction": "11/16"},
+  {"id": 12, "length": 12, "name": "dotted half note", "fraction": "6/8"},
+  {"id": 13, "length": 13, "name": "thirteenth/sixteenth note", "fraction": "13/16"},
+  {"id": 14, "length": 14, "name": "half and dotted quarter note", "fraction": "7/8"},
+  {"id": 15, "length": 15, "name": "fifteenth/sixteenth note", "fraction": "15/16"},
+  {"id": 16, "length": 16, "name": "whole note", "fraction": "1"} 
+]

@@ -1,16 +1,34 @@
-export class Note {
-  public phoneme: string;
-  private _pitch: number;
-  public duration: number;
-  get pitch() {
-    // TODO: 추후 실제 음이름을 숫자로 매핑하도록 변경 필요 (ex. 0: 'C2', 1: 'C#2')
-    return this._pitch.toString();
-  }
+import { Duration } from "./Duration";
+import { Pitch } from "./Pitch";
 
-  constructor(phoneme: string, pitch: number, duration: number) {
+export class Note {
+  public phoneme?: string;
+  public pitch: Pitch;
+  public duration: Duration;
+
+  constructor(phoneme: string, pitch: Pitch, duration: Duration) {
     this.phoneme = phoneme;
-    this._pitch = pitch;
+    this.pitch = pitch;
     this.duration = duration;
   }
 
+  static fromJson(obj: any) {
+    return new Note(
+      obj.phoneme,
+      Pitch.fromCode(obj.pitch),
+      Duration.fromLength(obj.duration)
+    );
+  }
+
+  public setPitch(value: number) {
+    this.pitch = Pitch.fromCode(value);
+    return this;
+  }
+
+  public equals(note: Note): boolean {
+    return this.phoneme === note.phoneme
+      && this.pitch === note.pitch
+      && this.duration === note.duration
+    ;
+  }
 }

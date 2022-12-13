@@ -1,0 +1,16 @@
+[
+  {"code": -1, "sharpName": "", "flatName": ""},
+  {"code": 0, "sharpName": "C2", "flatName": "C2"},
+  {"code": 1, "sharpName": "C#2", "flatName": "Db2"},
+  {"code": 2, "sharpName": "D2", "flatName": "D2"},
+  {"code": 3, "sharpName": "D#2", "flatName": "Eb2"},
+  {"code": 4, "sharpName": "E2", "flatName": "E2"},
+  {"code": 5, "sharpName": "F2", "flatName": "F2"},
+  {"code": 6, "sharpName": "F#2", "flatName": "Gb2"},
+  {"code": 7, "sharpName": "G2", "flatName": "G2"},
+  {"code": 8, "sharpName": "G#2", "flatName": "Ab2"},
+  {"code": 9, "sharpName": "A2", "flatName": "A2"},
+  {"code": 10, "sharpName": "A#2", "flatName": "Bb2"},
+  {"code": 11, "sharpName": "B2", "flatName": "B2"},
+  {"code": 12, "sharpName": "C3", "flatName": "C3"} 
+]

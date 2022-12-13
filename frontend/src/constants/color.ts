@@ -2,7 +2,7 @@ export const Colors = {
   primary: '#f5c96c',
   primaryHover: '#f5c96c4d',
   secondary: '#fbebcc',
-  secondaryHover: '#e8d7b5',
+  secondaryHover: '#f0ddb9',
   gray: '#e8e8e8',
   grayHover: '#d4d4d4',
   

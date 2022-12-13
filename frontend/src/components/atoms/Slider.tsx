@@ -1,3 +1,4 @@
+import { ChangeEventHandler } from 'react';
 import styled from 'styled-components';
 
 interface ContainerProp {
@@ -39,20 +40,22 @@ const InputRange = styled.input`
   }
 `;
 
-interface Prop extends ContainerProp, RangeProp {
+export interface Prop extends ContainerProp, RangeProp {
   step: number;
   thumbSize?: number;
+  onChange: ChangeEventHandler<HTMLInputElement>;
 }
 
 const Slider = ({
   width = 300,
   value,
   thumbSize,
+  onChange,
   ...props
 }: Prop) => {
   return (
     <SliderContainer width={width}>
-      <InputRange {...props} type='range' />
+      <InputRange {...props} type='range' onChange={onChange} />
     </SliderContainer>
   );
 };

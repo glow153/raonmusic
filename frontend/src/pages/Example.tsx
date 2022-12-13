@@ -1,8 +1,15 @@
+import React, { useEffect, useRef, useState } from 'react';
 import styled from 'styled-components';
-import { Button, Link, SelectedNote, Slider } from '../components/atoms';
-import { IconButton, InputGroup } from '../components/molecules';
+import { Button, Link, SelectedNote } from '../components/atoms';
+import { IconButton } from '../components/molecules';
+import { InputSlider } from '../components/organisms';
 import { Page } from '../components/templates';
 import { Colors } from '../constants/color';
+import _riff from '../constants/riff-mockup.json';
+import { Duration } from '../model/Duration';
+import { Note } from '../model/Note';
+import { Pitch } from '../model/Pitch';
+import { Riff } from '../model/Riff';
 
 const Topbar = styled.section`
   display: flex;
@@ -49,10 +56,37 @@ const ConfigButton = styled(Button)`
 const Canvas = styled.canvas`
   width: 100%;
   height: 375px;
-  background-color: ${Colors.gray}
+  background-color: ${Colors.gray};
 `;
 
+
+const mockupRiff = Riff.fromJson(_riff.measures);
+const mockupNote = mockupRiff.notes[0];
+
 const Example = () => {
+  const canvasRef = useRef<HTMLCanvasElement>();
+  const [ctx, setCtx] = useState();
+  const [riff, setRiff] = useState<Riff>(mockupRiff);
+  const [selectedNote, setSelectedNote] = useState<Note>(mockupNote);
+  const [selectedPitch, setSelectedPitch] = useState<Pitch>();
+  const [selectedDuration, setSelectedDuration] = useState<Duration>();
+
+  useEffect(() => {
+    const canvas = canvasRef.current;
+    const context = canvas?.getContext('2d');
+    if (context) {
+      context.strokeStyle = 'black';
+
+    }
+  }, []);
+
+  useEffect(() => {
+    console.log('riff:', riff);
+    console.log('selectedNote:', selectedNote);
+    setSelectedPitch(selectedNote.pitch);
+    setSelectedDuration(selectedDuration);
+  }, [selectedNote]);
+
   return (
     <Page>
       <Topbar>
@@ -66,7 +100,7 @@ const Example = () => {
           <IconButton secondary name='plus' />
           <IconButton secondary name='minus' />
         </NoteButtonGroup>
-        <SelectedNote />
+        <SelectedNote word={selectedNote.phoneme} />
         <ConfigButtonGroup>
           <ConfigButton gray>
             <span className='title'>120</span>
@@ -86,17 +120,29 @@ const Example = () => {
         <Canvas />
       </div>
       <div style={{display: 'flex', marginTop: 30, justifyContent: 'space-between'}}>
-        <div style={{display: 'flex', justifyContent: 'space-between'}}>
-          <InputGroup label='피치' value={'C2'} />
-          <Slider width={300} min={0} max={12} step={1} value={0} />
-        </div>
-        <div style={{display: 'flex', justifyContent: 'space-between'}}>
-          <InputGroup label='길이' value={'1/4'} />
-          <Slider width={300} min={0} max={12} step={1} value={0} />
-        </div>
+        <InputSlider
+          label='피치'
+          min={0} max={12} step={1}
+          text={selectedPitch?.name}
+          value={selectedPitch?.code}
+          sliderWidth={300}
+          onChange={(evt) => {
+            const val = parseInt(evt.target.value);
+            setSelectedNote(selectedNote.setPitch(val));
+          }}
+        />
+        <InputSlider label='길이'
+          min={0} max={16} step={1}
+          sliderWidth={300}
+          text={selectedDuration?.fraction}
+          value={selectedDuration?.length}
+          onChange={(evt) => {
+            console.log(evt);
+          }}
+        />
       </div>
     </Page>
   );
 };
 
-export default Example;
+export default React.memo(Example);
