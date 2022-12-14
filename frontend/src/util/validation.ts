@@ -11,7 +11,7 @@ export const isString = (s: any): boolean => {
 };
 
 export const isNumber = (n: any): boolean => {
-  return typeof n === 'number';
+  return n !== undefined && typeof n === 'number';
 };
 
 export const isArray = (a: any): boolean => {

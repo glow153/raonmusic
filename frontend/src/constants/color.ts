@@ -7,6 +7,7 @@ export const Colors = {
   grayHover: '#d4d4d4',
   
   background: '#fdfaf5',
+  striped: '#fcf3e0',
   
   textDefault: '#0e3049',
   textGray: '#949494',

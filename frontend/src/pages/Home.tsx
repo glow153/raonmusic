@@ -31,7 +31,7 @@ const Text = styled.p<TextProp>`
 
 const Home = () => {
   const onButtonClick = useCallback(() => {
-    console.log('onClick')
+    // console.log('onClick')
     toast('coming soon :)');
   }, []);
   return (

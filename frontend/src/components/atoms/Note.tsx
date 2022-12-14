@@ -2,27 +2,35 @@ import { useEffect, useRef } from 'react';
 import { Rect, Text } from 'react-konva';
 import { Colors } from '../../constants/color';
 import { Note as NoteModel } from '../../model/Note';
-import { CANVAS_HEIGHT, UNIT_SIZE } from '../molecules/Board';
+import { isNumber } from '../../util';
+import { CANVAS_HEIGHT, CANVAS_PADDING, UNIT_SIZE } from '../molecules/Board';
 
 interface Prop {
   left: number;
   note: NoteModel;
-  isSelected: boolean;
+  pitch?: number;
+  isSelected?: boolean;
   lowestPitch: number;
 }
 
 const Note = ({
   left,
   note,
-  isSelected,
+  pitch: _pitch,
+  isSelected = false,
   lowestPitch,
 }: Prop) => {
   const shapeRef = useRef();
   const trRef =  useRef<Transformer | null>(null);
-  const pitch = (note.pitch?.code ? (note.pitch?.code - lowestPitch) : 0);
+  const pitch = (
+    isNumber(_pitch)
+      ? ((_pitch ?? 0)  - lowestPitch)
+      : (isNumber(note.pitch?.code) ? ((note.pitch?.code ?? 0) - lowestPitch) : 0)
+  );
   const duration = note.duration?.length ?? 1;
-  const x = left * UNIT_SIZE;
-  const y = CANVAS_HEIGHT - ((pitch + 1) * UNIT_SIZE);
+
+  const x = left * UNIT_SIZE + CANVAS_PADDING;
+  const y = CANVAS_HEIGHT - ((pitch + 1) * UNIT_SIZE - CANVAS_PADDING);
   const width = UNIT_SIZE * duration;
   const height = UNIT_SIZE;
   const radius = Math.round(UNIT_SIZE / 3);
@@ -31,7 +39,7 @@ const Note = ({
   const yText = y + (height-fontSize)/2;
 
   useEffect(() => {
-    console.log('<Note/>: note:', note, ', x:', x, ', y:', y, ', pitch:', pitch);
+    // console.log('<Note/>: note:', note, ', x:', x, ', y:', y, ', pitch:', note.pitch?.code);
   }, []);
 
   return (
@@ -39,7 +47,8 @@ const Note = ({
       <Rect x={x} y={y}
         width={width} height={height}
         cornerRadius={radius}
-        fill={Colors.primary} 
+        fill={note.isRest ? Colors.gray : Colors.primary}
+        draggable
       />
       <Text x={xText} y={yText}
         text={note.phoneme}

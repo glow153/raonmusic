@@ -12,7 +12,7 @@ export class Note implements INote {
   public pitch?: Pitch;
   public duration?: Duration;
   public get isRest() {
-    return (this.pitch?.code ?? 0) < 0;
+    return ((this.pitch?.code ?? 0) < 0) || this.phoneme === '-';
   }
 
   constructor(phoneme?: string, pitch?: Pitch, duration?: Duration) {
@@ -27,6 +27,10 @@ export class Note implements INote {
       Pitch.fromCode(obj.pitch),
       Duration.fromLength(obj.duration)
     );
+  }
+
+  static rest() {
+    return new Note('-', Pitch.fromCode(0), Duration.fromLength(4));
   }
 
   public setPitch(value: number) {

@@ -6,8 +6,8 @@ interface ConfigParam {
   key: Key;
   time: Time;
   lang: string;
-  lowestPitch: Pitch;
-  highestPitch: Pitch;
+  lowestPitch?: Pitch;
+  highestPitch?: Pitch;
 }
 
 export class Config {
@@ -27,9 +27,12 @@ export class Config {
     this.highestPitch = highestPitch ?? Pitch.fromCode(36); // C3
   }
 
-  // public fromJson(config: any) {
-  //   return new Config(
-
-  //   );
-  // }
+  public static fromJson(config: any) {
+    return new Config({
+      tempo: Tempo.fromJson(config.tempo),
+      key: Key.fromJson(config.key),
+      time: Time.fromJson(config.time),
+      lang: config.lang
+    });
+  }
 }
