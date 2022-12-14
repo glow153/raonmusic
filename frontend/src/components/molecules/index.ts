@@ -1,3 +1,4 @@
+export { default as Board } from './Board';
 export { default as ButtonInput } from './ButtonInput';
 export { default as IconButton } from './IconButton';
 export { default as InputGroup } from './InputGroup';

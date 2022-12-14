@@ -1,7 +1,13 @@
 import { Duration } from "./Duration";
 import { Pitch } from "./Pitch";
 
-export class Note {
+export interface INote {
+  phoneme?: string;
+  pitch?: Pitch;
+  duration?: Duration;
+}
+
+export class Note implements INote {
   public phoneme?: string;
   public pitch?: Pitch;
   public duration?: Duration;

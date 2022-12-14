@@ -16,6 +16,10 @@ export class Key {
     this._tone = tone ?? Tone.MAJOR;
   }
 
+  static fromJson(key: any) {
+    return new Key(Pitch.fromCode(key.pitch), key.tone);
+  }
+
   toString() {
     return `${this.pitch.shorterName} ${this.tone}`;
   }

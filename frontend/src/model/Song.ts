@@ -1,12 +1,52 @@
 import { Config } from "./config";
-import { Riff } from "./Riff";
+import { Note } from "./Note";
 
 export class Song {
-  public riff: Riff;
+  public notes: Note[];
+  private _elapsed: number[] = [];
   public config: Config;
 
-  constructor(riff: Riff, config: Config) {
-    this.riff = riff;
+  constructor(notes: Note[], config: Config) {
+    this.notes = notes;
     this.config = config;
+    this.initElapsed();
+  }
+
+  static fromJson(song: any) {
+    return new Song(
+      song.notes.map((n: any) => Note.fromJson(n)),
+      song.config
+    );
+  }
+
+  private initElapsed() {
+    let elapsed = 0;
+    for (let i = 0; i < this.notes.length; i++) {
+      if (i > 0) {
+        const leftNote = this.notes[i-1];
+        elapsed += (leftNote.duration?.length ?? 0);
+      }
+      this._elapsed.push(elapsed);
+    }
+  }
+
+  public elapsed(index: number) {
+    return this._elapsed[index];
+  }
+
+  public duplicate(index: number) {
+    if (index >= 0) {
+      this.notes?.splice(index, 0, this.notes[index]);
+    } else {
+      debugger;
+    }
+  }
+  
+  public delete(index: number) {
+    if (index >= 0) {
+      this.notes?.splice(index, 1);
+    } else {
+      debugger;
+    }
   }
 }

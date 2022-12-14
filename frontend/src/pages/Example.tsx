@@ -1,15 +1,15 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import styled from 'styled-components';
 import { Button, Link, SelectedNote } from '../components/atoms';
-import { IconButton } from '../components/molecules';
+import { Board, IconButton } from '../components/molecules';
 import { InputSlider } from '../components/organisms';
 import { Page } from '../components/templates';
-import { Colors } from '../constants/color';
-import _riff from '../constants/riff-example-ko.json';
+import _song from '../constants/song-example-ko.json';
 import { Duration } from '../model/Duration';
 import { Note } from '../model/Note';
 import { Pitch } from '../model/Pitch';
-import { Riff } from '../model/Riff';
+import { Song } from '../model/Song';
+import { isNumber } from '../util';
 
 const Topbar = styled.section`
   display: flex;
@@ -48,43 +48,27 @@ const ConfigButton = styled(Button)`
   align-items: center;
   flex-direction: column;
   padding: 6px 11px;
+  min-width: 53px;
   span{font-family:BMJua;line-height:1.3;}
   .title{font-size:18px;}
   .subtitle{font-size:12px;}
 `;
 
-const Canvas = styled.canvas`
-  width: 100%;
-  height: 375px;
-  background-color: ${Colors.gray};
-`;
-
-
-const mockupRiff = Riff.fromJson(_riff.measures);
-const mockupNote = mockupRiff.notes[0];
+const mockupSong = Song.fromJson(_song);
+const mockupNote = mockupSong.notes[0];
 
 const Example = () => {
-  const canvasRef = useRef<HTMLCanvasElement>();
-  const [ctx, setCtx] = useState();
-  const [riff, setRiff] = useState<Riff>(mockupRiff);
+  const [song, setSong] = useState<Song>(mockupSong);
   const [selectedNote, setSelectedNote] = useState<Note>();
   const [selectedPitch, setSelectedPitch] = useState<Pitch>();
   const [selectedDuration, setSelectedDuration] = useState<Duration>();
 
   useEffect(() => {
     setSelectedNote(mockupNote);
-
-    const canvas = canvasRef.current;
-    const context = canvas?.getContext('2d');
-    if (context) {
-      context.strokeStyle = 'black';
-
-    }
   }, []);
 
   useEffect(() => {
-    console.log('riff:', riff);
-    console.log('selectedNote:', selectedNote);
+    // console.log('song:', song, ', selectedNote:', selectedNote);
     setSelectedPitch(selectedNote?.pitch);
     setSelectedDuration(selectedNote?.duration);
   }, [selectedNote]);
@@ -92,7 +76,7 @@ const Example = () => {
   return (
     <Page>
       <Topbar>
-        <Link to='/' style={{textDecoration: 'none'}}>
+        <Link to='/'>
           <IconButton name='home' />
         </Link>
       </Topbar>
@@ -118,19 +102,21 @@ const Example = () => {
           </ConfigButton>
         </ConfigButtonGroup>
       </div>
-      <div style={{display: 'flex', marginTop: 25, justifyContent: 'center'}}>
-        <Canvas />
-      </div>
+      
+      <Board song={song} setSong={setSong} />
+      
       <div style={{display: 'flex', marginTop: 30, justifyContent: 'space-between'}}>
         <InputSlider
           label='피치'
-          min={0} max={12} step={1}
+          min={24} max={36} step={1}
           text={selectedPitch?.name}
           value={selectedPitch?.code}
           sliderWidth={300}
           onChange={(evt) => {
             const val = parseInt(evt.target.value);
-            setSelectedNote(selectedNote?.setPitch(val));
+            if (isNumber(val)) {
+              setSelectedNote(selectedNote?.setPitch(val));
+            }
           }}
         />
         <InputSlider label='길이'
@@ -140,7 +126,9 @@ const Example = () => {
           value={selectedDuration?.length}
           onChange={(evt) => {
             const val = parseInt(evt.target.value);
-            setSelectedNote(selectedNote?.setDuration(val));
+            if (isNumber(val)) {
+              setSelectedNote(selectedNote?.setDuration(val));
+            }
           }}
         />
       </div>

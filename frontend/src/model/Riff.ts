@@ -11,7 +11,7 @@ export class Riff {
   }
 
   static fromJson(measures: any[]) {
-    return new Riff(measures.map(m => Measure.fromJson(m['notes'])));
+    return new Riff(measures.map(m => Measure.fromJson(m.notes)));
   }
 
   public duplicate(index: number) {

@@ -11,7 +11,6 @@ interface Prop {
   children?: any;
 }
 
-
 const CustomLinkComponent = ({
   children,
   ...props

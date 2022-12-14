@@ -6,4 +6,8 @@ export class Time {
     this.upper = upper ?? 4;
     this.lower = lower ?? 4;
   }
+
+  static fromJson(time: any) {
+    return new Time(time.upper, time.lower);
+  }
 }
