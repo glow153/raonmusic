@@ -11,6 +11,9 @@ export class Note implements INote {
   public phoneme?: string;
   public pitch?: Pitch;
   public duration?: Duration;
+  public get isRest() {
+    return (this.pitch?.code ?? 0) < 0;
+  }
 
   constructor(phoneme?: string, pitch?: Pitch, duration?: Duration) {
     this.phoneme = phoneme ?? '';

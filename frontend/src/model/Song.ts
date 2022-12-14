@@ -5,6 +5,12 @@ export class Song {
   public notes: Note[];
   private _elapsed: number[] = [];
   public config: Config;
+  public get totalDuration() {
+    return this.notes
+      .map(note => note.duration?.length ?? 0)
+      .reduce((a, b) => a + b, 0)
+    ;
+  }
 
   constructor(notes: Note[], config: Config) {
     this.notes = notes;

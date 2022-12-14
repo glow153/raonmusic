@@ -3,16 +3,15 @@ import styled from 'styled-components';
 import { Song } from '../../model/Song';
 import { Note } from '../atoms';
 
-export const UNIT_SIZE = 36;
+export const UNIT_SIZE = 34;
 export const CANVAS_HEIGHT = UNIT_SIZE * 13;
 const LOWEST_PITCH = 24;
 
 const BoardContainer = styled.div`
-  display: flex;
-  justify-content: center;
   margin-top: 25px;
   width: 100%;
-  height: ${CANVAS_HEIGHT}px;
+  max-width: 960px;
+  height: ${CANVAS_HEIGHT + 20}px;
   border: 1px solid #ccc;
   overflow-x: auto;
 `;
@@ -27,8 +26,12 @@ const Board = ({
 }: Prop) => {
   return (
     <BoardContainer>
-      <Stage width={960} height={CANVAS_HEIGHT}>
-        <Layer x={0} y={0}>
+      <Stage
+        x={0} y={0}
+        width={song.totalDuration * UNIT_SIZE}
+        height={CANVAS_HEIGHT}
+      >
+        <Layer>
           {song.notes.map((note, i) => {
             return (
               <Note
