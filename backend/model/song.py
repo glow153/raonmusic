@@ -1,3 +1,5 @@
+from model.config import Config
+from model.note import Note
 from pydantic import BaseModel
 
 
@@ -6,5 +8,5 @@ from model.config import Config
 
 
 class Song(BaseModel):
-  riff: Riff
+  notes: list(Note)
   config: Config
