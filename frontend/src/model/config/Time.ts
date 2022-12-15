@@ -10,4 +10,8 @@ export class Time {
   static fromJson(time: any) {
     return new Time(time.upper, time.lower);
   }
+
+  public get obj() {
+    return { upper: this.upper, lower: this.lower };
+  }
 }

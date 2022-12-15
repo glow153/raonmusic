@@ -12,4 +12,8 @@ export class Tempo {
   static fromJson(tempo: any) {
     return new Tempo(tempo.count, Duration.fromLength(tempo.beat));
   }
+
+  public get obj() {
+    return { count: this.count, beat: this.beat.length };
+  }
 }

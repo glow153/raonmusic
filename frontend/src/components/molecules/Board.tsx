@@ -1,33 +1,38 @@
+import { useState } from 'react';
 import { Layer, Stage } from 'react-konva';
 import styled from 'styled-components';
 import { Colors } from '../../constants/color';
+import { Config } from '../../model/config';
 import { Note as NoteModel } from '../../model/Note';
 import { Song } from '../../model/Song';
 import { Note } from '../atoms';
 import Grid from './Grid';
 
-export const CANVAS_PADDING = 16;
 export const MIN_NOTE_SIZE = 30;
-export const CANVAS_HEIGHT = MIN_NOTE_SIZE * 13;
-const SCROLLBAR_WIDTH = 10;
 const MIN_NOTE_DURATION = 1;
 const MEASURES = 2;
 const LOWEST_PITCH = 24;
 
-const BoardContainer = styled.div`
+
+interface BoardContainerProp {
+  padding: number;
+  height: number;
+  scrollbarWidth: number;
+}
+const BoardContainer = styled.div<BoardContainerProp>`
   margin-top: 25px;
   width: 100%;
   max-width: 960px;
-  height: ${CANVAS_HEIGHT + (CANVAS_PADDING*2) + SCROLLBAR_WIDTH}px;
+  height: ${p => p.height + (p.padding*2) + p.scrollbarWidth}px;
   overflow: scroll;
   border: 1px solid #eee;
-  border-radius: ${SCROLLBAR_WIDTH}px;
+  border-radius: ${p => p.scrollbarWidth}px;
   &::-webkit-scrollbar {
-    height: ${SCROLLBAR_WIDTH}px;
+    height: ${p => p.scrollbarWidth}px;
     background-color: transparent;
   }
   &::-webkit-scrollbar-thumb {
-    border-radius: ${SCROLLBAR_WIDTH}px;
+    border-radius: ${p => p.scrollbarWidth}px;
     background-color: ${Colors.gray};
   }
   &::-webkit-scrollbar-track {
@@ -37,51 +42,64 @@ const BoardContainer = styled.div`
 
 interface Prop {
   song: Song;
-  setSong: React.Dispatch<React.SetStateAction<Song>>;
+  notes?: NoteModel[];
+  config: Config;
+  padding?: number;
   stageRef: any;
   selectedNote?: NoteModel;
-  setSelectedNote: React.Dispatch<React.SetStateAction<NoteModel | undefined>>;
-  onClick: () => void;
   onSelectNote: (note?: NoteModel) => void;
 }
 
 const Board = ({
   song,
+  config,
+  notes,
+  padding = 16,
   stageRef,
   selectedNote,
-  setSelectedNote,
-  onClick,
   onSelectNote,
 }: Prop) => {
-  const stageWidth = song.totalDuration * MIN_NOTE_SIZE + (CANVAS_PADDING*2);
-  const stageHeight = CANVAS_HEIGHT + (CANVAS_PADDING*2);
+  const [selectedNoteIndex, setSelectedNoteIndex] = useState<number>();
+  const songLength = config.measures * 16;
+  const highestPitch = config.highestPitch.code;
+  const lowestPitch = config.lowestPitch.code;
+
+  const boardHeight = ((highestPitch - lowestPitch) + 1) * MIN_NOTE_SIZE;
+  const stageWidth = songLength * MIN_NOTE_SIZE + (padding*2);
+  const stageHeight = boardHeight + (padding*2);
 
   return (
-    <BoardContainer>
+    <BoardContainer
+      padding={padding}
+      height={boardHeight}
+      scrollbarWidth={10}
+    >
       <Stage width={stageWidth} height={stageHeight} ref={stageRef}>
         <Layer>
-          <Grid song={song}
+          <Grid
+            config={config}
             cellSize={MIN_NOTE_SIZE}
-            height={CANVAS_HEIGHT}
-            padding={CANVAS_PADDING}
+            length={songLength}
+            height={boardHeight}
+            padding={padding}
             onClick={() => {
-              console.log('on click grid');
+              setSelectedNoteIndex(undefined);
               onSelectNote(undefined);
             }}
           />
-          {song.notes.map((note, i) => { // dhpark: notes
-            const prevPitch = i > 0 ? song.notes[i-1].pitch?.code ?? 0 : 0;
+          {notes?.map((note, i) => { // dhpark: notes
+            const prevPitch = i > 0 ? notes[i-1].pitch?.code ?? 0 : 0;
             return (
-              <Note note={note}
+              <Note key={`note${i}`} note={note}
                 gridCellSize={MIN_NOTE_SIZE}
-                gridHeight={CANVAS_HEIGHT}
-                gridPadding={CANVAS_PADDING}
+                gridHeight={boardHeight}
+                gridPadding={padding}
                 left={song.elapsed(i)}
-                pitch={note.isRest ? prevPitch : undefined}
-                lowestPitch={LOWEST_PITCH}
-                isSelected={note.equals(selectedNote)}
+                restPitch={note.isRest ? prevPitch : undefined}
+                lowestPitch={lowestPitch}
+                isSelected={i === selectedNoteIndex}
                 onClick={(note) => {
-                  console.log('onclicknote:')
+                  setSelectedNoteIndex(i);
                   onSelectNote(note);
                 }}
               />

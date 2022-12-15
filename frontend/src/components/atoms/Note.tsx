@@ -10,7 +10,7 @@ interface Prop {
   gridHeight?: number;
   gridPadding?: number;
   left: number;
-  pitch?: number;
+  restPitch?: number;
   isSelected?: boolean;
   lowestPitch: number;
   onClick?: (note: NoteModel) => void;
@@ -22,7 +22,7 @@ const Note = ({
   gridHeight = 0,
   gridPadding = 0,
   left,
-  pitch: _pitch,
+  restPitch,
   isSelected = false,
   lowestPitch,
   onClick: _onClick,
@@ -33,8 +33,8 @@ const Note = ({
   }, [note]);
 
   const pitch = (
-    isNumber(_pitch)
-      ? ((_pitch ?? 0)  - lowestPitch)
+    isNumber(restPitch)
+      ? ((restPitch ?? 0) - lowestPitch)
       : (isNumber(note.pitch?.code) ? ((note.pitch?.code ?? 0) - lowestPitch) : 0)
   );
   const duration = note.duration?.length ?? 1;

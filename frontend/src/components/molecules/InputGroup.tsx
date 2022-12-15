@@ -1,5 +1,5 @@
 import styled from 'styled-components';
-import { Input } from '../atoms';
+import { Input, InputProp } from '../atoms';
 
 interface ContainerProp {
   width?: number;
@@ -10,7 +10,7 @@ interface ContainerProp {
 const InputGroupContainer = styled.div<ContainerProp>`
   width: ${p => p.width}px;
   height: ${p => p.height}px;
-  margin-top: ${({marginTop}) => marginTop}px;
+  margin-top: ${p => p.marginTop}px;
   display: flex;
   align-items: center;
   position: relative;
@@ -35,15 +35,12 @@ const StyledInput = styled(Input)`
   text-align: center;
 `;
 
-interface Prop {
+export interface Prop extends InputProp {
   id?: string,
   label: string,
-  value?: string | number;
   width?: number;
   height?: number;
-  padding?: number;
   marginTop?: number;
-  placeholder?: string;
   buttonLabel?: string;
 } 
 
@@ -52,17 +49,18 @@ const InputGroup = ({
   label,
   width,
   height,
-  padding,
   marginTop,
-  placeholder,
   buttonLabel,
-  value,
+  onMouseWheel,
   ...props
 }: Prop) => {
   return (
     <InputGroupContainer width={width} height={height} marginTop={marginTop}>
       <StyledLabel htmlFor={id}>{label}</StyledLabel>
-      <StyledInput id={id} padding={padding} placeholder={placeholder} value={value} readonly />
+      <StyledInput id={id} {...props}
+        onMouseWheel={onMouseWheel}
+        readonly
+      />
     </InputGroupContainer>
   );
 };

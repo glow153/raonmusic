@@ -2,6 +2,7 @@ import { Duration } from "./Duration";
 import { Pitch } from "./Pitch";
 
 export interface INote {
+
   phoneme?: string;
   pitch?: Pitch;
   duration?: Duration;
@@ -39,13 +40,27 @@ export class Note implements INote {
   
 
   public setPitch(value: number) {
-    const pitch = Pitch.fromCode(value);
-    return new Note(this.phoneme, pitch, this.duration);
+    return new Note(this.phoneme, this.pitch.setPitch(value), this.duration);
+  }
+  
+  public higher(amount: number = 1) {
+    return new Note(this.phoneme, this.pitch.higher(amount), this.duration);
   }
 
-  public setDuration(value: number) {
-    const duration = Duration.fromLength(value);
-    return new Note(this.phoneme, this.pitch, duration);
+  public lower(amount: number = 1) {
+    return new Note(this.phoneme, this.pitch.lower(amount), this.duration);
+  }
+
+  public setDuration(amount: number) {
+    return new Note(this.phoneme, this.pitch, this.duration.setLength(amount));
+  }
+ 
+  public longer(amount: number = 1) {
+    return new Note(this.phoneme, this.pitch, this.duration.longer(amount));
+  }
+
+  public shorter(amount: number = 1) {
+    return new Note(this.phoneme, this.pitch, this.duration.shorter(amount));
   }
 
   public equals(note?: Note): boolean {

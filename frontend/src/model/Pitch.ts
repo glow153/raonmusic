@@ -12,6 +12,9 @@ export enum PitchMode {
 }
 
 export class Pitch implements PitchParam {
+  static MIN_PITCH_CODE = _pitchCodes[2].code;
+  static MAX_PITCH_CODE = _pitchCodes[_pitchCodes.length-1].code;
+
   public code: number;
   private _sharpName: string;
   private _flatName: string;
@@ -30,7 +33,12 @@ export class Pitch implements PitchParam {
     this.mode = mode ?? PitchMode.SHARP;
   }
 
-  static fromCode(code: number) {
+  static fromCode(_code: number) {
+    const code = (
+      _code < Pitch.MIN_PITCH_CODE ? Pitch.MIN_PITCH_CODE
+      : _code > Pitch.MAX_PITCH_CODE ? Pitch.MAX_PITCH_CODE
+      : _code
+    );
     const pitch = _pitchCodes.find(p => p.code === code);
     return new Pitch(pitch);
   }
@@ -41,6 +49,18 @@ export class Pitch implements PitchParam {
 
   static get C2() {
     return new Pitch(_pitchCodes[26]);
+  }
+
+  public setPitch(amount: number = 1) {
+    return Pitch.fromCode(amount);
+  }
+
+  public higher(amount: number = 1) {
+    return this.setPitch(this.code + amount);
+  }
+
+  public lower(amount: number = 1) {
+    return this.setPitch(this.code - amount);
   }
 
   public toString() {

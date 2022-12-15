@@ -1,4 +1,3 @@
-import { ChangeEventHandler } from 'react';
 import styled from 'styled-components';
 
 interface ContainerProp {
@@ -43,7 +42,8 @@ const InputRange = styled.input`
 export interface Prop extends ContainerProp, RangeProp {
   step: number;
   thumbSize?: number;
-  onChange: ChangeEventHandler<HTMLInputElement>;
+  onChange: React.ChangeEventHandler<HTMLInputElement>;
+  onMouseWheel?: React.WheelEventHandler<HTMLInputElement>;
 }
 
 const Slider = ({
@@ -51,11 +51,14 @@ const Slider = ({
   value,
   thumbSize,
   onChange,
+  onMouseWheel,
   ...props
 }: Prop) => {
   return (
     <SliderContainer width={width}>
-      <InputRange {...props} type='range' value={value} onChange={onChange} />
+      <InputRange {...props} type='range' value={value}
+        onChange={onChange} onWheel={onMouseWheel}
+      />
     </SliderContainer>
   );
 };

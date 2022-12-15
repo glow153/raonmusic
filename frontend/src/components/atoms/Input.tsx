@@ -27,30 +27,35 @@ const InputElement = styled.input<ElementProp>`
   }
 `;
 
-interface Prop {
+export interface Prop extends ElementProp {
   id?: string;
   style?: any;
-  width?: number;
-  height?: number;
-  padding?: number;
-  marginTop?: number;
   placeholder?: string;
   value?: string | number;
   onChange?: React.ChangeEventHandler<HTMLInputElement>;
+  onMouseWheel?: React.WheelEventHandler<HTMLInputElement>;
   readonly?: boolean;
 } 
 
 const Input = ({
   placeholder,
   onChange: _onChange,
+  onMouseWheel: _onMouseWheel,
   ...props
 }: Prop) => {
   const onChange = useCallback(() => {
     tryCall(_onChange);
   }, [_onChange]);
+  const onMouseWheel = useCallback((evt: any) => {
+    tryCall(_onMouseWheel, evt);
+  }, [_onMouseWheel]);
   
   return (
-    <InputElement type='text' placeholder={placeholder} {...props} onChange={onChange} />
+    <InputElement type='text' placeholder={placeholder} {...props}
+      onChange={onChange}
+      onWheel={onMouseWheel}
+      onWheelCapture={onMouseWheel}
+    />
   );
 };
 

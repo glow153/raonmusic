@@ -1,14 +1,15 @@
- import React, { ChangeEventHandler } from "react";
+ import React from "react";
 import styled from "styled-components";
+import { tryCall } from "../../util";
 import { Slider } from "../atoms";
-import { InputGroup } from "../molecules";
+import { InputGroup, InputGroupProp } from "../molecules";
 
 const Container = styled.div`
   display: flex;
   justify-content: space-between;
 `;
 
-interface Prop {
+interface Prop extends InputGroupProp {
   label: string;
   min: number;
   max: number;
@@ -16,7 +17,6 @@ interface Prop {
   text?: string;
   value?: number;
   sliderWidth: number;
-  onChange: ChangeEventHandler<HTMLInputElement>
 }
 
 const InputSlider = ({
@@ -24,12 +24,17 @@ const InputSlider = ({
   text,
   value,
   sliderWidth,
+  onChange: _onChange,
+  onMouseWheel,
   ...props
 }: Prop) => {
+  const onChange = (evt: any) => {
+    tryCall(_onChange, evt);
+  };
   return (
     <Container>
-      <InputGroup label={label} value={text} />
-      <Slider width={sliderWidth} value={value ?? 0} {...props} />
+      <InputGroup label={label} value={text} onMouseWheel={onMouseWheel}/>
+      <Slider {...props} width={sliderWidth} value={value ?? 0} onChange={onChange} onMouseWheel={onMouseWheel} />
     </Container>
   );
 }
