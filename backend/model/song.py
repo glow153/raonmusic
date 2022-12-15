@@ -1,5 +1,10 @@
 from pydantic import BaseModel
 
 
+from model.riff import Riff
+from model.config import Config
+
+
 class Song(BaseModel):
-  pass
+  riff: Riff
+  config: Config

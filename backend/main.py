@@ -28,4 +28,5 @@ def example(lyric: str):
 
 @app.post("/generate")
 def generate(song: Song):
+    #
     return {"result": "true", 'song': json.dumps(song)}
