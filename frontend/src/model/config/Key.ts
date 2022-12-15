@@ -25,6 +25,6 @@ export class Key {
   }
 
   public get obj() {
-    return { pitch: this.pitch.code, tone: this.tone };
+    return { pitch: this.pitch.code, tone: this._tone };
   }
 }

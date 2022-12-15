@@ -1,9 +1,10 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import styled from 'styled-components';
 import { Button, Link, SelectedNote } from '../components/atoms';
-import { Board, IconButton } from '../components/molecules';
+import { Board, IconButton, IconLabelButton } from '../components/molecules';
 import { InputSlider } from '../components/organisms';
 import { Page } from '../components/templates';
+import { Colors } from '../constants/color';
 import _song from '../constants/song-example-ko.json';
 import { Config } from '../model/config';
 import { Duration } from '../model/Duration';
@@ -70,7 +71,6 @@ const Example = () => {
 
   const onClickRefresh = useCallback(() => {
     console.log('refresh');
-    stageRef.current.clear();
     setSong(Song.fromJson(_song));
   }, []);
 
@@ -174,6 +174,15 @@ const Example = () => {
                 setSelectedNote(selectedNote?.shorter());
               }
             }
+          }}
+        />
+      </div>
+      <div style={{display: 'flex', marginTop: 30, justifyContent: 'center'}}>
+        <IconLabelButton secondary
+          name='song' label='노래 생성'
+          iconBackground={Colors.primary}
+          onClick={() => {
+            console.log(song.toJson());
           }}
         />
       </div>

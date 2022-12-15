@@ -56,4 +56,8 @@ export class Duration {
       && this.fraction === duration?.fraction
     ;
   }
+
+  public get obj() {
+    return this.length;
+  }
 }

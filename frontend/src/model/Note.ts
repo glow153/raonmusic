@@ -37,11 +37,6 @@ export class Note implements INote {
     );
   }
 
-  public toJson(){
-    return JSON.stringify(this);
-  }
-  
-
   public setPitch(value: number) {
     return new Note(this.index, this.phoneme, this.pitch.setPitch(value), this.duration);
   }
@@ -72,5 +67,13 @@ export class Note implements INote {
       && this.pitch.equals(note?.pitch)
       && this.duration.equals(note?.duration)
     ;
+  }
+
+  public get obj() {
+    return {
+      phoneme: this.phoneme,
+      pitch: this.pitch.obj,
+      duration: this.duration.obj,
+    };
   }
 }

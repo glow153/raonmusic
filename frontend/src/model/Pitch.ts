@@ -74,4 +74,8 @@ export class Pitch implements PitchParam {
       && this.mode === pitch?.mode
     ;
   }
+
+  public get obj() {
+    return this.code;
+  }
 }

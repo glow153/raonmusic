@@ -57,6 +57,9 @@ export class Song {
   }
 
   public toJson() {
-
+    return JSON.stringify({
+      notes: this.notes.map(n => n.obj),
+      config: this.config.obj
+    });
   }
 }
