@@ -20,7 +20,7 @@ export class Song {
 
   static fromJson(song: any) {
     return new Song(
-      song.notes.map((n: any) => Note.fromJson(n)),
+      song.notes.map((n: any, i: number) => Note.fromJson(n, i)),
       Config.fromJson(song.config)
     );
   }

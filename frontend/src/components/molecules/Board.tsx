@@ -90,7 +90,8 @@ const Board = ({
           {notes?.map((note, i) => { // dhpark: notes
             const prevPitch = i > 0 ? notes[i-1].pitch?.code ?? 0 : 0;
             return (
-              <Note key={`note${i}`} note={note}
+              <Note key={`note${i}`}
+                note={note}
                 gridCellSize={MIN_NOTE_SIZE}
                 gridHeight={boardHeight}
                 gridPadding={padding}

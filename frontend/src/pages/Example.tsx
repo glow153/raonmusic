@@ -62,8 +62,8 @@ const Example = () => {
   const [notes, setNotes] = useState<Note[]>(mockupSong.notes);
   const [config, setConfig] = useState<Config>(mockupSong.config);
   const [selectedNote, setSelectedNote] = useState<Note>();
-  const [selectedPitch, setSelectedPitch] = useState<Pitch>();
-  const [selectedDuration, setSelectedDuration] = useState<Duration>();
+  const selectedPitch = useMemo<Pitch | undefined>(() => selectedNote?.pitch, [selectedNote]);
+  const selectedDuration = useMemo<Duration | undefined>(() => selectedNote?.duration, [selectedNote]);
   const stageRef = useRef<any>();
   const lowestPitch = useMemo<number>(() => config.lowestPitch.code, [config]);
   const highestPitch = useMemo<number>(() => config.highestPitch.code, [config]);
@@ -75,8 +75,10 @@ const Example = () => {
   }, []);
 
   useEffect(() => {
-    setSelectedPitch(selectedNote?.pitch);
-    setSelectedDuration(selectedNote?.duration);
+    if (selectedNote) {
+      notes.splice(selectedNote?.index, 1, selectedNote);
+      setNotes([...notes]);
+    }
   }, [selectedNote]);
 
   useEffect(() => {
@@ -155,7 +157,7 @@ const Example = () => {
         <InputSlider id='durationSlider' label='길이'
           min={Duration.MIN} max={Duration.MAX} step={1}
           sliderWidth={300}
-          text={selectedDuration?.fraction}
+          text={selectedDuration?.fraction ?? ''}
           value={selectedDuration?.length}
           onChange={(evt) => {
             const val = parseInt(evt.target.value);

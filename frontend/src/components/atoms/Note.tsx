@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useState } from 'react';
 import { Rect, Text } from 'react-konva';
 import { Colors } from '../../constants/color';
 import { Note as NoteModel } from '../../model/Note';
@@ -27,11 +27,6 @@ const Note = ({
   lowestPitch,
   onClick: _onClick,
 }: Prop) => {
-  const [isHover, setHover] = useState<boolean>(false);
-  const onClick = useCallback((note: NoteModel) => {
-    tryCall(_onClick, note);
-  }, [note]);
-
   const pitch = (
     isNumber(restPitch)
       ? ((restPitch ?? 0) - lowestPitch)
@@ -43,15 +38,16 @@ const Note = ({
   const y = gridHeight - ((pitch + 1) * gridCellSize - gridPadding);
   const width = gridCellSize * duration;
   const height = gridCellSize;
-  const borderWidth = 2;
+  const selectBorderWidth = 5;
   const radius = Math.round(gridCellSize / 3);
   const fontSize = Math.round(gridCellSize * 0.7);
   const xText = x + (width-fontSize)/2;
   const yText = y + (height-fontSize)/2;
 
-  useEffect(() => {
-    // console.log('<Note/>: note:', note, ', x:', x, ', y:', y, ', pitch:', note.pitch?.code);
-  }, []);
+  const [isHover, setHover] = useState<boolean>(false);
+  const onClick = useCallback((note: NoteModel) => {
+    tryCall(_onClick, note);
+  }, [note]);
 
   return (
     <>
@@ -80,7 +76,7 @@ const Note = ({
         <Rect x={x} y={y}
           width={width} height={height}
           fill='transparent' stroke='#ed0e0eaa'
-          strokeWidth={5}
+          strokeWidth={selectBorderWidth}
           onMouseOver={() => {setHover(true);}}
           onMouseOut={() => {setHover(false);}}
         />
