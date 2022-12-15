@@ -21,7 +21,7 @@ export class Key {
   }
 
   toString() {
-    return `${this.pitch.shorterName} ${this.tone}`;
+    return `${this.pitch.shorterName}`;
   }
 
   public get obj() {

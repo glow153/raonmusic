@@ -1,7 +1,7 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import styled from 'styled-components';
 import { Button, Link, SelectedNote } from '../components/atoms';
-import { Board, IconButton, IconLabelButton } from '../components/molecules';
+import { Board, CheckboxGroup, IconButton, IconLabelButton } from '../components/molecules';
 import { InputSlider } from '../components/organisms';
 import { Page } from '../components/templates';
 import { Colors } from '../constants/color';
@@ -106,15 +106,15 @@ const Example = () => {
         <SelectedNote word={selectedNote?.phoneme} />
         <ConfigButtonGroup>
           <ConfigButton gray>
-            <span className='title'>120</span>
+            <span className='title'>{config.tempo.count}</span>
             <span className='subtitle'>BPM</span>
           </ConfigButton>
           <ConfigButton gray>
-            <span className='title'>C2</span>
-            <span className='subtitle'>MAJOR</span>
+            <span className='title'>{config.key.toString()}</span>
+            <span className='subtitle'>{config.key.tone}</span>
           </ConfigButton>
           <ConfigButton gray>
-            <span className='title'>4/4</span>
+            <span className='title'>{`${config.time.upper}/${config.time.lower}`}</span>
             <span className='subtitle'>TIME</span>
           </ConfigButton>
         </ConfigButtonGroup>
@@ -122,10 +122,7 @@ const Example = () => {
       
       <Board
         song={song}
-        notes={notes}
-        config={config}
         stageRef={stageRef}
-        selectedNote={selectedNote}
         onSelectNote={(note) => {
           setSelectedNote(note);
         }}
@@ -136,7 +133,7 @@ const Example = () => {
           min={lowestPitch} max={highestPitch} step={1}
           text={selectedPitch?.name ?? ''}
           value={selectedPitch?.code}
-          sliderWidth={300}
+          sliderWidth={280}
           onChange={(evt) => {
             const val = parseInt(evt.target.value);
             if (isNumber(val)) {
@@ -154,9 +151,12 @@ const Example = () => {
             }
           }}
         />
+
+        <CheckboxGroup label='쉼표' isChecked={selectedNote?.isRest ?? false} />
+
         <InputSlider id='durationSlider' label='길이'
           min={Duration.MIN} max={Duration.MAX} step={1}
-          sliderWidth={300}
+          sliderWidth={280}
           text={selectedDuration?.fraction ?? ''}
           value={selectedDuration?.length}
           onChange={(evt) => {

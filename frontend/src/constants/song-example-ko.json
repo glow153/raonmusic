@@ -18,7 +18,7 @@
     {"phoneme": "-", "pitch": -1, "duration": 4}
   ],
   "config": {
-    "tempo": {"count": 120, "beat": 4},
+    "tempo": {"count": 90, "beat": 4},
     "key": {"pitch": 0, "tone": 0},
     "time": {"upper": 4, "lower": 4},
     "lang": "ko"
