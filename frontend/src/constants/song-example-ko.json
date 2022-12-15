@@ -2,7 +2,6 @@
   "notes": [
     {"phoneme": "반", "pitch": 24, "duration": 4},
     {"phoneme": "짝", "pitch": 24, "duration": 4},
-    {"phoneme": "@", "pitch": 36, "duration": 1},
     {"phoneme": "반", "pitch": 31, "duration": 4},
     {"phoneme": "짝", "pitch": 31, "duration": 4},
     {"phoneme": "작", "pitch": 33, "duration": 4},

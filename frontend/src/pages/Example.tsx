@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import styled from 'styled-components';
 import { Button, Link, SelectedNote } from '../components/atoms';
 import { Board, IconButton } from '../components/molecules';
@@ -55,23 +55,25 @@ const ConfigButton = styled(Button)`
 `;
 
 const mockupSong = Song.fromJson(_song);
-const mockupNote = mockupSong.notes[0];
 
 const Example = () => {
   const [song, setSong] = useState<Song>(mockupSong);
   const [selectedNote, setSelectedNote] = useState<Note>();
   const [selectedPitch, setSelectedPitch] = useState<Pitch>();
   const [selectedDuration, setSelectedDuration] = useState<Duration>();
-
-  useEffect(() => {
-    setSelectedNote(mockupNote);
-  }, []);
+  const stageRef = useRef<any>();
 
   useEffect(() => {
     // console.log('song:', song, ', selectedNote:', selectedNote);
     setSelectedPitch(selectedNote?.pitch);
     setSelectedDuration(selectedNote?.duration);
   }, [selectedNote]);
+
+  const onClickRefresh = useCallback(() => {
+    console.log('refresh');
+    stageRef.current.clear();
+    setSong(Song.fromJson(_song));
+  }, []);
 
   return (
     <Page>
@@ -82,9 +84,9 @@ const Example = () => {
       </Topbar>
       <div style={{display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end'}}>
         <NoteButtonGroup>
-          <IconButton secondary name='refresh' />
-          <IconButton secondary name='plus' />
-          <IconButton secondary name='minus' />
+          <IconButton secondary name='refresh' onClick={onClickRefresh} />
+          <IconButton secondary name='plus' disabled />
+          <IconButton secondary name='minus' disabled />
         </NoteButtonGroup>
         <SelectedNote word={selectedNote?.phoneme} />
         <ConfigButtonGroup>
@@ -103,7 +105,11 @@ const Example = () => {
         </ConfigButtonGroup>
       </div>
       
-      <Board song={song} setSong={setSong} />
+      <Board
+        song={song} setSong={setSong}
+        stageRef={stageRef}
+        selectedNote={selectedNote} setSelectedNote={setSelectedNote}
+      />
       
       <div style={{display: 'flex', marginTop: 30, justifyContent: 'space-between'}}>
         <InputSlider

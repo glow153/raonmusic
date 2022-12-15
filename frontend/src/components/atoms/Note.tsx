@@ -1,4 +1,4 @@
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Rect, Text } from 'react-konva';
 import { Colors } from '../../constants/color';
 import { Note as NoteModel } from '../../model/Note';
@@ -11,6 +11,7 @@ interface Prop {
   pitch?: number;
   isSelected?: boolean;
   lowestPitch: number;
+  setSelectedNote: any;
 }
 
 const Note = ({
@@ -19,9 +20,11 @@ const Note = ({
   pitch: _pitch,
   isSelected = false,
   lowestPitch,
+  setSelectedNote,
 }: Prop) => {
   const shapeRef = useRef();
-  const trRef =  useRef<Transformer | null>(null);
+  const trRef =  useRef<Transformer | null>();
+  const [isHover, setHover] = useState<boolean>(false);
   const pitch = (
     isNumber(_pitch)
       ? ((_pitch ?? 0)  - lowestPitch)
@@ -33,6 +36,7 @@ const Note = ({
   const y = CANVAS_HEIGHT - ((pitch + 1) * UNIT_SIZE - CANVAS_PADDING);
   const width = UNIT_SIZE * duration;
   const height = UNIT_SIZE;
+  const borderWidth = 2;
   const radius = Math.round(UNIT_SIZE / 3);
   const fontSize = Math.round(UNIT_SIZE * 0.7);
   const xText = x + (width-fontSize)/2;
@@ -47,25 +51,33 @@ const Note = ({
       <Rect x={x} y={y}
         width={width} height={height}
         cornerRadius={radius}
-        fill={note.isRest ? Colors.gray : Colors.primary}
-        draggable
+        fill={note.isRest
+          ? (isHover ? Colors.grayHover : Colors.gray)
+          : (isHover ? Colors.primaryHover : Colors.primary)
+        }
+        onClick={() => {
+          setSelectedNote(note);
+        }}
+        onMouseOver={() => {setHover(true);}}
+        onMouseOut={() => {setHover(false);}}
       />
       <Text x={xText} y={yText}
         text={note.phoneme}
         fontFamily='BMJua' fontSize={fontSize}
+        onClick={() => {
+          setSelectedNote(note);
+        }}
+        onMouseOver={() => {setHover(true);}}
+        onMouseOut={() => {setHover(false);}}
       />
-      {/* {isSelected && (
-        <Transformer
-          ref={trRef}
-          boundBoxFunc={(oldBox, newBox) => {
-            // limit resize
-            if (newBox.width < 5 || newBox.height < 5) {
-              return oldBox;
-            }
-            return newBox;
-          }}
+      {isSelected && (
+        <Rect x={x - borderWidth/2} y={y - borderWidth/2}
+          width={width + borderWidth} height={height + borderWidth}
+          stroke='#de4949'
+          fill='transparent'
+          zIndex={999}
         />
-      )} */}
+      )}
     </>
   );
 };

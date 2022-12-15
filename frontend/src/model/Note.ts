@@ -43,10 +43,10 @@ export class Note implements INote {
     return new Note(this.phoneme, this.pitch, duration);
   }
 
-  public equals(note: Note): boolean {
-    return this.phoneme === note.phoneme
-      && this.pitch === note.pitch
-      && this.duration === note.duration
+  public equals(note?: Note): boolean {
+    return this.phoneme === note?.phoneme
+      && this.pitch === note?.pitch
+      && this.duration === note?.duration
     ;
   }
 }

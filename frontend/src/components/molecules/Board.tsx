@@ -1,13 +1,15 @@
 import { Layer, Line, Rect, Stage } from 'react-konva';
 import styled from 'styled-components';
 import { Colors } from '../../constants/color';
+import { Note as NoteModel } from '../../model/Note';
 import { Song } from '../../model/Song';
 import { seq } from '../../util';
 import { Note } from '../atoms';
 
-export const CANVAS_PADDING = 23;
+export const CANVAS_PADDING = 16;
 export const UNIT_SIZE = 30;
 export const CANVAS_HEIGHT = UNIT_SIZE * 13;
+const SCROLLBAR_WIDTH = 10;
 const MEASURES = 4;
 const LOWEST_PITCH = 24;
 
@@ -15,28 +17,45 @@ const BoardContainer = styled.div`
   margin-top: 25px;
   width: 100%;
   max-width: 960px;
-  height: ${CANVAS_HEIGHT + (CANVAS_PADDING*2) + 20}px;
-  overflow-x: auto;
-  border: 1px solid #ccc;
-  border-radius: 23px;
+  height: ${CANVAS_HEIGHT + (CANVAS_PADDING*2) + SCROLLBAR_WIDTH}px;
+  overflow: auto hidden;
+  border: 1px solid #eee;
+  border-radius: ${SCROLLBAR_WIDTH}px;
+  &::-webkit-scrollbar {
+    height: ${SCROLLBAR_WIDTH}px;
+    background-color: transparent;
+  }
+  &::-webkit-scrollbar-thumb {
+    border-radius: ${SCROLLBAR_WIDTH}px;
+    background-color: #ddd;
+  }
+  &::-webkit-scrollbar-track {
+    background-color: transparent;
+  }
 `;
 
 interface Prop {
   song: Song;
   setSong: React.Dispatch<React.SetStateAction<Song>>;
+  stageRef: any;
+  selectedNote?: NoteModel;
+  setSelectedNote: any;
 }
 
 const Board = ({
   song,
+  stageRef,
+  selectedNote,
+  setSelectedNote,
 }: Prop) => {
   const stageWidth = song.totalDuration * UNIT_SIZE + (CANVAS_PADDING*2);
   const stageHeight = CANVAS_HEIGHT + (CANVAS_PADDING*2);
 
   return (
     <BoardContainer>
-      <Stage width={stageWidth} height={stageHeight}>
+      <Stage width={stageWidth} height={stageHeight} ref={stageRef}>
         <Layer>
-          {seq(song.totalDuration + 1).map(n => {
+          {seq(song.totalDuration + 1).map(n => { // dhpark: 세로선
             const dx = n * UNIT_SIZE;
             return (
               <>
@@ -60,7 +79,7 @@ const Board = ({
               </>
             );
           })}
-          {seq((song.config.highestPitch.code - song.config.lowestPitch.code) + 2).map(n => {
+          {seq((song.config.highestPitch.code - song.config.lowestPitch.code) + 2).map(n => { // dhpark: 가로선
             const dy = n * UNIT_SIZE;
             return (
               <Line
@@ -73,16 +92,17 @@ const Board = ({
               />
             );
           })}
-          {song.notes.map((note, i) => {
+          {song.notes.map((note, i) => { // dhpark: notes
             if (note.isRest) {
               const prevPitch = i > 0 ? song.notes[i-1].pitch?.code ?? 0 : 0;
-              // console.log('Board.notes:: prevPitch:', prevPitch);
               return (
                 <Note
                   left={song.elapsed(i)}
                   note={note}
                   pitch={prevPitch}
                   lowestPitch={LOWEST_PITCH}
+                  isSelected={note.equals(selectedNote)}
+                  setSelectedNote={setSelectedNote}
                 />
               );
             } else {
@@ -91,6 +111,8 @@ const Board = ({
                   left={song.elapsed(i)}
                   note={note}
                   lowestPitch={LOWEST_PITCH}
+                  isSelected={note.equals(selectedNote)}
+                  setSelectedNote={setSelectedNote}
                 />
               );
             }

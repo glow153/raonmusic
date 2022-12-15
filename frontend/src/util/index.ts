@@ -1,3 +1,4 @@
+export { dateObjToStr, dateObjToTimestamp } from './date';
 export {
   hasValue, isArray, isEmpty, isNumber, isString
 } from './validation';
