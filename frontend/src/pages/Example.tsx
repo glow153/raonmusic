@@ -63,24 +63,26 @@ const Example = () => {
   const [selectedDuration, setSelectedDuration] = useState<Duration>();
   const stageRef = useRef<any>();
 
-  useEffect(() => {
-    // console.log('song:', song, ', selectedNote:', selectedNote);
-    setSelectedPitch(selectedNote?.pitch);
-    setSelectedDuration(selectedNote?.duration);
-  }, [selectedNote]);
-
   const onClickRefresh = useCallback(() => {
     console.log('refresh');
     stageRef.current.clear();
     setSong(Song.fromJson(_song));
   }, []);
 
+  useEffect(() => {
+    // console.log('song:', song, ', selectedNote:', selectedNote);
+    setSelectedPitch(selectedNote?.pitch);
+    setSelectedDuration(selectedNote?.duration);
+  }, [selectedNote]);
+
+  useEffect(() => {
+    
+  }, [song]);
+
   return (
     <Page>
       <Topbar>
-        <Link to='/'>
-          <IconButton name='home' />
-        </Link>
+        <Link to='/'><IconButton name='home' /></Link>
       </Topbar>
       <div style={{display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end'}}>
         <NoteButtonGroup>
@@ -109,6 +111,12 @@ const Example = () => {
         song={song} setSong={setSong}
         stageRef={stageRef}
         selectedNote={selectedNote} setSelectedNote={setSelectedNote}
+        onClick={() => {
+          // setSelectedNote(undefined);
+        }}
+        onSelectNote={(note) => {
+          setSelectedNote(note);
+        }}
       />
       
       <div style={{display: 'flex', marginTop: 30, justifyContent: 'space-between'}}>

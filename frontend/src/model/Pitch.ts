@@ -40,22 +40,18 @@ export class Pitch implements PitchParam {
   }
 
   static get C2() {
-    return new Pitch(_pitchCodes[1]);
-  }
-
-  public up(amount?: number) {
-    
+    return new Pitch(_pitchCodes[26]);
   }
 
   public toString() {
     return this.name;
   }
 
-  public equals(pitch: Pitch): boolean {
-    return this.code === pitch.code
-      && this._sharpName === pitch._sharpName
-      && this._flatName === pitch._flatName
-      && this.mode === pitch.mode
+  public equals(pitch?: Pitch): boolean {
+    return this.code === pitch?.code
+      && this._sharpName === pitch?._sharpName
+      && this._flatName === pitch?._flatName
+      && this.mode === pitch?.mode
     ;
   }
 }

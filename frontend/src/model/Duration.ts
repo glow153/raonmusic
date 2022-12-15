@@ -29,11 +29,11 @@ export class Duration {
     return this.fraction;
   }
 
-  public equals(duration: Duration): boolean {
-    return this.id === duration.id
-      && this.name === duration.name
-      && this.length === duration.length
-      && this.fraction === duration.fraction
+  public equals(duration?: Duration): boolean {
+    return this.id === duration?.id
+      && this.name === duration?.name
+      && this.length === duration?.length
+      && this.fraction === duration?.fraction
     ;
   }
 }

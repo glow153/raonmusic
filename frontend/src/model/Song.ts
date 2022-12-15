@@ -55,4 +55,8 @@ export class Song {
       debugger;
     }
   }
+
+  public toJson() {
+
+  }
 }

@@ -5,6 +5,8 @@ export const Colors = {
   secondaryHover: '#fadda8',
   gray: '#e8e8e8',
   grayHover: '#f0f0f0',
+  strong: '#e6ac30',
+  strongHover: '#f2c86d',
   
   background: '#fdfaf5',
   striped: '#fcf3e0',

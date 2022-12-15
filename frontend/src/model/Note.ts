@@ -9,8 +9,8 @@ export interface INote {
 
 export class Note implements INote {
   public phoneme?: string;
-  public pitch?: Pitch;
-  public duration?: Duration;
+  public pitch: Pitch;
+  public duration: Duration;
   public get isRest() {
     return ((this.pitch?.code ?? 0) < 0) || this.phoneme === '-';
   }
@@ -21,6 +21,10 @@ export class Note implements INote {
     this.duration = duration ?? new Duration();
   }
 
+  static rest() {
+    return new Note('-', Pitch.fromCode(0), Duration.fromLength(4));
+  }
+
   static fromJson(obj: any) {
     return new Note(
       obj.phoneme,
@@ -29,9 +33,10 @@ export class Note implements INote {
     );
   }
 
-  static rest() {
-    return new Note('-', Pitch.fromCode(0), Duration.fromLength(4));
+  public toJson(){
+    return JSON.stringify(this);
   }
+  
 
   public setPitch(value: number) {
     const pitch = Pitch.fromCode(value);
@@ -45,8 +50,8 @@ export class Note implements INote {
 
   public equals(note?: Note): boolean {
     return this.phoneme === note?.phoneme
-      && this.pitch === note?.pitch
-      && this.duration === note?.duration
+      && this.pitch.equals(note?.pitch)
+      && this.duration.equals(note?.duration)
     ;
   }
 }
