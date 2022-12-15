@@ -1,10 +1,10 @@
 import json
 from typing import Union
 
+from ai.svs import cmd
+from model.song import Song
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-
-from model.song import Song
 
 app = FastAPI()
 
@@ -28,4 +28,7 @@ def example(lyric: str):
 
 @app.post("/generate")
 def generate(song: Song):
+    
+    model_language = ["config"]["lang"]
+    cmd("sh engine.sh {}".format(model_language))
     return {"result": "true", 'song': json.dumps(song)}

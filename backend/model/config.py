@@ -2,10 +2,17 @@ from enum import Enum
 
 from pydantic import BaseModel
 
+class Tempo:
+  count: int
+  beat: int
+
+class Key:
+  pitch: int
+  tone: int
 
 class Time:
-  numerator: int
-  denominator: int
+  upper: int
+  lower: int
 
 
 class Lang(Enum):
@@ -14,7 +21,7 @@ class Lang(Enum):
 
 
 class Config(BaseModel):
-  bpm: int
-  key: str
+  tempo: Tempo
+  key: Key
   time: Time
-  lang: Lang
+  lang: str
