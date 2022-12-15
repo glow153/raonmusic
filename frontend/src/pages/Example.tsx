@@ -13,6 +13,8 @@ import { Pitch } from '../model/Pitch';
 import { Song } from '../model/Song';
 import { isNumber } from '../util';
 
+const backendUrl = 'http://192.168.0.201:11300/generate'
+
 const Topbar = styled.section`
   display: flex;
 `;
@@ -183,6 +185,17 @@ const Example = () => {
           iconBackground={Colors.primary}
           onClick={() => {
             console.log(song.toJson());
+            fetch(backendUrl, {
+              method: 'POST',
+              headers: {
+                'content-type': 'application/json',
+              },
+              body: song.toJson()
+            })
+            .then((res) => res.json())
+            .then((res) => {
+              console.log(res);
+            })
           }}
         />
       </div>
