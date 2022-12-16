@@ -14,6 +14,7 @@ interface Prop {
   isSelected?: boolean;
   lowestPitch: number;
   onClick?: (note: NoteModel) => void;
+  language?: string;
 }
 
 const Note = ({
@@ -26,6 +27,7 @@ const Note = ({
   isSelected = false,
   lowestPitch,
   onClick: _onClick,
+  language,
 }: Prop) => {
   const pitch = (
     isNumber(restPitch)
@@ -65,7 +67,7 @@ const Note = ({
         onMouseOut={() => {setHover(false);}}
       />
       <Text x={xText} y={yText}
-        text={note.phoneme} fontFamily='BMJua' fontSize={fontSize}
+        text={note.phoneme} fontFamily={language === 'cn' ? 'Ma Shan Zheng' : 'BMJua'} fontSize={fontSize}
         onClick={() => {
           onClick(note);
         }}

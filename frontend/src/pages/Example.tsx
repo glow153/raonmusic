@@ -13,9 +13,11 @@ import { Duration } from '../model/Duration';
 import { Note } from '../model/Note';
 import { Pitch } from '../model/Pitch';
 import { Song } from '../model/Song';
-import { isNumber } from '../util';
+import { isNumber, isString } from '../util';
 
-const backendUrl = 'http://192.168.0.201:11300/generate';
+const url = 'http://192.168.0.201:11300'
+const generateEndpoint = '/generate';
+const generateUrl = url + generateEndpoint;
 
 const Topbar = styled.section`
   display: flex;
@@ -74,11 +76,16 @@ const Example = () => {
   const [selectedNote, setSelectedNote] = useState<Note>();
   const [isMusicLoading, setMusicLoading] = useState<boolean>();
   const [isMusicReady, setMusicReady] = useState<boolean>();
+  const [isPlaying, setPlaying] = useState<boolean>();
+  const [audioUri, setAudioUri] = useState<string>();
   const selectedPitch = useMemo<Pitch | undefined>(() => selectedNote?.pitch, [selectedNote]);
   const selectedDuration = useMemo<Duration | undefined>(() => selectedNote?.duration, [selectedNote]);
+  const audioRef = useRef<any>();
   const stageRef = useRef<any>();
   const lowestPitch = useMemo<number>(() => config.lowestPitch.code, [config]);
   const highestPitch = useMemo<number>(() => config.highestPitch.code, [config]);
+  const language = useMemo<string>(() => config.lang ?? 'ko', [config]);
+  const audioSrc = useMemo<string | undefined>(() => audioUri ? (url + audioUri) : undefined, [audioUri]);
 
   const onClickRefresh = useCallback(() => {
     console.log('refresh');
@@ -101,6 +108,14 @@ const Example = () => {
     // console.log('song:', song);
   }, [song]);
 
+  useEffect(() => {
+    if (isPlaying) {
+      audioRef.current.pause();
+    } else {
+      audioRef.current.play();
+    }
+  }, [isPlaying]);
+
   return (
     <Page>
       <Topbar>
@@ -114,7 +129,7 @@ const Example = () => {
           <IconButton secondary name='plus' disabled />
           <IconButton secondary name='minus' disabled />
         </NoteButtonGroup>
-        <SelectedNote word={selectedNote?.phoneme} />
+        <SelectedNote word={selectedNote?.phoneme} language={language} />
         <ConfigButtonGroup>
           <ConfigButton gray>
             <span className='title'>{config.tempo.count}</span>
@@ -197,7 +212,7 @@ const Example = () => {
           onClick={() => {
             setMusicLoading(!isMusicLoading);
             console.log(song.toJson());
-            fetch(backendUrl, {
+            fetch(generateUrl, {
               method: 'POST',
               headers: { 'content-type': 'application/json' },
               body: song.toJson()
@@ -205,20 +220,24 @@ const Example = () => {
             .then((res) => res.json())
             .then((res) => {
               console.log(res);
-              if (res.result === 'true' && res.song) {
+              if (res.result === 'true' && isString(res.song)) {
+                setAudioUri(res.song);
                 setMusicLoading(false);
                 setMusicReady(true);
               }
             });
           }}
         />
+        <audio ref={audioRef} src={audioSrc} hidden />
         {isMusicReady ? (
           <IconLabelButton lightgreen
             name='play' label='노래 생성'
             iconBackground={Colors.green}
             style={{marginLeft: 114}}
             onClick={() => {
-              
+              console.log('audioSrc:', audioSrc);
+              console.log('isPlaying:', isPlaying);
+              setPlaying(!isPlaying);
             }}
           />
         ) : null}

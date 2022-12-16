@@ -53,6 +53,7 @@ const Board = ({
   onSelectNote,
 }: Prop) => {
   const [selectedNoteIndex, setSelectedNoteIndex] = useState<number>();
+  const language = song.config.lang;
   const songLength = song.config.measures * 16;
   const highestPitch = song.config.highestPitch.code;
   const lowestPitch = song.config.lowestPitch.code;
@@ -92,6 +93,7 @@ const Board = ({
                 restPitch={note.isRest ? prevPitch : undefined}
                 lowestPitch={lowestPitch}
                 isSelected={i === selectedNoteIndex}
+                language={language}
                 onClick={(note) => {
                   setSelectedNoteIndex(i);
                   onSelectNote(note);

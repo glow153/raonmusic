@@ -5,7 +5,6 @@ import { tryCall } from '../../util';
 const defaultColor = Colors.defaultBackgroundButton;
 const defaultHoverColor = Colors.defaultBackgroundButtonHover;
 const ButtonContainer = styled.button<Prop>`
-  font-family: NanumGothic;
   border-radius: 12px;
   border-width: 0px;
   ${p => p.disabled ? 'opacity: 0.5;' : 'cursor: pointer;'}
