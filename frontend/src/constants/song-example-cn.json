@@ -1,0 +1,19 @@
+{
+  "notes": [
+    {"phoneme": "小", "pitch": 49, "duration": 4},
+    {"phoneme": "酒", "pitch": 54, "duration": 4},
+    {"phoneme": "窝", "pitch": 56, "duration": 4},
+    {"phoneme": "SP", "pitch": -1, "duration": 4},
+    {"phoneme": "长", "pitch": 58, "duration": 4},
+    {"phoneme": "-", "pitch": 54, "duration": 4},
+    {"phoneme": "睫", "pitch": 54, "duration": 4},
+    {"phoneme": "-", "pitch": 49, "duration": 4},
+    {"phoneme": "毛", "pitch": 49, "duration": 4}
+  ],
+  "config": {
+    "tempo": {"count": 90, "beat": 4},
+    "key": {"pitch": 0, "tone": 0},
+    "time": {"upper": 4, "lower": 4},
+    "lang": "cn"
+  }
+}

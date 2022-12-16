@@ -3,6 +3,7 @@ export const Colors = {
   primaryHover: '#f7db9e',
   secondary: '#fbebcc',
   secondaryHover: '#fadda8',
+  brighter: '#f5ecdc',
   gray: '#e8e8e8',
   grayHover: '#f0f0f0',
   strong: '#e6ac30',

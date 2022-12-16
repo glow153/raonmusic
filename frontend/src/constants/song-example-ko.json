@@ -7,7 +7,7 @@
     {"phoneme": "작", "pitch": 33, "duration": 4},
     {"phoneme": "은", "pitch": 33, "duration": 4},
     {"phoneme": "별", "pitch": 31, "duration": 4},
-    {"phoneme": "-", "pitch": -1, "duration": 4},
+    {"phoneme": "SP", "pitch": -1, "duration": 4},
     {"phoneme": "아", "pitch": 29, "duration": 4},
     {"phoneme": "름", "pitch": 29, "duration": 4},
     {"phoneme": "답", "pitch": 28, "duration": 4},
@@ -15,7 +15,7 @@
     {"phoneme": "비", "pitch": 26, "duration": 4},
     {"phoneme": "치", "pitch": 26, "duration": 4},
     {"phoneme": "네", "pitch": 24, "duration": 4},
-    {"phoneme": "-", "pitch": -1, "duration": 4}
+    {"phoneme": "SP", "pitch": -1, "duration": 4}
   ],
   "config": {
     "tempo": {"count": 90, "beat": 4},

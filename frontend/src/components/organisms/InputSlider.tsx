@@ -1,4 +1,4 @@
- import React from "react";
+import React from "react";
 import styled from "styled-components";
 import { tryCall } from "../../util";
 import { Slider } from "../atoms";
@@ -17,6 +17,7 @@ interface Prop extends InputGroupProp {
   text?: string;
   value?: number;
   sliderWidth: number;
+  disabled?: boolean;
 }
 
 const InputSlider = ({
@@ -25,16 +26,20 @@ const InputSlider = ({
   value,
   sliderWidth,
   onChange: _onChange,
-  onMouseWheel,
+  onMouseWheel: _onMouseWheel,
+  disabled = false,
   ...props
 }: Prop) => {
   const onChange = (evt: any) => {
     tryCall(_onChange, evt);
   };
+  const onMouseWheel = (evt: React.WheelEvent<HTMLInputElement>) => {
+    !disabled && tryCall(_onMouseWheel, evt);
+  };
   return (
     <Container>
-      <InputGroup label={label} value={text} onMouseWheel={onMouseWheel}/>
-      <Slider {...props} width={sliderWidth} value={value ?? 0} onChange={onChange} onMouseWheel={onMouseWheel} />
+      <InputGroup label={label} value={text} onMouseWheel={onMouseWheel} disabled={disabled} />
+      <Slider {...props} width={sliderWidth} value={value ?? 0} onChange={onChange} onMouseWheel={onMouseWheel} disabled={disabled} />
     </Container>
   );
 }

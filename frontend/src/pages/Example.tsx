@@ -73,10 +73,10 @@ const Example = () => {
 
   const onClickRefresh = useCallback(() => {
     console.log('refresh');
-    setSong(Song.fromJson(_song));
   }, []);
 
   useEffect(() => {
+    console.log('selectedNote:', selectedNote);
     if (selectedNote) {
       notes.splice(selectedNote?.index, 1, selectedNote);
       setNotes([...notes]);
@@ -101,7 +101,7 @@ const Example = () => {
       </Topbar>
       <div style={{display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end'}}>
         <NoteButtonGroup>
-          <IconButton secondary name='refresh' onClick={onClickRefresh} />
+          <IconButton secondary name='refresh' disabled onClick={onClickRefresh} />
           <IconButton secondary name='plus' disabled />
           <IconButton secondary name='minus' disabled />
         </NoteButtonGroup>
@@ -133,9 +133,10 @@ const Example = () => {
       <div style={{display: 'flex', marginTop: 30, justifyContent: 'space-between'}}>
         <InputSlider id='pitchSlider' label='피치'
           min={lowestPitch} max={highestPitch} step={1}
+          sliderWidth={280}
           text={selectedPitch?.name ?? ''}
           value={selectedPitch?.code}
-          sliderWidth={280}
+          disabled={selectedNote?.isRest}
           onChange={(evt) => {
             const val = parseInt(evt.target.value);
             if (isNumber(val)) {

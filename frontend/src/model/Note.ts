@@ -14,7 +14,7 @@ export class Note implements INote {
   public pitch: Pitch;
   public duration: Duration;
   public get isRest() {
-    return ((this.pitch?.code ?? 0) < 0) || this.phoneme === '-';
+    return ((this.pitch?.code ?? 0) < 0) || (this.phoneme === 'SP') || (this.phoneme === 'AP');
   }
 
   constructor(index: number, phoneme?: string, pitch?: Pitch, duration?: Duration) {
