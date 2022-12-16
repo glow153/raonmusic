@@ -62,8 +62,12 @@ const ConfigButton = styled(Button)`
 
 
 const Example = () => {
-  const params = useParams();
-  const initSong = Song.fromJson(params['lang'] ? (params['lang'] === 'ko' ? _song_example_ko : _song_example_cn) : undefined);
+  const {lang} = useParams();
+  const initSong = Song.fromJson(
+    lang === 'ko' ? _song_example_ko
+    : lang === 'cn' ? _song_example_cn
+    : undefined
+  );
   const [song, setSong] = useState<Song>(initSong);
   const [notes, setNotes] = useState<Note[]>(initSong.notes);
   const [config, setConfig] = useState<Config>(initSong.config);
@@ -81,10 +85,6 @@ const Example = () => {
   }, []);
 
   useEffect(() => {
-    console.log('useParams:', params);
-  }, []);
-
-  useEffect(() => {
     console.log('selectedNote:', selectedNote);
     if (selectedNote) {
       notes.splice(selectedNote?.index, 1, selectedNote);
@@ -98,7 +98,7 @@ const Example = () => {
 
   useEffect(() => {
     // TODO: refresh board
-    console.log('song:', song);
+    // console.log('song:', song);
   }, [song]);
 
   return (

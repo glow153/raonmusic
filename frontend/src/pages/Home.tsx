@@ -54,7 +54,7 @@ const Home = () => {
       <div style={{display: 'flex', position: 'relative', alignItems: 'center'}}>
         <span style={{position: 'absolute', left: 22, fontFamily: 'BMJua', flex: 0}}>한국어)</span>
         <Link to='/example/ko' style={{flex: 1, display: 'flex'}}>
-          <Input value='반짝 반짝 작은 별 아름답게 비치네' style={{paddingLeft: 80, paddingRight: 30, paddingTop: 22, paddingBottom: 22, flex: 1}} readonly />
+          <Input value='반짝반짝작은별 아름답게비치네' style={{paddingLeft: 80, paddingRight: 30, paddingTop: 22, paddingBottom: 22, flex: 1}} readonly />
         </Link>
       </div>
       <div style={{display: 'flex', position: 'relative', alignItems: 'center', marginTop: 20}}>
