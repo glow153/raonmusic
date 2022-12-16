@@ -44,4 +44,4 @@ const InputSlider = ({
   );
 }
 
-export default React.memo(InputSlider) as typeof InputSlider;
+export default InputSlider;

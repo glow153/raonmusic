@@ -1,11 +1,13 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { useParams } from 'react-router-dom';
 import styled from 'styled-components';
 import { Button, Link, SelectedNote } from '../components/atoms';
-import { Board, CheckboxGroup, IconButton, IconLabelButton } from '../components/molecules';
-import { InputSlider } from '../components/organisms';
+import { CheckboxGroup, IconButton, IconLabelButton } from '../components/molecules';
+import { Board, InputSlider } from '../components/organisms';
 import { Page } from '../components/templates';
 import { Colors } from '../constants/color';
-import _song from '../constants/song-example-ko.json';
+import _song_example_cn from '../constants/song-example-cn.json';
+import _song_example_ko from '../constants/song-example-ko.json';
 import { Config } from '../model/config';
 import { Duration } from '../model/Duration';
 import { Note } from '../model/Note';
@@ -13,7 +15,7 @@ import { Pitch } from '../model/Pitch';
 import { Song } from '../model/Song';
 import { isNumber } from '../util';
 
-const backendUrl = 'http://192.168.0.201:11300/generate'
+const backendUrl = 'http://192.168.0.201:11300/generate';
 
 const Topbar = styled.section`
   display: flex;
@@ -58,13 +60,16 @@ const ConfigButton = styled(Button)`
   .subtitle{font-size:12px;}
 `;
 
-const mockupSong = Song.fromJson(_song);
 
 const Example = () => {
-  const [song, setSong] = useState<Song>(mockupSong);
-  const [notes, setNotes] = useState<Note[]>(mockupSong.notes);
-  const [config, setConfig] = useState<Config>(mockupSong.config);
+  const params = useParams();
+  const initSong = Song.fromJson(params['lang'] ? (params['lang'] === 'ko' ? _song_example_ko : _song_example_cn) : undefined);
+  const [song, setSong] = useState<Song>(initSong);
+  const [notes, setNotes] = useState<Note[]>(initSong.notes);
+  const [config, setConfig] = useState<Config>(initSong.config);
   const [selectedNote, setSelectedNote] = useState<Note>();
+  const [isMusicLoading, setMusicLoading] = useState<boolean>();
+  const [isMusicReady, setMusicReady] = useState<boolean>();
   const selectedPitch = useMemo<Pitch | undefined>(() => selectedNote?.pitch, [selectedNote]);
   const selectedDuration = useMemo<Duration | undefined>(() => selectedNote?.duration, [selectedNote]);
   const stageRef = useRef<any>();
@@ -73,6 +78,10 @@ const Example = () => {
 
   const onClickRefresh = useCallback(() => {
     console.log('refresh');
+  }, []);
+
+  useEffect(() => {
+    console.log('useParams:', params);
   }, []);
 
   useEffect(() => {
@@ -89,7 +98,7 @@ const Example = () => {
 
   useEffect(() => {
     // TODO: refresh board
-    
+    console.log('song:', song);
   }, [song]);
 
   return (
@@ -155,7 +164,7 @@ const Example = () => {
           }}
         />
 
-        <CheckboxGroup label='쉼표' isChecked={selectedNote?.isRest ?? false} />
+        <CheckboxGroup label='쉼표' isChecked={selectedNote?.isRest ?? false} onChange={()=>{}} />
 
         <InputSlider id='durationSlider' label='길이'
           min={Duration.MIN} max={Duration.MAX} step={1}
@@ -184,21 +193,35 @@ const Example = () => {
         <IconLabelButton secondary
           name='song' label='노래 생성'
           iconBackground={Colors.primary}
+          loading={isMusicLoading}
           onClick={() => {
+            setMusicLoading(!isMusicLoading);
             console.log(song.toJson());
             fetch(backendUrl, {
               method: 'POST',
-              headers: {
-                'content-type': 'application/json',
-              },
+              headers: { 'content-type': 'application/json' },
               body: song.toJson()
             })
             .then((res) => res.json())
             .then((res) => {
               console.log(res);
-            })
+              if (res.result === 'true' && res.song) {
+                setMusicLoading(false);
+                setMusicReady(true);
+              }
+            });
           }}
         />
+        {isMusicReady ? (
+          <IconLabelButton lightgreen
+            name='play' label='노래 생성'
+            iconBackground={Colors.green}
+            style={{marginLeft: 114}}
+            onClick={() => {
+              
+            }}
+          />
+        ) : null}
       </div>
     </Page>
   );

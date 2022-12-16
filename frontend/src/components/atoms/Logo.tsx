@@ -33,7 +33,7 @@ const Logo = ({
   return (
     <Link to='/' style={{color: Colors.textDefault}}>
       <LogoWrapper>
-        <LogoImg width={size} height={size} src='img/raonmusic_logo.svg' />
+        <LogoImg width={size} height={size} src='/img/raonmusic_logo.svg' />
         <LogoText>{text}</LogoText>
       </LogoWrapper>
     </Link>

@@ -12,17 +12,17 @@ export class Song {
     ;
   }
 
-  constructor(notes: Note[], config: Config) {
-    this.notes = notes;
-    this.config = config;
+  constructor(notes?: Note[], config?: Config) {
+    this.notes = notes ?? [];
+    this.config = config ?? new Config();
     this.initElapsed();
   }
 
-  static fromJson(song: any) {
-    return new Song(
+  static fromJson(song?: any) {
+    return song ? new Song(
       song.notes.map((n: any, i: number) => Note.fromJson(n, i)),
       Config.fromJson(song.config)
-    );
+    ) : new Song();
   }
 
   private initElapsed() {

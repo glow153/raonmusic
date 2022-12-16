@@ -5,7 +5,7 @@ import { Colors } from '../../constants/color';
 import { Note as NoteModel } from '../../model/Note';
 import { Song } from '../../model/Song';
 import { Note } from '../atoms';
-import Grid from './Grid';
+import Grid from '../molecules/Grid';
 
 export const MIN_NOTE_SIZE = 30;
 const MEASURES = 2;

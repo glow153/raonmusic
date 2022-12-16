@@ -41,8 +41,6 @@ const Home = () => {
       
       <div style={{display: 'flex', position: 'relative', alignItems: 'center'}}>
         <Input padding={30} placeholder='ex) 반짝 반짝 작은 별 아름답게 비치네' />
-        {/* <Link to='/repair' style={{position: 'absolute', right: 30}}>
-        </Link> */}
         <Button primary
           style={{fontFamily: 'BMJua', padding: 20, position: 'absolute', right: 30}}
           onClick={onButtonClick}
@@ -55,14 +53,14 @@ const Home = () => {
       
       <div style={{display: 'flex', position: 'relative', alignItems: 'center'}}>
         <span style={{position: 'absolute', left: 22, fontFamily: 'BMJua', flex: 0}}>한국어)</span>
-        <Link to='/example' style={{flex: 1, display: 'flex'}}>
+        <Link to='/example/ko' style={{flex: 1, display: 'flex'}}>
           <Input value='반짝 반짝 작은 별 아름답게 비치네' style={{paddingLeft: 80, paddingRight: 30, paddingTop: 22, paddingBottom: 22, flex: 1}} readonly />
         </Link>
       </div>
       <div style={{display: 'flex', position: 'relative', alignItems: 'center', marginTop: 20}}>
         <span style={{position: 'absolute', left: 22, fontFamily: 'BMJua'}}>중국어)</span>
-        <Link to='/example' style={{flex: 1, display: 'flex'}}>
-          <Input value='一闪一闪亮晶晶满天都是小星星' style={{paddingLeft: 80, paddingRight: 30, paddingTop: 22, paddingBottom: 22, flex: 1}} readonly />
+        <Link to='/example/cn' style={{flex: 1, display: 'flex'}}>
+          <Input value='小酒窝 长-睫-毛' style={{paddingLeft: 80, paddingRight: 30, paddingTop: 22, paddingBottom: 22, flex: 1}} readonly />
         </Link>
       </div>
     </Page>

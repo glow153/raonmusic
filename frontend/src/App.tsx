@@ -1,4 +1,3 @@
-import React from 'react';
 import { BrowserRouter, Route, Routes } from 'react-router-dom';
 import './App.css';
 import { Root } from './layout/root';
@@ -16,7 +15,7 @@ const App = () => {
           <Routes>
             <Route path='/' element={<Home />} />
             <Route path='/about' element={<About />} />
-            <Route path='/example' element={<Example />} />
+            <Route path='/example/:lang' element={<Example />} />
             <Route path='/repair' element={<Repair />} />
             <Route path='/*' element={<Repair />} />
           </Routes>
