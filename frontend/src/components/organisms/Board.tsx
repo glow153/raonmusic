@@ -18,7 +18,7 @@ const BoardContainer = styled.div<BoardContainerProp>`
   max-width: 960px;
   height: ${p => p.height + (p.padding*2) + p.scrollbarWidth}px;
   overflow: scroll;
-  border: 1px solid #eee;
+  border: 1px solid #dfdfdf;
   border-radius: ${p => p.scrollbarWidth}px;
   &::-webkit-scrollbar {
     width: ${p => p.scrollbarWidth}px;
@@ -80,7 +80,7 @@ const Board = ({
             onClick={onClickGrid}
           />
           {song.notes?.map((note, i) => { // dhpark: notes
-            const prevPitch = i > 0 ? song.notes[i-1].pitch?.code ?? 0 : 0;
+            const prevPitch = i > 0 ? song.notes[i-1].pitch?.code ?? 0 : lowestPitch;
             return (
               <Note key={`note${i}`}
                 note={note}

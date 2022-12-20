@@ -16,17 +16,21 @@ const StyledCheckbox = styled.input`
   }
 `;
 
-interface Prop {
+export interface Prop {
   isChecked: boolean;
   onChange?: React.ChangeEventHandler<HTMLInputElement>;
+  onClick?: React.MouseEventHandler<HTMLInputElement>;
 }
 
 const Checkbox = ({
   isChecked,
   onChange,
+  onClick,
 }: Prop) => {
   return (
-    <StyledCheckbox type='checkbox' checked={isChecked} onChange={onChange} />
+    <StyledCheckbox type='checkbox' checked={isChecked}
+      onChange={onChange} onClick={onClick}
+    />
   );
 };
 

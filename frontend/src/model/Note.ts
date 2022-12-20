@@ -1,30 +1,25 @@
 import { Duration, Pitch } from ".";
 
-export interface INote {
-  index: number;
-  phoneme?: string;
-  pitch?: Pitch;
-  duration?: Duration;
-}
-
-export class Note implements INote {
+export class Note {
   public index: number;
   public phoneme?: string;
   public pitch: Pitch;
   public duration: Duration;
-  public get isRest() {
-    return ((this.pitch?.code ?? 0) < 0) || (this.phoneme === 'SP') || (this.phoneme === 'AP');
-  }
+  public isRest: boolean;
+  // public get isRest() {
+  //   return ((this.pitch?.code ?? 0) < 0) || (this.phoneme === 'SP') || (this.phoneme === 'AP');
+  // }
 
-  constructor(index: number, phoneme?: string, pitch?: Pitch, duration?: Duration) {
+  constructor(index: number, phoneme?: string, pitch?: Pitch, duration?: Duration, isRest?: boolean) {
     this.index = index;
     this.phoneme = phoneme ?? '';
     this.pitch = pitch ?? new Pitch();
     this.duration = duration ?? new Duration();
+    this.isRest = isRest ?? false;
   }
 
   static rest(index: number) {
-    return new Note(index, '-', Pitch.fromCode(0), Duration.fromLength(4));
+    return new Note(index, '-', Pitch.fromCode(-1), Duration.fromLength(4));
   }
 
   static fromJson(obj: any, index?: number) {
@@ -32,8 +27,13 @@ export class Note implements INote {
       index ?? 0,
       obj.phoneme,
       Pitch.fromCode(obj.pitch),
-      Duration.fromLength(obj.duration)
+      Duration.fromLength(obj.duration),
+      (obj.pitch < 0 || obj.isRest === true) ? true : false
     );
+  }
+
+  public setPhoneme(word: string) {
+    return new Note(this.index, word, this.pitch, this.duration);
   }
 
   public setPitch(value: number) {
@@ -62,6 +62,10 @@ export class Note implements INote {
 
   public copy() {
     return new Note(this.index, this.phoneme, this.pitch, this.duration);
+  }
+
+  public toggleRest() {
+    return new Note(this.index, this.phoneme, this.pitch, this.duration, !this.isRest);
   }
 
   public equals(note?: Note): boolean {

@@ -1,5 +1,5 @@
 import styled from 'styled-components';
-import { Checkbox, Input, InputProp } from '../atoms';
+import { Checkbox, CheckboxProp } from '../atoms';
 
 interface ContainerProp {
   width?: number;
@@ -25,17 +25,7 @@ const StyledLabel = styled.label`
   margin-right: 5px;
 `;
 
-const StyledInput = styled(Input)`
-  width: 50px;
-  padding: 5px;
-  font-size: 14px;
-  border-radius: 8px;
-  color: #fdfaf5;
-  background-color: #0e3049;
-  text-align: center;
-`;
-
-export interface Prop extends InputProp {
+export interface Prop extends CheckboxProp {
   id?: string,
   label: string,
   width?: number;
@@ -43,7 +33,7 @@ export interface Prop extends InputProp {
   marginTop?: number;
   buttonLabel?: string;
   isChecked: boolean;
-} 
+}
 
 const CheckboxGroup = ({
   id,

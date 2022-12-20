@@ -5,11 +5,11 @@ import { Note as NoteModel } from '../../model/Note';
 import { isNumber, tryCall } from '../../util';
 
 interface Prop {
+  left: number;
   note: NoteModel;
   gridCellSize?: number;
   gridHeight?: number;
   gridPadding?: number;
-  left: number;
   restPitch?: number;
   isSelected?: boolean;
   lowestPitch: number;
@@ -21,11 +21,11 @@ interface Prop {
 const dragThreshold = 18;
 
 const Note = ({
+  left,
   note,
   gridCellSize = 0,
   gridHeight = 0,
   gridPadding = 0,
-  left,
   restPitch,
   isSelected = false,
   lowestPitch,
@@ -63,8 +63,7 @@ const Note = ({
 
   return (
     <>
-      <Rect x={x} y={y}
-        width={width} height={height}
+      <Rect x={x} y={y} width={width} height={height}
         cornerRadius={radius}
         fill={note.isRest
           ? (isHover ? Colors.grayHover : Colors.gray)
@@ -80,7 +79,8 @@ const Note = ({
         }}
       />
       <Text x={xText} y={yText}
-        text={note.phoneme} fontFamily={language === 'cn' ? 'Ma Shan Zheng' : 'BMJua'} fontSize={fontSize}
+        fontFamily={language === 'cn' ? 'Ma Shan Zheng' : 'BMJua'} fontSize={fontSize}
+        text={note.isRest ? '(    )' : note.phoneme}
         onClick={() => {
           onClick(note);
         }}

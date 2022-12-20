@@ -31,6 +31,7 @@ export interface Prop extends ElementProp {
   style?: any;
   placeholder?: string;
   value?: string | number;
+  maxLength?: number;
   onChange?: React.ChangeEventHandler<HTMLInputElement>;
   onMouseWheel?: React.WheelEventHandler<HTMLInputElement>;
   readonly?: boolean;

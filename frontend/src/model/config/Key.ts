@@ -1,12 +1,12 @@
 import { Pitch } from "../Pitch";
 
-enum Tone {
+export enum Tone {
   MAJOR, MINOR
 }
 
 export class Key {
   public pitch: Pitch;
-  private _tone: Tone;
+  public _tone: Tone;
   public get tone() {
     return this._tone === Tone.MAJOR ? "Major" : "Minor";
   }

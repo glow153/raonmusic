@@ -33,14 +33,19 @@ export class Pitch implements PitchParam {
     this.mode = mode ?? PitchMode.SHARP;
   }
 
-  static fromCode(_code: number) {
+  static fromCode(_code: number, mode?: PitchMode) {
     const code = (
       _code < Pitch.MIN_PITCH_CODE ? Pitch.MIN_PITCH_CODE
       : _code > Pitch.MAX_PITCH_CODE ? Pitch.MAX_PITCH_CODE
       : _code
     );
-    const pitch = _pitchCodes.find(p => p.code === code);
-    return new Pitch(pitch);
+    const pitch = new Pitch(_pitchCodes.find(p => p.code === code));
+    if (mode) {
+      pitch.mode = mode;
+    } else if (pitch.name.includes('#')) {
+      pitch.mode = PitchMode.FLAT;
+    }
+    return pitch;
   }
 
   static rest() {
