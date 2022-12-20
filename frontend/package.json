@@ -20,7 +20,8 @@
   "scripts": {
     "dev": "webpack-dev-server --mode=development --open --hot --progress",
     "build": "webpack --mode=production  --progress",
-    "start": "webpack --mode=development  --progress"
+    "start": "webpack --mode=development  --progress",
+    "prod": "npx serve -l 12008 ./dist"
   },
   "eslintConfig": {
     "extends": [
@@ -50,6 +51,7 @@
     "@types/styled-components": "^5.1.26",
     "babel-loader": "^9.1.0",
     "clean-webpack-plugin": "^4.0.0",
+    "copy-webpack-plugin": "^11.0.0",
     "html-webpack-plugin": "^5.5.0",
     "ts-loader": "^9.4.2",
     "typescript": "^4.9.4",
