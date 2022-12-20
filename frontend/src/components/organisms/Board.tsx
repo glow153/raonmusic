@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useCallback, useMemo, useState } from 'react';
 import { Layer, Stage } from 'react-konva';
 import styled from 'styled-components';
 import { Colors } from '../../constants/color';
@@ -6,11 +6,6 @@ import { Note as NoteModel } from '../../model/Note';
 import { Song } from '../../model/Song';
 import { Note } from '../atoms';
 import Grid from '../molecules/Grid';
-
-export const MIN_NOTE_SIZE = 30;
-const MEASURES = 2;
-const LOWEST_PITCH = 24;
-
 
 interface BoardContainerProp {
   padding: number;
@@ -41,6 +36,7 @@ const BoardContainer = styled.div<BoardContainerProp>`
 
 interface Prop {
   song: Song;
+  cellSize?: number;
   padding?: number;
   stageRef: any;
   onSelectNote: (note?: NoteModel) => void;
@@ -48,19 +44,24 @@ interface Prop {
 
 const Board = ({
   song,
+  cellSize = 30,
   padding = 16,
   stageRef,
   onSelectNote,
 }: Prop) => {
   const [selectedNoteIndex, setSelectedNoteIndex] = useState<number>();
-  const language = song.config.lang;
-  const songLength = song.config.measures * 16;
-  const highestPitch = song.config.highestPitch.code;
-  const lowestPitch = song.config.lowestPitch.code;
+  const language = useMemo<string>(() => song.config.lang, [song]);
+  const songLength = useMemo<number>(() => song.config.measures * 16, [song]);
+  const highestPitch = useMemo<number>(() => song.config.highestPitch.code, [song]);
+  const lowestPitch = useMemo<number>(() => song.config.lowestPitch.code, [song]);
+  const boardHeight = useMemo<number>(() => ((highestPitch - lowestPitch) + 1) * cellSize, [song]);
+  const stageWidth = useMemo<number>(() => songLength * cellSize + (padding * 2), [song]);
+  const stageHeight = useMemo<number>(() => boardHeight + (padding * 2), [song]);
 
-  const boardHeight = ((highestPitch - lowestPitch) + 1) * MIN_NOTE_SIZE;
-  const stageWidth = songLength * MIN_NOTE_SIZE + (padding*2);
-  const stageHeight = boardHeight + (padding*2);
+  const onClickGrid = useCallback(() => {
+    setSelectedNoteIndex(undefined);
+    onSelectNote(undefined);
+  }, []);
 
   return (
     <BoardContainer
@@ -72,21 +73,18 @@ const Board = ({
         <Layer>
           <Grid
             config={song.config}
-            cellSize={MIN_NOTE_SIZE}
+            cellSize={cellSize}
             length={songLength}
             height={boardHeight}
             padding={padding}
-            onClick={() => {
-              setSelectedNoteIndex(undefined);
-              onSelectNote(undefined);
-            }}
+            onClick={onClickGrid}
           />
           {song.notes?.map((note, i) => { // dhpark: notes
             const prevPitch = i > 0 ? song.notes[i-1].pitch?.code ?? 0 : 0;
             return (
               <Note key={`note${i}`}
                 note={note}
-                gridCellSize={MIN_NOTE_SIZE}
+                gridCellSize={cellSize}
                 gridHeight={boardHeight}
                 gridPadding={padding}
                 left={song.elapsed(i)}
