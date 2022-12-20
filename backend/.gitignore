@@ -1,4 +1,12 @@
 __pycache__
+*.log
+.idea
+*.pyc
+local_tools/
+
+# about ai
 /diff_env
 /ai/opencpop
-*.log
+/ai/DiffSinger/checkpoints/*
+/ai/DiffSinger/data/*
+/ai/DiffSinger/infer_out/*
