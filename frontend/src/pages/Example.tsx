@@ -8,6 +8,7 @@ import { Page } from '../components/templates';
 import { Colors } from '../constants/color';
 import _song_example_cn from '../constants/song-example-cn.json';
 import _song_example_ko from '../constants/song-example-ko.json';
+import { useAudio } from '../hooks';
 import { Config } from '../model/config';
 import { Duration } from '../model/Duration';
 import { Note } from '../model/Note';
@@ -15,7 +16,7 @@ import { Pitch } from '../model/Pitch';
 import { Song } from '../model/Song';
 import { isNumber, isString } from '../util';
 
-const url = 'http://192.168.0.201:11300'
+const url = 'https://api.svs.raondata.ai'
 const generateEndpoint = '/generate';
 const generateUrl = url + generateEndpoint;
 
@@ -76,16 +77,15 @@ const Example = () => {
   const [selectedNote, setSelectedNote] = useState<Note>();
   const [isMusicLoading, setMusicLoading] = useState<boolean>();
   const [isMusicReady, setMusicReady] = useState<boolean>();
-  const [isPlaying, setPlaying] = useState<boolean>();
   const [audioUri, setAudioUri] = useState<string>();
   const selectedPitch = useMemo<Pitch | undefined>(() => selectedNote?.pitch, [selectedNote]);
   const selectedDuration = useMemo<Duration | undefined>(() => selectedNote?.duration, [selectedNote]);
-  const audioRef = useRef<any>();
   const stageRef = useRef<any>();
   const lowestPitch = useMemo<number>(() => config.lowestPitch.code, [config]);
   const highestPitch = useMemo<number>(() => config.highestPitch.code, [config]);
   const language = useMemo<string>(() => config.lang ?? 'ko', [config]);
   const audioSrc = useMemo<string | undefined>(() => audioUri ? (url + audioUri) : undefined, [audioUri]);
+  const [isPlaying, togglePlaying] = useAudio(audioSrc);
 
   const onClickRefresh = useCallback(() => {
     console.log('refresh');
@@ -131,13 +131,6 @@ const Example = () => {
     // console.log('song:', song);
   }, [song]);
 
-  useEffect(() => {
-    if (isPlaying) {
-      audioRef.current.pause();
-    } else {
-      audioRef.current.play();
-    }
-  }, [isPlaying]);
 
   return (
     <Page>
@@ -157,6 +150,10 @@ const Example = () => {
           <ConfigButton gray>
             <span className='title'>{config.tempo.count}</span>
             <span className='subtitle'>BPM</span>
+          </ConfigButton>
+          <ConfigButton gray>
+            <span className='title'>{config.measures}</span>
+            <span className='subtitle'>Measures</span>
           </ConfigButton>
           <ConfigButton gray>
             <span className='title'>{config.key.toString()}</span>
@@ -259,10 +256,7 @@ const Example = () => {
             });
           }}
         />
-        <audio ref={audioRef} src={audioSrc} hidden
-          onEnded={() => { setPlaying(false); }}
-          onPause={() => { setPlaying(false); }}
-        />
+
         {isMusicReady ? (
           <IconLabelButton lightgreen
             name={isPlaying ? 'pause' : 'play'} label={isPlaying ? '노래 일시정지' : '노래 듣기'}
@@ -271,7 +265,7 @@ const Example = () => {
             onClick={() => {
               console.log('audioSrc:', audioSrc);
               console.log('isPlaying:', isPlaying);
-              setPlaying(!isPlaying);
+              togglePlaying();
             }}
           />
         ) : null}
