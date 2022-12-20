@@ -5,7 +5,7 @@ import { Colors } from '../../constants/color';
 import { Note as NoteModel } from '../../model/Note';
 import { Song } from '../../model/Song';
 import { Note } from '../atoms';
-import Grid from './Grid';
+import Grid from '../molecules/Grid';
 
 export const MIN_NOTE_SIZE = 30;
 const MEASURES = 2;
@@ -53,6 +53,7 @@ const Board = ({
   onSelectNote,
 }: Prop) => {
   const [selectedNoteIndex, setSelectedNoteIndex] = useState<number>();
+  const language = song.config.lang;
   const songLength = song.config.measures * 16;
   const highestPitch = song.config.highestPitch.code;
   const lowestPitch = song.config.lowestPitch.code;
@@ -92,6 +93,11 @@ const Board = ({
                 restPitch={note.isRest ? prevPitch : undefined}
                 lowestPitch={lowestPitch}
                 isSelected={i === selectedNoteIndex}
+                language={language}
+                onSelect={(note) => {
+                  setSelectedNoteIndex(i);
+                  onSelectNote(note);
+                }}
                 onClick={(note) => {
                   setSelectedNoteIndex(i);
                   onSelectNote(note);

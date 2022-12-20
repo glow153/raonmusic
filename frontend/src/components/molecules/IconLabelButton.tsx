@@ -1,6 +1,7 @@
 import styled from 'styled-components';
 import { Colors } from '../../constants/color';
-import { Button, ButtonProp, Icon } from '../atoms';
+import { tryCall } from '../../util';
+import { Button, ButtonProp, Icon, Spinner } from '../atoms';
 
 const ButtonContainer = styled(Button)`
   display: flex;
@@ -34,22 +35,27 @@ interface Prop extends ButtonProp {
   label: string;
   background?: string;
   iconBackground?: string;
+  loading?: boolean;
 }
 
 const IconLabelButton = ({
   name,
   label,
   iconBackground,
-  onClick,
+  onClick: _onClick,
+  loading,
   ...props
 }: Prop) => {
+  const onClick = () => {
+    !loading && tryCall(_onClick);
+  }
   return (
-    <ButtonContainer {...props} onClick={onClick}>
-      <IconContainer 
+    <ButtonContainer {...props} onClick={onClick} disabled={loading}>
+      <IconContainer
         background={iconBackground ?? Colors.primary}
         onClick={onClick}
       >
-        <Icon name={name} />
+        {loading ? <Spinner /> : <Icon name={name} />}
       </IconContainer>
       <LabelContainer>
         {label}

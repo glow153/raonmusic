@@ -18,13 +18,15 @@ const StyledCheckbox = styled.input`
 
 interface Prop {
   isChecked: boolean;
+  onChange?: React.ChangeEventHandler<HTMLInputElement>;
 }
 
 const Checkbox = ({
-  isChecked
+  isChecked,
+  onChange,
 }: Prop) => {
   return (
-    <StyledCheckbox type='checkbox' checked={isChecked} />
+    <StyledCheckbox type='checkbox' checked={isChecked} onChange={onChange} />
   );
 };
 

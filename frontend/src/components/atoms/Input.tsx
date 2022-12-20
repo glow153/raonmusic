@@ -12,7 +12,6 @@ interface ElementProp {
 
 const InputElement = styled.input<ElementProp>`
   background-color: ${Colors.inputBackground};
-  font-family: NanumGothic;
   width: ${p => isNumber(p.width) ? p.width + 'px' : '100%'};
   height: ${p => p.height}px;
   padding: ${p => p.padding ?? 12}px;

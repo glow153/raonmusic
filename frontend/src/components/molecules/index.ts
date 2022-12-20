@@ -1,4 +1,3 @@
-export { default as Board } from './Board';
 export { default as ButtonInput } from './ButtonInput';
 export { default as CheckboxGroup } from './CheckboxGroup';
 export { default as Grid } from './Grid';

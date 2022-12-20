@@ -2,11 +2,11 @@ import { Key, Tempo, Time } from ".";
 import { Pitch } from "../Pitch";
 
 interface ConfigParam {
-  tempo: Tempo;
-  key: Key;
-  time: Time;
+  tempo?: Tempo;
+  key?: Key;
+  time?: Time;
   measures?: number;
-  lang: string;
+  lang?: string;
   lowestPitch?: Pitch;
   highestPitch?: Pitch;
 }
@@ -20,12 +20,12 @@ export class Config {
   public lowestPitch: Pitch;
   public highestPitch: Pitch;
 
-  constructor({tempo, key, time, measures, lang, lowestPitch, highestPitch}: ConfigParam) {
-    this.tempo = tempo;
-    this.key = key;
-    this.time = time;
+  constructor({tempo, key, time, measures, lang, lowestPitch, highestPitch}: ConfigParam = {}) {
+    this.tempo = tempo ?? new Tempo();
+    this.key = key ?? new Key();
+    this.time = time ?? new Time();
     this.measures = measures ?? 4;
-    this.lang = lang;
+    this.lang = lang ?? 'ko';
     this.lowestPitch = lowestPitch ?? Pitch.fromCode(24); // C2
     this.highestPitch = highestPitch ?? Pitch.fromCode(36); // C3
   }
@@ -35,7 +35,9 @@ export class Config {
       tempo: Tempo.fromJson(config.tempo),
       key: Key.fromJson(config.key),
       time: Time.fromJson(config.time),
-      lang: config.lang
+      lang: config.lang,
+      lowestPitch: Pitch.fromCode(config['lowestPitch'] ?? 24),
+      highestPitch: Pitch.fromCode(config['highestPitch'] ?? 36),
     });
   }
 

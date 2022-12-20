@@ -1,5 +1,6 @@
 import IcHome from './home.svg';
 import IcMinus from './minus.svg';
+import IcPlay from './play.svg';
 import IcPlus from './plus.svg';
 import IcRefresh from './refresh.svg';
 import IcSong from './song.svg';
@@ -11,6 +12,7 @@ type t = {
   plus: any;
   minus: any;
   song: any;
+  play: any;
 }
 
 const m: t = {
@@ -19,6 +21,7 @@ const m: t = {
   plus: IcPlus,
   minus: IcMinus,
   song: IcSong,
+  play: IcPlay,
 };
 
 export default m;

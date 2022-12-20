@@ -1,5 +1,4 @@
-import { Duration } from "./Duration";
-import { Pitch } from "./Pitch";
+import { Duration, Pitch } from ".";
 
 export interface INote {
   index: number;
@@ -14,7 +13,7 @@ export class Note implements INote {
   public pitch: Pitch;
   public duration: Duration;
   public get isRest() {
-    return ((this.pitch?.code ?? 0) < 0) || this.phoneme === '-';
+    return ((this.pitch?.code ?? 0) < 0) || (this.phoneme === 'SP') || (this.phoneme === 'AP');
   }
 
   constructor(index: number, phoneme?: string, pitch?: Pitch, duration?: Duration) {
@@ -59,6 +58,10 @@ export class Note implements INote {
 
   public shorter(amount: number = 1) {
     return new Note(this.index, this.phoneme, this.pitch, this.duration.shorter(amount));
+  }
+
+  public copy() {
+    return new Note(this.index, this.phoneme, this.pitch, this.duration);
   }
 
   public equals(note?: Note): boolean {
