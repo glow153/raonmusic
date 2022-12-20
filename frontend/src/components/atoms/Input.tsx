@@ -42,8 +42,8 @@ const Input = ({
   onMouseWheel: _onMouseWheel,
   ...props
 }: Prop) => {
-  const onChange = useCallback(() => {
-    tryCall(_onChange);
+  const onChange = useCallback((evt: any) => {
+    tryCall(_onChange, evt);
   }, [_onChange]);
   const onMouseWheel = useCallback((evt: any) => {
     tryCall(_onMouseWheel, evt);

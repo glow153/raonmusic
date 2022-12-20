@@ -15,7 +15,7 @@ import { Pitch } from '../model/Pitch';
 import { Song } from '../model/Song';
 import { isNumber, isString } from '../util';
 
-const url = 'http://192.168.0.201:11300'
+const url = 'https://api.svs.raondata.ai'
 const generateEndpoint = '/generate';
 const generateUrl = url + generateEndpoint;
 
