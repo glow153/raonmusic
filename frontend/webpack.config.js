@@ -1,5 +1,6 @@
 const HtmlWebpackPlugin = require("html-webpack-plugin");
 const { CleanWebpackPlugin } = require('clean-webpack-plugin');
+const CopyPlugin = require("copy-webpack-plugin");
 const path = require("path");
 const webpack = require('webpack');
 
@@ -51,6 +52,13 @@ module.exports = (env, argv) => {
         favicon: "./public/favicon.svg"
       }),
       new CleanWebpackPlugin(),
+      new CopyPlugin({
+        patterns: [
+          {from: 'public/css', to: 'css'},
+          {from: 'public/fonts', to: 'fonts'},
+          {from: 'public/img', to: 'img'},
+        ]
+      }),
     ],
   }
 };
