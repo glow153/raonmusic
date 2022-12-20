@@ -1,10 +1,10 @@
 import styled from "styled-components";
 import { Colors } from "../../constants/color";
 
-const SelectedNoteContainer = styled.div`
+const SelectedNoteContainer = styled.div<{language?: string}>`
   width: 125px;
   height: 125px;
-  font-family: BMJua;
+  font-family: ${p => p.language === 'cn' ? "'Ma Shan Zheng'" : 'BMJua'};
   background-color: ${Colors.primary};
   border-radius: 17px;
   font-size: 75px;
@@ -15,13 +15,15 @@ const SelectedNoteContainer = styled.div`
 
 interface Prop {
   word?: string;
+  language?: string;
 }
 
 const SelectedNote = ({
-  word
+  word,
+  language
 }: Prop) => {
   return (
-    <SelectedNoteContainer>{word}</SelectedNoteContainer>
+    <SelectedNoteContainer language={language}>{word}</SelectedNoteContainer>
   );
 };
 

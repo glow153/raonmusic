@@ -1,4 +1,4 @@
-import { Note } from "./Note";
+import { Note } from ".";
 
 export class Measure {
   public notes: Note[];

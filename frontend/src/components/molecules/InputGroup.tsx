@@ -25,13 +25,13 @@ const StyledLabel = styled.label`
   margin-right: 5px;
 `;
 
-const StyledInput = styled(Input)`
+const StyledInput = styled(Input)<{disabled: boolean}>`
   width: 50px;
   padding: 5px;
   font-size: 14px;
   border-radius: 8px;
   color: #fdfaf5;
-  background-color: #0e3049;
+  background-color: ${p => p.disabled ? '#777' : '#0e3049'};
   text-align: center;
 `;
 
@@ -42,6 +42,7 @@ export interface Prop extends InputProp {
   height?: number;
   marginTop?: number;
   buttonLabel?: string;
+  disabled?: boolean;
 } 
 
 const InputGroup = ({
@@ -50,6 +51,7 @@ const InputGroup = ({
   width,
   height,
   marginTop,
+  disabled,
   buttonLabel,
   ...props
 }: Prop) => {
@@ -57,6 +59,7 @@ const InputGroup = ({
     <InputGroupContainer width={width} height={height} marginTop={marginTop}>
       <StyledLabel htmlFor={id}>{label}</StyledLabel>
       <StyledInput id={id} {...props}
+        disabled={disabled ?? false}
         readonly
       />
     </InputGroupContainer>

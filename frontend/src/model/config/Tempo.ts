@@ -4,8 +4,8 @@ export class Tempo {
   public count: number;
   public beat: Duration;
 
-  constructor(count: number, beat?: Duration) {
-    this.count = count;
+  constructor(count?: number, beat?: Duration) {
+    this.count = count ?? 60;
     this.beat = beat ?? new Duration();
   }
 
