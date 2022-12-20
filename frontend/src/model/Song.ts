@@ -1,5 +1,4 @@
-import { Config } from "./config";
-import { Note } from "./Note";
+import { Config, Note } from ".";
 
 export class Song {
   public notes: Note[];
@@ -41,19 +40,27 @@ export class Song {
   }
 
   public duplicate(index: number) {
-    if (index >= 0) {
-      this.notes?.splice(index, 0, this.notes[index]);
+    if (0 <= index && index < this.notes.length) {
+      this.notes?.splice(index, 0, this.notes[index].copy());
+      for (let i = index; i < this.notes.length; i++) {
+        this.notes[i].index = i;
+      }
     } else {
       debugger;
     }
+    return this.notes;
   }
   
   public delete(index: number) {
-    if (index >= 0) {
+    if (0 <= index && index < this.notes.length) {
       this.notes?.splice(index, 1);
+      for (let i = index; i < this.notes.length; i++) {
+        this.notes[i].index = i;
+      }
     } else {
       debugger;
     }
+    return this.notes;
   }
 
   public toJson() {

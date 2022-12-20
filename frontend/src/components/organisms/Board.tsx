@@ -94,6 +94,10 @@ const Board = ({
                 lowestPitch={lowestPitch}
                 isSelected={i === selectedNoteIndex}
                 language={language}
+                onSelect={(note) => {
+                  setSelectedNoteIndex(i);
+                  onSelectNote(note);
+                }}
                 onClick={(note) => {
                   setSelectedNoteIndex(i);
                   onSelectNote(note);

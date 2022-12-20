@@ -1,5 +1,4 @@
-import { Duration } from "./Duration";
-import { Pitch } from "./Pitch";
+import { Duration, Pitch } from ".";
 
 export interface INote {
   index: number;
@@ -59,6 +58,10 @@ export class Note implements INote {
 
   public shorter(amount: number = 1) {
     return new Note(this.index, this.phoneme, this.pitch, this.duration.shorter(amount));
+  }
+
+  public copy() {
+    return new Note(this.index, this.phoneme, this.pitch, this.duration);
   }
 
   public equals(note?: Note): boolean {

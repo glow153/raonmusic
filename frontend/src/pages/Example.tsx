@@ -89,12 +89,35 @@ const Example = () => {
 
   const onClickRefresh = useCallback(() => {
     console.log('refresh');
+    setNotes([]);
+    setNotes(initSong.notes);
+    setSelectedNote(undefined);
   }, []);
+  const onClickAdd = useCallback(() => {
+    if (selectedNote) {
+      const index = selectedNote.index
+      const newNote = selectedNote.copy();      
+      notes.splice(index, 0, newNote);
+      for (let i = index; i < notes.length; i++) {
+        notes[i].index = i;
+      }
+      setSelectedNote(newNote);
+    }
+  }, [selectedNote, notes]);
+  const onClickRemove = useCallback(() => {
+    if (selectedNote) {
+      const index = selectedNote.index
+      notes.splice(index, 1);
+      for (let i = index; i < notes.length; i++) {
+        notes[i].index = i;
+      }
+      setSelectedNote(notes[index]);
+    }
+  }, [selectedNote, notes]);
 
   useEffect(() => {
-    console.log('selectedNote:', selectedNote);
     if (selectedNote) {
-      notes.splice(selectedNote?.index, 1, selectedNote);
+      notes.splice(selectedNote?.index, 1, selectedNote); // dhpark: replace selected note
       setNotes([...notes]);
     }
   }, [selectedNote]);
@@ -125,9 +148,9 @@ const Example = () => {
       </Topbar>
       <div style={{display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end'}}>
         <NoteButtonGroup>
-          <IconButton secondary name='refresh' disabled onClick={onClickRefresh} />
-          <IconButton secondary name='plus' disabled />
-          <IconButton secondary name='minus' disabled />
+          <IconButton secondary name='refresh' onClick={onClickRefresh} />
+          <IconButton secondary name='plus' onClick={onClickAdd} />
+          <IconButton secondary name='minus' onClick={onClickRemove} />
         </NoteButtonGroup>
         <SelectedNote word={selectedNote?.phoneme} language={language} />
         <ConfigButtonGroup>
@@ -212,9 +235,12 @@ const Example = () => {
           onClick={() => {
             setMusicLoading(!isMusicLoading);
             console.log(song.toJson());
+
             fetch(generateUrl, {
               method: 'POST',
-              headers: { 'content-type': 'application/json' },
+              headers: {
+                'content-type': 'application/json',
+              },
               body: song.toJson()
             })
             .then((res) => res.json())
@@ -225,13 +251,21 @@ const Example = () => {
                 setMusicLoading(false);
                 setMusicReady(true);
               }
+            })
+            .catch((e) => {
+              setAudioUri(undefined);
+              setMusicLoading(false);
+              setMusicReady(false);
             });
           }}
         />
-        <audio ref={audioRef} src={audioSrc} hidden />
+        <audio ref={audioRef} src={audioSrc} hidden
+          onEnded={() => { setPlaying(false); }}
+          onPause={() => { setPlaying(false); }}
+        />
         {isMusicReady ? (
           <IconLabelButton lightgreen
-            name='play' label='노래 생성'
+            name={isPlaying ? 'pause' : 'play'} label={isPlaying ? '노래 일시정지' : '노래 듣기'}
             iconBackground={Colors.green}
             style={{marginLeft: 114}}
             onClick={() => {
