@@ -1,9 +1,10 @@
+import os
 import json
 from typing import Union
 
-from ai.svs import cmd
-from model.song import Song
-from fastapi import FastAPI
+from ai.svs import cmd,save_inference_logs
+from fastapi import FastAPI, Request
+from fastapi.responses import FileResponse
 from fastapi.middleware.cors import CORSMiddleware
 
 app = FastAPI()
@@ -27,8 +28,15 @@ def example(lyric: str):
     return {"lyric": lyric}
 
 @app.post("/generate")
-def generate(song: Song):
-    
-    model_language = ["config"]["lang"]
+async def generate(request: Request):
+    notedata = await request.json()
+    file_id = save_inference_logs(notedata)
+    model_language = notedata["config"]["lang"]
     cmd("sh engine.sh {}".format(model_language))
-    return {"result": "true", 'song': json.dumps(song)}
+    return {"result": "true", 'song': "/result/{}.wav".format(file_id)}
+
+@app.get('/result/{wav_file}')
+def result(wav_file: str):
+    curr_dir = os.getcwd()
+    filepath = f'{curr_dir}/ai/DiffSinger/infer_out/{wav_file}'
+    return FileResponse(filepath)

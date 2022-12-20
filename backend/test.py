@@ -24,7 +24,7 @@ notedata = {
     {"phoneme": "반", "pitch": 49, "duration": 4},
     {"phoneme": "짝", "pitch": 54, "duration": 4},
     {"phoneme": "반", "pitch": 56, "duration": 4},
-    {"phoneme": "SP", "pitch": -1, "duration": 4},
+    # {"phoneme": "SP", "pitch": -1, "duration": 4},
     {"phoneme": "짝", "pitch": 58, "duration": 4},
     {"phoneme": "-", "pitch": 54, "duration": 4},
     {"phoneme": "작", "pitch": 54, "duration": 4},
@@ -38,6 +38,6 @@ notedata = {
     "lang": "ko"
   }
 }
-# save_inference_logs(notedata)
+save_inference_logs(notedata)
 model_language = notedata["config"]["lang"]
 cmd("sh engine.sh {}".format(model_language))

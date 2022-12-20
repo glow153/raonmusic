@@ -155,6 +155,7 @@ def save_inference_logs(notedata):
     log = '%'.join(saved_log)
     with open(infer_logs,'a+') as f:
         f.write("\n"+log)
+    return file_id
 
 
 
