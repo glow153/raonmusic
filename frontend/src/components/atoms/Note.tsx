@@ -13,9 +13,12 @@ interface Prop {
   restPitch?: number;
   isSelected?: boolean;
   lowestPitch: number;
+  onSelect?: (note: NoteModel) => void;
   onClick?: (note: NoteModel) => void;
   language?: string;
 }
+
+const dragThreshold = 18;
 
 const Note = ({
   note,
@@ -26,6 +29,7 @@ const Note = ({
   restPitch,
   isSelected = false,
   lowestPitch,
+  onSelect: _onSelect,
   onClick: _onClick,
   language,
 }: Prop) => {
@@ -47,9 +51,15 @@ const Note = ({
   const yText = y + (height-fontSize)/2;
 
   const [isHover, setHover] = useState<boolean>(false);
+  const [isDragging, setDragging] = useState<boolean>(false);
+  const [dragStartY, setDragStartY] = useState<number>(0);
   const onClick = useCallback((note: NoteModel) => {
     tryCall(_onClick, note);
   }, [note]);
+  const onSelect = useCallback((note: NoteModel) => {
+    tryCall(_onSelect, note);
+  }, [note]);
+  
 
   return (
     <>
@@ -60,11 +70,14 @@ const Note = ({
           ? (isHover ? Colors.grayHover : Colors.gray)
           : (isHover ? Colors.primaryHover : Colors.primary)
         }
-        onClick={(evt) => {
-          onClick(note);
-        }}
         onMouseOver={() => {setHover(true);}}
         onMouseOut={() => {setHover(false);}}
+        onMouseDown={({evt}) => {
+          console.log('onMouseDown', evt);
+          onClick(note);
+          setDragStartY(evt.y);
+          setDragging(true);
+        }}
       />
       <Text x={xText} y={yText}
         text={note.phoneme} fontFamily={language === 'cn' ? 'Ma Shan Zheng' : 'BMJua'} fontSize={fontSize}
@@ -80,7 +93,31 @@ const Note = ({
           fill='transparent' stroke='#ed0e0eaa'
           strokeWidth={selectBorderWidth}
           onMouseOver={() => {setHover(true);}}
-          onMouseOut={() => {setHover(false);}}
+          onMouseOut={() => {
+            setHover(false);
+            setDragging(false);
+          }}
+          onMouseDown={({evt}) => {
+            console.log('onMouseDown', evt);
+            setDragStartY(evt.offsetY);
+            setDragging(true);
+          }}
+          onMouseMove={({evt}) => {
+            if (isDragging){
+              const dy = dragStartY - evt.offsetY;
+              console.log(`mouse dragging: y=${y}, dragStartY=${dragStartY}, evt.offsetY=${evt.offsetY}, dy=${dy}`);
+              if (dy > dragThreshold) {
+                onSelect(note.higher());
+                setDragStartY(evt.y - 15);
+              } else if (dy < -dragThreshold) {
+                onSelect(note.lower());
+                setDragStartY(evt.y + 15);
+              }
+            }
+          }}
+          onMouseUp={(evt) => {
+            setDragging(false);
+          }}
         />
       )}
     </>
