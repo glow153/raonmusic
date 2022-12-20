@@ -9,6 +9,7 @@ from inference.svs.opencpop.map import cpop_pinyin2ph_func
 from utils import load_ckpt
 from utils.hparams import set_hparams, hparams
 from utils.text_encoder import TokenTextEncoder
+from utils.KoG2P.g2p import SG2P
 from pypinyin import pinyin, lazy_pinyin, Style
 import librosa
 import glob
@@ -16,17 +17,35 @@ import re
 
 
 class BaseSVSInfer:
-    def __init__(self, hparams, device=None):
+    def __init__(self, hparams, language=None,device=None):
         if device is None:
             device = 'cuda' if torch.cuda.is_available() else 'cpu'
         self.hparams = hparams
         self.device = device
-
-        phone_list = ["AP", "SP", "a", "ai", "an", "ang", "ao", "b", "c", "ch", "d", "e", "ei", "en", "eng", "er", "f", "g",
-                  "h", "i", "ia", "ian", "iang", "iao", "ie", "in", "ing", "iong", "iu", "j", "k", "l", "m", "n", "o",
-                  "ong", "ou", "p", "q", "r", "s", "sh", "t", "u", "ua", "uai", "uan", "uang", "ui", "un", "uo", "v",
-                  "van", "ve", "vn", "w", "x", "y", "z", "zh"]
-        self.ph_encoder = TokenTextEncoder(None, vocab_list=phone_list, replace_oov=',')
+        self.language = language
+        phone_list_cn = ["AP", "SP", "a", "ai", "an", "ang", "ao", "b", "c", "ch", "d", "e", "ei", "en", "eng", "er", "f", "g",
+                        "h", "i", "ia", "ian", "iang", "iao", "ie", "in", "ing", "iong", "iu", "j", "k", "l", "m", "n", "o",
+                        "ong", "ou", "p", "q", "r", "s", "sh", "t", "u", "ua", "uai", "uan", "uang", "ui", "un", "uo", "v",
+                        "van", "ve", "vn", "w", "x", "y", "z", "zh"]
+        phone_list_ko = ['AP', 'SP', 'a', 'ae', 'aek', 'ael', 'aem', 'aen', 'aeng',
+                        'aet', 'ak', 'al', 'am', 'an', 'ang', 'ap', 'at', 'b', 'ch', 'd', 'e',
+                        'el', 'en', 'eo', 'eok', 'eol', 'eom', 'eon', 'eong', 'eop', 'eot',
+                        'et', 'eu', 'eul', 'eum', 'eun', 'eung', 'eup', 'eut', 'g', 'h',
+                        'i', 'ik', 'il', 'im', 'in', 'ing', 'ip', 'it', 'j', 'jj', 'k',
+                        'kk', 'm', 'n', 'o', 'oe', 'oel', 'oen', 'oet', 'ok', 'ol', 'om',
+                        'on', 'ong', 'op', 'ot', 'p', 'pp', 'r', 's', 'ss', 't', 'tt', 'u',
+                        'ui', 'uin', 'uk', 'ul', 'um', 'un', 'ung', 'up', 'ut', 'wa', 'wae', 
+                        'waen', 'wak', 'wan', 'wang', 'wat', 'wen', 'wi', 'wik', 'wim', 'wing', 
+                        'wit', 'wo', 'wol', 'won', 'wot', 'ya', 'yak', 'yang', 'ye', 'yeo', 
+                        'yeok', 'yeol', 'yeom', 'yeon', 'yeong', 'yeop', 'yeot', 'yet', 'yo', 
+                        'yok', 'yong', 'yu', 'yuk']
+        print("selected_phone_list:"+self.language)
+        if language=="ko":
+            self.ph_encoder = TokenTextEncoder(None, vocab_list=phone_list_ko, replace_oov=',')
+        elif language=="cn":
+            self.ph_encoder = TokenTextEncoder(None, vocab_list=phone_list_cn, replace_oov=',')
+        else:
+            print("no language selected!!")
         self.pinyin2phs = cpop_pinyin2ph_func()
         self.spk_map = {'opencpop': 0}
 
@@ -68,6 +87,90 @@ class BaseSVSInfer:
             y = self.vocoder(c).view(-1)
             # [T]
         return y[None]
+
+
+    def preprocess_word_level_input_ko(self, inp):
+        # Pypinyin can't solve polyphonic words
+
+        print("*"*50)
+        print(inp['text'])
+        print(SG2P(inp['text']))
+        print("&"*50)
+        # text_raw = inp['text'].replace('最长', '最常').replace('长睫毛', '常睫毛') \
+        #     .replace('那么长', '那么常').replace('多长', '多常') \
+        #     .replace('很长', '很常')  # We hope someone could provide a better g2p module for us by opening pull requests.
+
+        # lyric
+        # pinyins = lazy_pinyin(text_raw, strict=False)
+        # ph_per_word_lst = [self.pinyin2phs[pinyin.strip()] for pinyin in pinyins if pinyin.strip() in self.pinyin2phs]
+        ph_per_word_lst = re.split('\||\#',SG2P(inp['text']))
+        print(ph_per_word_lst)
+
+
+        # Note
+        note_per_word_lst = [x.strip() for x in inp['notes'].split('|') if x.strip() != '']
+        mididur_per_word_lst = [x.strip() for x in inp['notes_duration'].split('|') if x.strip() != '']
+
+        if len(note_per_word_lst) == len(ph_per_word_lst) == len(mididur_per_word_lst):
+            print('Pass word-notes check.')
+        else:
+            print('The number of words does\'t match the number of notes\' windows. ',
+                  'You should split the note(s) for each word by | mark.')
+            print(ph_per_word_lst, note_per_word_lst, mididur_per_word_lst)
+            print(len(ph_per_word_lst), len(note_per_word_lst), len(mididur_per_word_lst))
+            return None
+
+        note_lst = []
+        ph_lst = []
+        midi_dur_lst = []
+        is_slur = []
+        for idx, ph_per_word in enumerate(ph_per_word_lst):
+            # for phs in one word:
+            # single ph like ['ai']  or multiple phs like ['n', 'i']
+            ph_in_this_word = ph_per_word.split()
+
+            # for notes in one word:
+            # single note like ['D4'] or multiple notes like ['D4', 'E4'] which means a 'slur' here.
+            note_in_this_word = note_per_word_lst[idx].split()
+            midi_dur_in_this_word = mididur_per_word_lst[idx].split()
+            # process for the model input
+            # Step 1.
+            #  Deal with note of 'not slur' case or the first note of 'slur' case
+            #  j        ie
+            #  F#4/Gb4  F#4/Gb4
+            #  0        0
+
+            for ph in ph_in_this_word:
+                ph_lst.append(ph)
+                note_lst.append(note_in_this_word[0])
+                if len(ph_in_this_word)==1:
+                    midi_dur_lst.append(midi_dur_in_this_word[0])
+                else:
+                    midi_dur_lst.append(float(midi_dur_in_this_word[0])/2)
+
+                is_slur.append(0)
+            # step 2.
+            #  Deal with the 2nd, 3rd... notes of 'slur' case
+            #  j        ie         ie
+            #  F#4/Gb4  F#4/Gb4    C#4/Db4
+            #  0        0          1
+            if len(note_in_this_word) > 1:  # is_slur = True, we should repeat the YUNMU to match the 2nd, 3rd... notes.
+                for idx in range(1, len(note_in_this_word)):
+                    ph_lst.append(ph_in_this_word[-1])
+                    note_lst.append(note_in_this_word[idx])
+                    midi_dur_lst.append(midi_dur_in_this_word[idx])
+                    is_slur.append(1)
+        ph_seq = ' '.join(ph_lst)
+
+        if len(ph_lst) == len(note_lst) == len(midi_dur_lst):
+            print(len(ph_lst), len(note_lst), len(midi_dur_lst))
+            print('Pass word-notes check.')
+        else:
+            print('The number of words does\'t match the number of notes\' windows. ',
+                  'You should split the note(s) for each word by | mark.')
+            return None
+        return ph_seq, note_lst, midi_dur_lst, is_slur
+
 
     def preprocess_word_level_input(self, inp):
         # Pypinyin can't solve polyphonic words
@@ -167,7 +270,10 @@ class BaseSVSInfer:
 
         # get ph seq, note lst, midi dur lst, is slur lst.
         if input_type == 'word':
-            ret = self.preprocess_word_level_input(inp)
+            if self.language=="cn":
+                ret = self.preprocess_word_level_input(inp)
+            elif self.language=="ko":
+                ret = self.preprocess_word_level_input_ko(inp)
         elif input_type == 'phoneme':  # like transcriptions.txt in Opencpop dataset.
             ret = self.preprocess_phoneme_level_input(inp)
         else:
@@ -232,10 +338,10 @@ class BaseSVSInfer:
         return output
 
     @classmethod
-    def example_run(cls, inp,file_id):
+    def example_run(cls, inp,file_id,language):
         from utils.audio import save_wav
         set_hparams(print_hparams=False)
-        infer_ins = cls(hparams)
+        infer_ins = cls(hparams,language) #初始化类
         out = infer_ins.infer_once(inp)
         infer_path = 'infer_out'
         os.makedirs(infer_path, exist_ok=True)

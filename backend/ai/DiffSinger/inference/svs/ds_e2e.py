@@ -71,7 +71,7 @@ if __name__ == '__main__':
     #     'is_slur_seq': '0 0 0 0 0 0 0 0 1 0 0 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0',
     #     'input_type': 'phoneme'
     # }  # input like Opencpop dataset.
-    DiffSingerE2EInfer.example_run(inp,file_id)
+    DiffSingerE2EInfer.example_run(inp,file_id,language)
 
 
 # python inference/svs/ds_e2e.py --config usr/configs/midi/e2e/opencpop/ds100_adj_rel.yaml --exp_name 0228_opencpop_ds100_rel
