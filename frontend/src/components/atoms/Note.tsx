@@ -18,7 +18,7 @@ interface Prop {
   language?: string;
 }
 
-const dragThreshold = 18;
+const dragThreshold = 15;
 
 const Note = ({
   left,
@@ -39,7 +39,6 @@ const Note = ({
       : (isNumber(note.pitch?.code) ? ((note.pitch?.code ?? 0) - lowestPitch) : 0)
   );
   const duration = note.duration?.length ?? 1;
-
   const x = left * gridCellSize + gridPadding;
   const y = gridHeight - ((pitch + 1) * gridCellSize - gridPadding);
   const width = gridCellSize * duration;
@@ -74,7 +73,7 @@ const Note = ({
         onMouseDown={({evt}) => {
           console.log('onMouseDown', evt);
           onClick(note);
-          setDragStartY(evt.y);
+          setDragStartY(evt.offsetY);
           setDragging(true);
         }}
       />
@@ -108,10 +107,10 @@ const Note = ({
               console.log(`mouse dragging: y=${y}, dragStartY=${dragStartY}, evt.offsetY=${evt.offsetY}, dy=${dy}`);
               if (dy > dragThreshold) {
                 onSelect(note.higher());
-                setDragStartY(evt.y - 15);
+                setDragStartY(evt.offsetY - 15);
               } else if (dy < -dragThreshold) {
                 onSelect(note.lower());
-                setDragStartY(evt.y + 15);
+                setDragStartY(evt.offsetY + 15);
               }
             }
           }}

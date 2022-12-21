@@ -1,0 +1,29 @@
+{
+  "notes": [
+    {"phoneme": "你", "pitch": 49, "duration": 1},
+    {"phoneme": "做", "pitch": 58, "duration": 1},
+    {"phoneme": "什", "pitch": 58, "duration": 1},
+    {"phoneme": "么", "pitch": 58, "duration": 1},
+    {"phoneme": "事", "pitch": 58, "duration": 1},
+    {"phoneme": "情", "pitch": 58, "duration": 1},
+    {"phoneme": "都", "pitch": 58, "duration": 1},
+    {"phoneme": "有", "pitch": 58, "duration": 1},
+    {"phoneme": "一", "pitch": 58, "duration": 1},
+    {"phoneme": "些", "pitch": 58, "duration": 1},
+    {"phoneme": "美", "pitch": 58, "duration": 1},
+    {"phoneme": "丽", "pitch": 58, "duration": 1},
+    {"phoneme": "的", "pitch": 58, "duration": 1},
+    {"phoneme": "借", "pitch": 58, "duration": 1},
+    {"phoneme": "口", "pitch": 58, "duration": 2}
+
+  ],
+  "config": {
+    "tempo": {"count": 240, "beat": 4},
+    "measures": 3,
+    "key": {"pitch": 6, "tone": 0},
+    "time": {"upper": 4, "lower": 4},
+    "lang": "cn",
+    "lowestPitch": 48,
+    "highestPitch": 60
+  }
+}

@@ -58,6 +58,9 @@ const Board = ({
   const stageWidth = useMemo<number>(() => songLength * cellSize + (padding * 2), [song]);
   const stageHeight = useMemo<number>(() => boardHeight + (padding * 2), [song]);
 
+  const onClickCanvas = useCallback((evt: any) => {
+    console.log('evt:', evt);
+  }, []);
   const onClickGrid = useCallback(() => {
     setSelectedNoteIndex(undefined);
     onSelectNote(undefined);
@@ -69,7 +72,9 @@ const Board = ({
       height={boardHeight}
       scrollbarWidth={10}
     >
-      <Stage width={stageWidth} height={stageHeight} ref={stageRef}>
+      <Stage width={stageWidth} height={stageHeight} ref={stageRef}
+        onClick={onClickCanvas}
+      >
         <Layer>
           <Grid
             config={song.config}

@@ -6,7 +6,10 @@ import { CheckboxGroup, ConfigButton, IconButton, IconLabelButton } from '../com
 import { Board, InputSlider } from '../components/organisms';
 import { Page } from '../components/templates';
 import { Colors } from '../constants/color';
+import _song_example_cn2 from '../constants/song-example-cn-2.json';
 import _song_example_cn from '../constants/song-example-cn.json';
+import _song_example_ko2 from '../constants/song-example-ko-2.json';
+import _song_example_ko3 from '../constants/song-example-ko-3.json';
 import _song_example_ko from '../constants/song-example-ko.json';
 import { useAudio } from '../hooks';
 import { Config, Tone } from '../model/config';
@@ -56,7 +59,10 @@ const Example = () => {
   const {lang} = useParams();
   const initSong = Song.fromJson(
     lang === 'ko' ? _song_example_ko
+    : lang === 'ko2' ? _song_example_ko2
+    : lang === 'ko3' ? _song_example_ko3
     : lang === 'cn' ? _song_example_cn
+    : lang === 'cn2' ? _song_example_cn2
     : undefined
   );
   const [song, setSong] = useState<Song>(initSong);

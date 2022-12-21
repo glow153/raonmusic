@@ -10,7 +10,7 @@ interface Prop {
   length: number;
   height: number;
   padding: number;
-  onClick: () => void;
+  onClick: (evt?: any) => void;
 }
 
 const Grid = ({

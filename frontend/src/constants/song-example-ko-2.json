@@ -1,0 +1,24 @@
+{
+  "notes": [
+    {"phoneme": "반", "pitch": 36, "duration": 4},
+    {"phoneme": "짝", "pitch": 36, "duration": 4},
+    {"phoneme": "반", "pitch": 31, "duration": 4},
+    {"phoneme": "짝", "pitch": 31, "duration": 4},
+    {"phoneme": "작", "pitch": 29, "duration": 4},
+    {"phoneme": "은", "pitch": 33, "duration": 4},
+    {"phoneme": "별", "pitch": 31, "duration": 8},
+    {"phoneme": "아", "pitch": 29, "duration": 4},
+    {"phoneme": "름", "pitch": 29, "duration": 4},
+    {"phoneme": "답", "pitch": 31, "duration": 4},
+    {"phoneme": "게", "pitch": 31, "duration": 4},
+    {"phoneme": "비", "pitch": 33, "duration": 4},
+    {"phoneme": "치", "pitch": 35, "duration": 4},
+    {"phoneme": "네", "pitch": 36, "duration": 16}
+  ],
+  "config": {
+    "tempo": {"count": 70, "beat": 4},
+    "key": {"pitch": 0, "tone": 0},
+    "time": {"upper": 4, "lower": 4},
+    "lang": "ko"
+  }
+}
