@@ -1,6 +1,7 @@
 export { default as Button } from './Button';
 export type { Prop as ButtonProp } from './Button';
 export { default as Checkbox } from './Checkbox';
+export type { Prop as CheckboxProp } from './Checkbox';
 export { default as Icon } from './Icon';
 export { default as Input } from './Input';
 export type { Prop as InputProp } from './Input';

@@ -69,13 +69,31 @@ const Home = () => {
       <Section>
         <span style={{position: 'absolute', left: 22, fontFamily: 'BMJua', flex: 0}}>한국어)</span>
         <Link to='/example/ko' style={{flex: 1, display: 'flex'}}>
-          <Input value='반짝반짝작은별 아름답게비치네' style={{paddingLeft: 80, paddingRight: 30, paddingTop: 22, paddingBottom: 22, flex: 1}} readonly />
+          <Input value='반짝반짝작은별 아름답게비치네' style={{paddingLeft: 90, paddingRight: 30, paddingTop: 22, paddingBottom: 22, flex: 1}} readonly />
+        </Link>
+      </Section>
+      <Section style={{marginTop: 20}}>
+        <span style={{position: 'absolute', left: 22, fontFamily: 'BMJua', flex: 0}}>한국어2)</span>
+        <Link to='/example/ko2' style={{flex: 1, display: 'flex'}}>
+          <Input value='반짝반짝작은별 아름답게비치네 (다른 버전)' style={{paddingLeft: 90, paddingRight: 30, paddingTop: 22, paddingBottom: 22, flex: 1}} readonly />
+        </Link>
+      </Section>
+      <Section style={{marginTop: 20}}>
+        <span style={{position: 'absolute', left: 22, fontFamily: 'BMJua'}}>한국어3)</span>
+        <Link to='/example/ko3' style={{flex: 1, display: 'flex'}}>
+          <Input value='여수밤바다' style={{paddingLeft: 90, paddingRight: 30, paddingTop: 22, paddingBottom: 22, flex: 1}} readonly />
         </Link>
       </Section>
       <Section style={{marginTop: 20}}>
         <span style={{position: 'absolute', left: 22, fontFamily: 'BMJua'}}>중국어)</span>
         <Link to='/example/cn' style={{flex: 1, display: 'flex'}}>
-          <Input value='小酒窝 长-睫-毛' style={{paddingLeft: 80, paddingRight: 30, paddingTop: 22, paddingBottom: 22, flex: 1}} readonly />
+          <Input value='小酒窝 长-睫-毛' style={{paddingLeft: 90, paddingRight: 30, paddingTop: 22, paddingBottom: 22, flex: 1}} readonly />
+        </Link>
+      </Section>
+      <Section style={{marginTop: 20}}>
+        <span style={{position: 'absolute', left: 22, fontFamily: 'BMJua'}}>중국어2)</span>
+        <Link to='/example/cn2' style={{flex: 1, display: 'flex'}}>
+          <Input value='Chinese Eminem' style={{paddingLeft: 90, paddingRight: 30, paddingTop: 22, paddingBottom: 22, flex: 1}} readonly />
         </Link>
       </Section>
     </Page>

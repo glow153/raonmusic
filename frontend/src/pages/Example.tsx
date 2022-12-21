@@ -1,15 +1,18 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import styled from 'styled-components';
-import { Button, Link, SelectedNote } from '../components/atoms';
-import { CheckboxGroup, IconButton, IconLabelButton } from '../components/molecules';
+import { Link, SelectedNote } from '../components/atoms';
+import { CheckboxGroup, ConfigButton, IconButton, IconLabelButton } from '../components/molecules';
 import { Board, InputSlider } from '../components/organisms';
 import { Page } from '../components/templates';
 import { Colors } from '../constants/color';
+import _song_example_cn2 from '../constants/song-example-cn-2.json';
 import _song_example_cn from '../constants/song-example-cn.json';
+import _song_example_ko2 from '../constants/song-example-ko-2.json';
+import _song_example_ko3 from '../constants/song-example-ko-3.json';
 import _song_example_ko from '../constants/song-example-ko.json';
 import { useAudio } from '../hooks';
-import { Config } from '../model/config';
+import { Config, Tone } from '../model/config';
 import { Duration } from '../model/Duration';
 import { Note } from '../model/Note';
 import { Pitch } from '../model/Pitch';
@@ -52,23 +55,14 @@ const ConfigButtonGroup = styled.div`
   }
 `;
 
-const ConfigButton = styled(Button)`
-  display: flex;
-  align-items: center;
-  flex-direction: column;
-  padding: 6px 11px;
-  min-width: 53px;
-  span{font-family:BMJua;line-height:1.3;}
-  .title{font-size:18px;}
-  .subtitle{font-size:12px;}
-`;
-
-
 const Example = () => {
   const {lang} = useParams();
   const initSong = Song.fromJson(
     lang === 'ko' ? _song_example_ko
+    : lang === 'ko2' ? _song_example_ko2
+    : lang === 'ko3' ? _song_example_ko3
     : lang === 'cn' ? _song_example_cn
+    : lang === 'cn2' ? _song_example_cn2
     : undefined
   );
   const [song, setSong] = useState<Song>(initSong);
@@ -131,7 +125,6 @@ const Example = () => {
     // console.log('song:', song);
   }, [song]);
 
-
   return (
     <Page>
       <Topbar>
@@ -145,7 +138,15 @@ const Example = () => {
           <IconButton secondary name='plus' onClick={onClickAdd} />
           <IconButton secondary name='minus' onClick={onClickRemove} />
         </NoteButtonGroup>
-        <SelectedNote word={selectedNote?.phoneme} language={language} />
+        <SelectedNote language={language}
+          note={selectedNote}
+          onChange={(e) => {
+            if (selectedNote) {
+              setSelectedNote(selectedNote.setPhoneme(e.target.value));
+            }
+          }}
+          readonly={!selectedNote || (selectedNote.isRest ?? false)}
+        />
         <ConfigButtonGroup>
           <ConfigButton gray>
             <span className='title'>{config.tempo.count}</span>
@@ -153,11 +154,11 @@ const Example = () => {
           </ConfigButton>
           <ConfigButton gray>
             <span className='title'>{config.measures}</span>
-            <span className='subtitle'>Measures</span>
+            <span className='subtitle'>MEASURES</span>
           </ConfigButton>
           <ConfigButton gray>
-            <span className='title'>{config.key.toString()}</span>
-            <span className='subtitle'>{config.key.tone}</span>
+            <span className='title'>{`${config.key}${config.key._tone === Tone.MINOR ? 'm' : ''}`}</span>
+            <span className='subtitle'>KEY</span>
           </ConfigButton>
           <ConfigButton gray>
             <span className='title'>{`${config.time.upper}/${config.time.lower}`}</span>
@@ -198,9 +199,16 @@ const Example = () => {
             }
           }}
         />
-
-        <CheckboxGroup label='쉼표' isChecked={selectedNote?.isRest ?? false} onChange={()=>{}} />
-
+        <CheckboxGroup label='쉼표'
+          isChecked={selectedNote?.isRest ?? false}
+          onClick={(e) => {
+            console.log('on clicked checkbox:', e);
+            setSelectedNote(selectedNote?.toggleRest());
+          }}
+          onChange={(e)=>{
+            console.log('on changed checkbox:', e.target.checked, ', e:', e);
+          }}
+        />
         <InputSlider id='durationSlider' label='길이'
           min={Duration.MIN} max={Duration.MAX} step={1}
           sliderWidth={280}
@@ -250,6 +258,7 @@ const Example = () => {
               }
             })
             .catch((e) => {
+              console.error(e);
               setAudioUri(undefined);
               setMusicLoading(false);
               setMusicReady(false);

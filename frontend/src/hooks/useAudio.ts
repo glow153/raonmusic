@@ -8,7 +8,12 @@ export const useAudio = (url?: string): ([boolean, () => void]) => {
 
   useEffect(() => {
     console.log('[useAudio] audio:', audio, ', playing:', playing)
-    audio ? (playing ? audio.play() : audio.pause()) : undefined;
+    try {
+      audio ? (playing ? audio.play() : audio.pause()) : undefined;
+    } catch (e) {
+      console.log('[useAudio] error occurred :(');
+      setPlaying(false);
+    }
   }, [playing]);
 
   useEffect(() => {

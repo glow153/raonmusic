@@ -5,11 +5,11 @@ import { Note as NoteModel } from '../../model/Note';
 import { isNumber, tryCall } from '../../util';
 
 interface Prop {
+  left: number;
   note: NoteModel;
   gridCellSize?: number;
   gridHeight?: number;
   gridPadding?: number;
-  left: number;
   restPitch?: number;
   isSelected?: boolean;
   lowestPitch: number;
@@ -18,14 +18,14 @@ interface Prop {
   language?: string;
 }
 
-const dragThreshold = 18;
+const dragThreshold = 15;
 
 const Note = ({
+  left,
   note,
   gridCellSize = 0,
   gridHeight = 0,
   gridPadding = 0,
-  left,
   restPitch,
   isSelected = false,
   lowestPitch,
@@ -39,7 +39,6 @@ const Note = ({
       : (isNumber(note.pitch?.code) ? ((note.pitch?.code ?? 0) - lowestPitch) : 0)
   );
   const duration = note.duration?.length ?? 1;
-
   const x = left * gridCellSize + gridPadding;
   const y = gridHeight - ((pitch + 1) * gridCellSize - gridPadding);
   const width = gridCellSize * duration;
@@ -63,8 +62,7 @@ const Note = ({
 
   return (
     <>
-      <Rect x={x} y={y}
-        width={width} height={height}
+      <Rect x={x} y={y} width={width} height={height}
         cornerRadius={radius}
         fill={note.isRest
           ? (isHover ? Colors.grayHover : Colors.gray)
@@ -75,12 +73,13 @@ const Note = ({
         onMouseDown={({evt}) => {
           console.log('onMouseDown', evt);
           onClick(note);
-          setDragStartY(evt.y);
+          setDragStartY(evt.offsetY);
           setDragging(true);
         }}
       />
       <Text x={xText} y={yText}
-        text={note.phoneme} fontFamily={language === 'cn' ? 'Ma Shan Zheng' : 'BMJua'} fontSize={fontSize}
+        fontFamily={language === 'cn' ? 'Ma Shan Zheng' : 'BMJua'} fontSize={fontSize}
+        text={note.isRest ? '~' : note.phoneme}
         onClick={() => {
           onClick(note);
         }}
@@ -103,15 +102,15 @@ const Note = ({
             setDragging(true);
           }}
           onMouseMove={({evt}) => {
-            if (isDragging){
+            if (isDragging) {
               const dy = dragStartY - evt.offsetY;
               console.log(`mouse dragging: y=${y}, dragStartY=${dragStartY}, evt.offsetY=${evt.offsetY}, dy=${dy}`);
               if (dy > dragThreshold) {
                 onSelect(note.higher());
-                setDragStartY(evt.y - 15);
+                setDragStartY(evt.offsetY - 15);
               } else if (dy < -dragThreshold) {
                 onSelect(note.lower());
-                setDragStartY(evt.y + 15);
+                setDragStartY(evt.offsetY + 15);
               }
             }
           }}

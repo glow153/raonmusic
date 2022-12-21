@@ -33,6 +33,7 @@ export class Config {
   public static fromJson(config: any) {
     return new Config({
       tempo: Tempo.fromJson(config.tempo),
+      measures: config.measures,
       key: Key.fromJson(config.key),
       time: Time.fromJson(config.time),
       lang: config.lang,
