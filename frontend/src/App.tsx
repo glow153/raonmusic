@@ -4,7 +4,7 @@ import { Root } from './layout/root';
 import { Footer } from './layout/root/footer';
 import { Header } from './layout/root/header';
 import { Main } from './layout/root/main';
-import { About, Example, Home, Repair } from './pages';
+import { About, Home, Repair, Score } from './pages';
 
 const App = () => {
   return (
@@ -15,8 +15,8 @@ const App = () => {
           <Routes>
             <Route path='/' element={<Home />} />
             <Route path='/about' element={<About />} />
-            <Route path='/example/' element={<Example />} />
-            <Route path='/example/:lang' element={<Example />} />
+            <Route path='/score/' element={<Score />} />
+            <Route path='/example/:lang' element={<Score />} />
             <Route path='/repair' element={<Repair />} />
             <Route path='/*' element={<Repair />} />
           </Routes>

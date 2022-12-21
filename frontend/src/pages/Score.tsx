@@ -1,5 +1,6 @@
+import QueryString from 'qs';
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { useParams } from 'react-router-dom';
+import { Params, useLocation, useParams } from 'react-router-dom';
 import styled from 'styled-components';
 import { Link, SelectedNote } from '../components/atoms';
 import { CheckboxGroup, ConfigButton, IconButton, IconLabelButton } from '../components/molecules';
@@ -55,19 +56,34 @@ const ConfigButtonGroup = styled.div`
   }
 `;
 
-const Example = () => {
-  const {lang} = useParams();
-  const initSong = Song.fromJson(
+const initSong = (param: Params<string>, location: any) => {
+  const lang = param.lang;
+  const lyric: any = QueryString.parse(location.search, {ignoreQueryPrefix: true})?.lyric;
+  return lang ? Song.fromJson(
     lang === 'ko' ? _song_example_ko
     : lang === 'ko2' ? _song_example_ko2
     : lang === 'ko3' ? _song_example_ko3
     : lang === 'cn' ? _song_example_cn
     : lang === 'cn2' ? _song_example_cn2
     : undefined
+  ) : new Song(
+    lyric ? lyric
+      .split('')
+      .map((w: string, i: number) => {
+        return new Note(i, w, Pitch.C2, Duration.Unit);
+      })
+      : undefined,
+    new Config({})
   );
-  const [song, setSong] = useState<Song>(initSong);
-  const [notes, setNotes] = useState<Note[]>(initSong.notes);
-  const [config, setConfig] = useState<Config>(initSong.config);
+}
+
+const Score = () => {
+  const params = useParams();
+  const location = useLocation();
+  const _song = initSong(params, location);
+  const [song, setSong] = useState<Song>(_song);
+  const [notes, setNotes] = useState<Note[]>(_song.notes);
+  const [config, setConfig] = useState<Config>(_song.config);
   const [selectedNote, setSelectedNote] = useState<Note>();
   const [isMusicLoading, setMusicLoading] = useState<boolean>();
   const [isMusicReady, setMusicReady] = useState<boolean>();
@@ -84,7 +100,7 @@ const Example = () => {
   const onClickRefresh = useCallback(() => {
     console.log('refresh');
     setNotes([]);
-    setNotes(initSong.notes);
+    setNotes(_song.notes);
     setSelectedNote(undefined);
   }, []);
   const onClickAdd = useCallback(() => {
@@ -283,4 +299,4 @@ const Example = () => {
   );
 };
 
-export default React.memo(Example);
+export default React.memo(Score);

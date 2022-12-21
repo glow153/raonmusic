@@ -23,6 +23,10 @@ export class Duration {
     this.fraction = fraction ?? "1/4";
   }
 
+  static get Unit () {
+    return Duration.fromLength(1);
+  }
+
   static fromLength(_length: number) {
     const length = (
       _length < Duration.MIN ? Duration.MIN

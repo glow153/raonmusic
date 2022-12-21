@@ -6,9 +6,6 @@ export class Note {
   public pitch: Pitch;
   public duration: Duration;
   public isRest: boolean;
-  // public get isRest() {
-  //   return ((this.pitch?.code ?? 0) < 0) || (this.phoneme === 'SP') || (this.phoneme === 'AP');
-  // }
 
   constructor(index: number, phoneme?: string, pitch?: Pitch, duration?: Duration, isRest?: boolean) {
     this.index = index;

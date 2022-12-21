@@ -35,7 +35,8 @@ export class Pitch implements PitchParam {
 
   static fromCode(_code: number, mode?: PitchMode) {
     const code = (
-      _code < Pitch.MIN_PITCH_CODE ? Pitch.MIN_PITCH_CODE
+      _code < 0 ? _code
+      : _code < Pitch.MIN_PITCH_CODE ? Pitch.MIN_PITCH_CODE
       : _code > Pitch.MAX_PITCH_CODE ? Pitch.MAX_PITCH_CODE
       : _code
     );

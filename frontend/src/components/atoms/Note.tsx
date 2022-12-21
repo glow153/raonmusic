@@ -18,7 +18,7 @@ interface Prop {
   language?: string;
 }
 
-const dragThreshold = 15;
+const dragThreshold = 14;
 
 const Note = ({
   left,

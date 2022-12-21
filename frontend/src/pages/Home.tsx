@@ -44,7 +44,7 @@ const StyledButton = styled(Button)`
 
 const Home = () => {
   const [lyric, setLyric] = useState<string>();
-  const urlExample = useMemo<string>(() => lyric ? `/example?lyric=${lyric}` : '/example', [lyric]);
+  const urlExample = useMemo<string>(() => lyric ? `/score?lyric=${lyric}` : '/example', [lyric]);
   const navigate = useNavigate();
 
   const onClick = useCallback(() => {
