@@ -80,7 +80,7 @@ const Note = ({
       />
       <Text x={xText} y={yText}
         fontFamily={language === 'cn' ? 'Ma Shan Zheng' : 'BMJua'} fontSize={fontSize}
-        text={note.isRest ? '(    )' : note.phoneme}
+        text={note.isRest ? '~' : note.phoneme}
         onClick={() => {
           onClick(note);
         }}
@@ -103,7 +103,7 @@ const Note = ({
             setDragging(true);
           }}
           onMouseMove={({evt}) => {
-            if (isDragging){
+            if (isDragging) {
               const dy = dragStartY - evt.offsetY;
               console.log(`mouse dragging: y=${y}, dragStartY=${dragStartY}, evt.offsetY=${evt.offsetY}, dy=${dy}`);
               if (dy > dragThreshold) {

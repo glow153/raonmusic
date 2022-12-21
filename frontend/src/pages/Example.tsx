@@ -1,8 +1,8 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import styled from 'styled-components';
-import { Button, Link, SelectedNote } from '../components/atoms';
-import { CheckboxGroup, IconButton, IconLabelButton } from '../components/molecules';
+import { Link, SelectedNote } from '../components/atoms';
+import { CheckboxGroup, ConfigButton, IconButton, IconLabelButton } from '../components/molecules';
 import { Board, InputSlider } from '../components/organisms';
 import { Page } from '../components/templates';
 import { Colors } from '../constants/color';
@@ -51,18 +51,6 @@ const ConfigButtonGroup = styled.div`
     }
   }
 `;
-
-const ConfigButton = styled(Button)`
-  display: flex;
-  align-items: center;
-  flex-direction: column;
-  padding: 6px 11px;
-  min-width: 53px;
-  span{font-family:BMJua;line-height:1.3;}
-  .title{font-size:18px;}
-  .subtitle{font-size:12px;}
-`;
-
 
 const Example = () => {
   const {lang} = useParams();
@@ -144,14 +132,14 @@ const Example = () => {
           <IconButton secondary name='plus' onClick={onClickAdd} />
           <IconButton secondary name='minus' onClick={onClickRemove} />
         </NoteButtonGroup>
-        <SelectedNote value={selectedNote?.phoneme ?? ''} language={language}
+        <SelectedNote language={language}
+          note={selectedNote}
           onChange={(e) => {
             if (selectedNote) {
               setSelectedNote(selectedNote.setPhoneme(e.target.value));
             }
           }}
           readonly={!selectedNote || (selectedNote.isRest ?? false)}
-          style={{position: 'relative', }}
         />
         <ConfigButtonGroup>
           <ConfigButton gray>
