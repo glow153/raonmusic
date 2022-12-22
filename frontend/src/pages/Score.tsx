@@ -256,8 +256,7 @@ const Score = () => {
             const val = parseInt(evt.target.value);
             if (isNumber(val)) {
               console.log('durationSlider>> val:', val, ', selectedNote:', selectedNote);
-              setNotes(song.setDuration(selectedNote?.index, val))
-              // setSelectedNote(selectedNote?.setDuration(val));
+              setSelectedNote(selectedNote?.setDuration(val));
             }
           }}
           onMouseWheel={(evt) => {
