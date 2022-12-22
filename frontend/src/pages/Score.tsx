@@ -56,6 +56,20 @@ const ConfigButtonGroup = styled.div`
   }
 `;
 
+interface SectionProp {
+  marginTop?: number;
+  spaceBetween?: boolean;
+  flexEnd?: boolean;
+}
+const Section = styled.section<SectionProp>`
+  display: flex;
+  justify-content: ${p => p.spaceBetween ? 'space-between' : 'center'};
+  align-items: ${p => p.flexEnd ? 'flex-end' : ''};
+  ${p => p.marginTop ? `margin-top: ${p.marginTop}px` : ''}
+`;
+
+
+
 const initSong = (param: Params<string>, location: any) => {
   const lang = param.lang;
   const lyric: any = QueryString.parse(location.search, {ignoreQueryPrefix: true})?.lyric;
@@ -85,6 +99,7 @@ const Score = () => {
   const [notes, setNotes] = useState<Note[]>(_song.notes);
   const [config, setConfig] = useState<Config>(_song.config);
   const [selectedNote, setSelectedNote] = useState<Note>();
+  const selectedNoteIndex = useMemo<number | undefined>(() => selectedNote?.index, [selectedNote]);
   const [isMusicLoading, setMusicLoading] = useState<boolean>();
   const [isMusicReady, setMusicReady] = useState<boolean>();
   const [audioUri, setAudioUri] = useState<string>();
@@ -148,7 +163,8 @@ const Score = () => {
           <IconButton name='home' />
         </Link>
       </Topbar>
-      <div style={{display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end'}}>
+      
+      <Section spaceBetween flexEnd>
         <NoteButtonGroup>
           <IconButton secondary name='refresh' onClick={onClickRefresh} />
           <IconButton secondary name='plus' onClick={onClickAdd} />
@@ -181,7 +197,7 @@ const Score = () => {
             <span className='subtitle'>TIME</span>
           </ConfigButton>
         </ConfigButtonGroup>
-      </div>
+      </Section>
       
       <Board
         song={song}
@@ -191,10 +207,9 @@ const Score = () => {
         }}
       />
       
-      <div style={{display: 'flex', marginTop: 30, justifyContent: 'space-between'}}>
+      <Section marginTop={30} spaceBetween>
         <InputSlider id='pitchSlider' label='피치'
           min={lowestPitch} max={highestPitch} step={1}
-          sliderWidth={280}
           text={selectedPitch?.name ?? ''}
           value={selectedPitch?.code}
           disabled={selectedNote?.isRest}
@@ -227,7 +242,6 @@ const Score = () => {
         />
         <InputSlider id='durationSlider' label='길이'
           min={Duration.MIN} max={Duration.MAX} step={1}
-          sliderWidth={280}
           text={selectedDuration?.fraction ?? ''}
           value={selectedDuration?.length}
           onChange={(evt) => {
@@ -247,8 +261,9 @@ const Score = () => {
             }
           }}
         />
-      </div>
-      <div style={{display: 'flex', marginTop: 30, justifyContent: 'center'}}>
+      </Section>
+
+      <Section marginTop={30}>
         <IconLabelButton secondary
           name='song' label='노래 생성'
           iconBackground={Colors.primary}
@@ -281,7 +296,6 @@ const Score = () => {
             });
           }}
         />
-
         {isMusicReady ? (
           <IconLabelButton lightgreen
             name={isPlaying ? 'pause' : 'play'} label={isPlaying ? '노래 일시정지' : '노래 듣기'}
@@ -294,7 +308,7 @@ const Score = () => {
             }}
           />
         ) : null}
-      </div>
+      </Section>
     </Page>
   );
 };

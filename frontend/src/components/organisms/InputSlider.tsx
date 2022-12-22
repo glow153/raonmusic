@@ -7,6 +7,7 @@ import { InputGroup, InputGroupProp } from "../molecules";
 const Container = styled.div`
   display: flex;
   justify-content: space-between;
+  align-items: center;
 `;
 
 interface Prop extends InputGroupProp {
@@ -16,7 +17,7 @@ interface Prop extends InputGroupProp {
   step: number;
   text?: string;
   value?: number;
-  sliderWidth: number;
+  sliderWidth?: number;
   disabled?: boolean;
 }
 
@@ -38,8 +39,8 @@ const InputSlider = ({
   };
   return (
     <Container>
-      <InputGroup label={label} value={text} onMouseWheel={onMouseWheel} disabled={disabled} />
-      <Slider {...props} width={sliderWidth} value={value ?? 0} onChange={onChange} onMouseWheel={onMouseWheel} disabled={disabled} />
+      <InputGroup label={label} value={text} flex={3} onMouseWheel={onMouseWheel} disabled={disabled} />
+      <Slider {...props} width={sliderWidth} flex={7} value={value ?? 0} onChange={onChange} onMouseWheel={onMouseWheel} disabled={disabled} />
     </Container>
   );
 }

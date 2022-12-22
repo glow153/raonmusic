@@ -1,24 +1,24 @@
 import styled from 'styled-components';
 import { Colors } from '../../constants/color';
 
-interface ContainerProp {
-  width: number;
+interface SliderContainerProp {
+  width?: number;
+  flex?: number;
 }
+const SliderContainer = styled.div<SliderContainerProp>`
+  margin-left: 15px;
+  ${p => p.width ? `width: ${p.width}px;` : ''}
+  ${p => p.flex ? `flex: ${p.flex};` : ''}
+`;
+
 interface RangeProp {
   min: number;
   max: number;
   value: number;
   disabled?: boolean;
 }
-
-const SliderContainer = styled.div<ContainerProp>`
-  margin-left: 15px;
-  width: ${p => p.width + 15}px;
-`;
-
 const InputRange = styled.input<RangeProp>`
   width: 100%;
-  height: 100%;
   -webkit-appearance: none;
   background: transparent;
   outline: none;
@@ -41,7 +41,7 @@ const InputRange = styled.input<RangeProp>`
   }
 `;
 
-export interface Prop extends ContainerProp, RangeProp {
+export interface Prop extends SliderContainerProp, RangeProp {
   step: number;
   thumbSize?: number;
   onChange: React.ChangeEventHandler<HTMLInputElement>;
@@ -49,7 +49,8 @@ export interface Prop extends ContainerProp, RangeProp {
 }
 
 const Slider = ({
-  width = 300,
+  width,
+  flex,
   value,
   thumbSize,
   onChange,
@@ -59,7 +60,7 @@ const Slider = ({
 }: Prop) => {
 
   return (
-    <SliderContainer width={width}>
+    <SliderContainer width={width} flex={flex}>
       <InputRange {...props}
         type='range'
         value={value}

@@ -3,11 +3,6 @@ html {
   color: #0e3049;
 }
 
-html, body {
-  width: 100%;
-  height: 100%;
-}
-
 @font-face {
   font-family: 'BMJUA';
   src: url('https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_one@1.0/BMJUA.woff') format('woff');
@@ -30,7 +25,7 @@ body {
 #app {
   display: flex;
   justify-content: center;
-  max-width: 960px;
+  max-width: 1000px;
   flex-grow: 1;
 }
 

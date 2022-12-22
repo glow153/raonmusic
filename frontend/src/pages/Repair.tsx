@@ -33,4 +33,4 @@ const Repair = () => {
 };
 
 
-export default Repair;
+export default React.memo(Repair);

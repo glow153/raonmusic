@@ -1,5 +1,6 @@
 {
   "notes": [
+    {"phoneme": "SP", "pitch": -1, "duration": 4},
     {"phoneme": "小", "pitch": 49, "duration": 4},
     {"phoneme": "酒", "pitch": 54, "duration": 4},
     {"phoneme": "窝", "pitch": 56, "duration": 4},

@@ -1,3 +1,4 @@
+import React from 'react';
 import { Link } from 'react-router-dom';
 import styled from 'styled-components';
 import { Logo } from '../../../components/atoms';
@@ -10,9 +11,10 @@ const HeaderContainer = styled.header`
   top: 0;
   left: 0;
   height: 85px;
-  width: 100%;
   align-items: center;
   justify-content: space-between;
+  padding-left: 20px;
+  padding-right: 20px;
 `;
 
 const Nav = styled.nav`
@@ -34,4 +36,4 @@ const Header = () => {
   );
 };
 
-export default Header;
+export default React.memo(Header);
