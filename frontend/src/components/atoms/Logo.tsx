@@ -1,6 +1,8 @@
+import React from "react";
 import styled from "styled-components";
 import { Link } from '.';
 import { Colors } from '../../constants/color';
+import { MAX_VIEWPORT_WIDTH_FOR_MOBILE } from "../../constants/data";
 
 const DEFAULT_LOGO_SIZE = 45;
 
@@ -19,6 +21,9 @@ const LogoText = styled.div`
   font-size: 34px;
   font-weight: 400;
   margin-left: 27px;
+  @media screen and (max-width: ${MAX_VIEWPORT_WIDTH_FOR_MOBILE}px) {
+    display: none;
+  }
 `;
 
 interface Prop {
@@ -40,4 +45,4 @@ const Logo = ({
   );
 };
 
-export default Logo;
+export default React.memo(Logo);

@@ -18,7 +18,7 @@ const SelectedNoteContainer = styled(Input)<{language?: string}>`
   text-align: center;
   &:focus {
     border-color: #f5d590 !important;
-    box-shadow: 0 0 0 0.3rem #fdcd0d40;
+    box-shadow: 0 0 0.25rem 0.5rem #fdcd0d70;
   }
 `;
 

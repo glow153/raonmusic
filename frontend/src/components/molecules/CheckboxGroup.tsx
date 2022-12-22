@@ -8,9 +8,9 @@ interface ContainerProp {
 }
 
 const InputGroupContainer = styled.div<ContainerProp>`
-  width: ${p => p.width}px;
-  height: ${p => p.height}px;
-  margin-top: ${p => p.marginTop}px;
+  ${p => p.width ? `width: ${p.width}px;` : ''}
+  ${p => p.height ? `height: ${p.height}px;` : ''}
+  ${p => p.marginTop ? `margin-top: ${p.marginTop}px;` : ''}
   display: flex;
   align-items: center;
   position: relative;
@@ -20,9 +20,9 @@ const StyledLabel = styled.label`
   display: inline-flex;
   justify-content: center;
   align-items: center;
-  width: 50px;
   font-size: 13px;
   margin-right: 5px;
+  flex: 1 1 30px;
 `;
 
 export interface Prop extends CheckboxProp {

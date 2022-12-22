@@ -23,8 +23,11 @@ export class Measure {
     this.notes = notes;
   }
 
-  static fromJson(notes: any[]) {
-    return new Measure(notes.map(n => Note.fromJson(n)));
+  static fromJson(_notes: any[]) {
+    const notes: Note[] = _notes
+      .filter(n => n.phoneme !== 'SP')
+      .map((n, i) => Note.fromJson(n, i));
+    return new Measure(notes);
   }
 
   public duplicate(index: number) {

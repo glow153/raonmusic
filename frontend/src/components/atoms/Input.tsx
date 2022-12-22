@@ -18,11 +18,11 @@ const InputElement = styled.input<ElementProp>`
   margin-top: ${p => p.marginTop}px;
   border-radius: 12px;
   border-width: 0px;
-  transition: border-color .15s ease-in-out,box-shadow .15s ease-in-out;
+  transition: border-color .3s ease-in-out,box-shadow .3s ease-in-out;
   &:focus {
     border-color: #86b7fe;
     outline: 0;
-    box-shadow: 0 0 0 0.25rem #0d6efd40;
+    box-shadow: 0 0 0.125rem 0.25rem #0d6efd40;
   }
 `;
 

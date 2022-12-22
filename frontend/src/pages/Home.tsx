@@ -3,7 +3,6 @@ import { useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
 import { Button, Input, Link } from '../components/atoms';
 import { Page } from '../components/templates';
-import { Colors } from '../constants/color';
 
 interface TitleProp {
   marginTop?: number;
@@ -12,9 +11,10 @@ interface TitleProp {
 const Title = styled.div<TitleProp>`
   margin-top: ${p => p.marginTop}px;
   font-size: 40px;
-  width: 100%;
   font-family: BMJua;
   text-align: center;
+  padding-left: 20px;
+  padding-right: 20px;
 `;
 
 interface TextProp {
@@ -25,14 +25,17 @@ interface TextProp {
 const Text = styled.p<TextProp>`
   margin-top: ${p => p.marginTop}px;
   font-size: 20px;
-  width: 100%;
   text-align: ${p => p.textAlign ?? 'left'};
+  padding-left: 20px;
+  padding-right: 20px;
 `;
 
 const Section = styled.section`
   display: flex;
   position: relative;
   align-items: center;
+  padding-left: 20px;
+  padding-right: 20px;
 `;
 
 const StyledButton = styled(Button)`
@@ -42,9 +45,18 @@ const StyledButton = styled(Button)`
   right: 30px;
 `;
 
+const LeftLabel = styled.span`
+  position: absolute;
+  left: 35px;
+  font-family: 'BMJua';
+  flex: 0;
+`;
+
+
+
 const Home = () => {
   const [lyric, setLyric] = useState<string>();
-  const urlExample = useMemo<string>(() => lyric ? `/example?lyric=${lyric}` : '/example', [lyric]);
+  const urlExample = useMemo<string>(() => lyric ? `/score?lyric=${lyric}` : '/score', [lyric]);
   const navigate = useNavigate();
 
   const onClick = useCallback(() => {
@@ -61,37 +73,35 @@ const Home = () => {
             setLyric(e.target.value);
           }}
         />
-        <StyledButton primary onClick={onClick}>
-          <Link to={urlExample} color={Colors.textDefault}>노래 편집하러 가기</Link>
-        </StyledButton>
+        <StyledButton primary onClick={onClick}>노래 편집하러 가기</StyledButton>
       </Section>
       <Text marginTop={150}>예시로 바로 시작해봐요</Text>
       <Section>
-        <span style={{position: 'absolute', left: 22, fontFamily: 'BMJua', flex: 0}}>한국어)</span>
+        <LeftLabel>한국어)</LeftLabel>
         <Link to='/example/ko' style={{flex: 1, display: 'flex'}}>
           <Input value='반짝반짝작은별 아름답게비치네' style={{paddingLeft: 90, paddingRight: 30, paddingTop: 22, paddingBottom: 22, flex: 1}} readonly />
         </Link>
       </Section>
       <Section style={{marginTop: 20}}>
-        <span style={{position: 'absolute', left: 22, fontFamily: 'BMJua', flex: 0}}>한국어2)</span>
+        <LeftLabel>한국어2)</LeftLabel>
         <Link to='/example/ko2' style={{flex: 1, display: 'flex'}}>
           <Input value='반짝반짝작은별 아름답게비치네 (다른 버전)' style={{paddingLeft: 90, paddingRight: 30, paddingTop: 22, paddingBottom: 22, flex: 1}} readonly />
         </Link>
       </Section>
       <Section style={{marginTop: 20}}>
-        <span style={{position: 'absolute', left: 22, fontFamily: 'BMJua'}}>한국어3)</span>
+        <LeftLabel>한국어3)</LeftLabel>
         <Link to='/example/ko3' style={{flex: 1, display: 'flex'}}>
           <Input value='여수밤바다' style={{paddingLeft: 90, paddingRight: 30, paddingTop: 22, paddingBottom: 22, flex: 1}} readonly />
         </Link>
       </Section>
       <Section style={{marginTop: 20}}>
-        <span style={{position: 'absolute', left: 22, fontFamily: 'BMJua'}}>중국어)</span>
+        <LeftLabel>중국어)</LeftLabel>
         <Link to='/example/cn' style={{flex: 1, display: 'flex'}}>
           <Input value='小酒窝 长-睫-毛' style={{paddingLeft: 90, paddingRight: 30, paddingTop: 22, paddingBottom: 22, flex: 1}} readonly />
         </Link>
       </Section>
       <Section style={{marginTop: 20}}>
-        <span style={{position: 'absolute', left: 22, fontFamily: 'BMJua'}}>중국어2)</span>
+        <LeftLabel>중국어2)</LeftLabel>
         <Link to='/example/cn2' style={{flex: 1, display: 'flex'}}>
           <Input value='Chinese Eminem' style={{paddingLeft: 90, paddingRight: 30, paddingTop: 22, paddingBottom: 22, flex: 1}} readonly />
         </Link>
