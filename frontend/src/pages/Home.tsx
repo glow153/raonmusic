@@ -52,8 +52,6 @@ const LeftLabel = styled.span`
   flex: 0;
 `;
 
-
-
 const Home = () => {
   const [lyric, setLyric] = useState<string>();
   const urlExample = useMemo<string>(() => lyric ? `/score?lyric=${lyric}` : '/score', [lyric]);

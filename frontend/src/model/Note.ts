@@ -9,11 +9,11 @@ export class Note {
   public isRest: boolean;
   public get end() {return this.start + this.duration.length - 1;}
 
-  constructor(index: number, phoneme?: string, pitch?: Pitch, duration?: Duration, start?: number, isRest?: boolean) {
+  constructor(index: number, phoneme?: string, pitch?: Pitch, duration?: any, start?: number, isRest?: boolean) {
     this.index = index;
     this.phoneme = phoneme ?? '';
     this.pitch = pitch ?? new Pitch();
-    this.duration = duration ?? new Duration();
+    this.duration = typeof duration === 'number' ? Duration.fromLength(duration) : (duration ?? new Duration());
     this.start = start ?? 0;
     this.isRest = isRest ?? false;
   }
