@@ -81,13 +81,9 @@ const initSong = (param: Params<string>, location: any) => {
     : lang === 'cn2' ? _song_example_cn2
     : undefined
   ) : new Song(
-    lyric ? lyric
-      .split('')
-      .map((w: string, i: number) => {
-        return new Note(i, w, Pitch.C2, Duration.Unit);
-      })
-      : undefined,
-    new Config({})
+    lyric?.replace(/ /g, '').split('').map((w: string, i: number) => {
+      return new Note(i, w, Pitch.C2, Duration.Unit, i);
+    })
   );
 }
 
@@ -155,7 +151,6 @@ const Score = () => {
   }, [selectedNote]);
 
   useEffect(() => {
-    console.log('new song')
     setSong(new Song(notes, config));
   }, [notes, config]);
 

@@ -108,7 +108,7 @@ export class Song {
       // 2. instantiate note (without SP)
       const notes = song.notes
         .filter((n: any) => n.phoneme !== 'SP')
-        .map((n: any, i: number, a: any[]) => Note.fromJson(n, i));
+        .map((n: any, i: number) => Note.fromJson(n, i));
 
       const config = Config.fromJson(song.config);
       return new Song(notes, config);
@@ -143,7 +143,10 @@ export class Song {
       });
     }
 
-    // 3. serialize
+    // 3. create lyric
+    //TODO: 가사 원문을 가지고 있어야 함
+
+    // 4. serialize
     return JSON.stringify({
       notes: noteObjs,
       config: this.config.obj
