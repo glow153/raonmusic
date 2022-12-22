@@ -52,47 +52,45 @@ export class Song {
   public setPitch(index: number, value: number) {
     const targetNote = this.notes[index];
     this.notes.splice(index, 1, targetNote.setPitch(value));
-    return this.notes;
+    return [...this.notes];
   }
   public lower(index: number) {
     const targetNote = this.notes[index];
     this.notes.splice(index, 1, targetNote.lower());
-    return this.notes;
+    return [...this.notes];
   }
   public higher(index: number) {
     const targetNote = this.notes[index];
     this.notes.splice(index, 1, targetNote.higher());
-    return this.notes;
+    return [...this.notes];
   }
 
   public setDuration(index: any, amount: number) {
-    if(typeof index === 'number') {
-      const targetNote = this.notes[index];
-      const originalDuration = targetNote.duration.length;
-      const diff = amount - originalDuration;
-      this.notes.splice(index, 1, targetNote.setDuration(amount));
-      for (let i = index + 1; i < this.notes.length; i++) {
-        if (diff > 0) this.notes[i].longer(diff);
-        else if (diff < 0) this.notes[i].shorter(diff);
-      }
-      return this.notes;
+    const targetNote = this.notes[index];
+    const originalDuration = targetNote.duration.length;
+    const diff = amount - originalDuration;
+    console.log('targetNote:',targetNote,', diff:', diff)
+    this.notes.splice(index, 1, targetNote.setDuration(amount));
+    for (let i = index + 1; i < this.notes.length; i++) {
+      this.notes[i].start += diff;
     }
+    return [...this.notes];
   }
   public shorter(index: number, amount: number = 1) {
     const targetNote = this.notes[index];
     this.notes.splice(index, 1, targetNote.shorter(amount));
     for (let i = index + 1; i < this.notes.length; i++) {
-      this.notes[i].shorter(amount);
+      this.notes[i].start -= amount;
     }
-    return this.notes;
+    return [...this.notes];
   }
   public longer(index: number, amount: number = 1) {
     const targetNote = this.notes[index];
     this.notes.splice(index, 1, targetNote.longer(amount));
     for (let i = index + 1; i < this.notes.length; i++) {
-      this.notes[i].longer(amount);
+      this.notes[i].start += amount;
     }
-    return this.notes;
+    return [...this.notes];
   }
 
   static fromJson(song?: any) {

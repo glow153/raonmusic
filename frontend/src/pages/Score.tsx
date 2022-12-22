@@ -99,6 +99,7 @@ const Score = () => {
   const [notes, setNotes] = useState<Note[]>(_song.notes);
   const [config, setConfig] = useState<Config>(_song.config);
   const [selectedNote, setSelectedNote] = useState<Note>();
+  const [durationOfLastSelectedNote, setDurationOfLastSelectedNote] = useState<number>();
   const selectedNoteIndex = useMemo<number | undefined>(() => selectedNote?.index, [selectedNote]);
   const [isMusicLoading, setMusicLoading] = useState<boolean>();
   const [isMusicReady, setMusicReady] = useState<boolean>();
@@ -142,12 +143,19 @@ const Score = () => {
 
   useEffect(() => {
     if (selectedNote) {
-      notes.splice(selectedNote?.index, 1, selectedNote); // dhpark: replace selected note
+      const prev = notes.splice(selectedNote.index, 1, selectedNote); // dhpark: replace selected note
+      const diff = selectedNote.duration.length - prev[0].duration.length;
+      console.log('selectedNote:', selectedNote, 'prev:', prev)
+      for (let i = selectedNote.index + 1; i < notes.length; i++) {
+        notes[i].start += diff;
+      }
       setNotes([...notes]);
+    } else {
     }
   }, [selectedNote]);
 
   useEffect(() => {
+    console.log('new song')
     setSong(new Song(notes, config));
   }, [notes, config]);
 
@@ -247,7 +255,9 @@ const Score = () => {
           onChange={(evt) => {
             const val = parseInt(evt.target.value);
             if (isNumber(val)) {
-              setSelectedNote(selectedNote?.setDuration(val));
+              console.log('durationSlider>> val:', val, ', selectedNote:', selectedNote);
+              setNotes(song.setDuration(selectedNote?.index, val))
+              // setSelectedNote(selectedNote?.setDuration(val));
             }
           }}
           onMouseWheel={(evt) => {

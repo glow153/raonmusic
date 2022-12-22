@@ -46,14 +46,14 @@ const Note = ({
     }
   }, [note, _prevPitch]);
   const duration = useMemo<number>(() => note.duration?.length ?? 1, [note]);
-  const x = useMemo<number>(() => left * gridCellSize + gridPadding, [note, gridCellSize, gridPadding]);
+  const x = useMemo<number>(() => left * gridCellSize + gridPadding, [left, note, gridCellSize, gridPadding]);
   const y = useMemo<number>(() => gridHeight - ((relativePitch + 1) * gridCellSize - gridPadding), [gridHeight, relativePitch, gridCellSize, gridPadding]);
   const width = useMemo<number>(() => gridCellSize * duration, [gridCellSize, duration]);
   const height = useMemo<number>(() => gridCellSize, [gridCellSize]);
   const radius = useMemo<number>(() => Math.round(gridCellSize / 3), [gridCellSize]);
   const fontSize = useMemo<number>(() => Math.round(gridCellSize * 0.7), [gridCellSize]);
-  const xText = useMemo<number>(() => x + (width-fontSize)/2, [width]);
-  const yText = useMemo<number>(() => y + (height-fontSize)/2, [gridCellSize]);
+  const xText = useMemo<number>(() => x + (width-fontSize)/2, [x, width]);
+  const yText = useMemo<number>(() => y + (height-fontSize)/2, [y, gridCellSize]);
   
   const [isHover, setHover] = useState<boolean>(false);
   const [isDragging, setDragging] = useState<boolean>(false);
