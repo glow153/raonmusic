@@ -92,11 +92,11 @@ const Score = () => {
   const location = useLocation();
   const _song = initSong(params, location);
   const [song, setSong] = useState<Song>(_song);
-  const [notes, setNotes] = useState<Note[]>(_song.notes);
+  const [notes, setNotes] = useState<Note[]>([..._song.notes]);
   const [config, setConfig] = useState<Config>(_song.config);
   const [selectedNote, setSelectedNote] = useState<Note>();
-  const [durationOfLastSelectedNote, setDurationOfLastSelectedNote] = useState<number>();
-  const selectedNoteIndex = useMemo<number | undefined>(() => selectedNote?.index, [selectedNote]);
+  const [addNote, setAddNote] = useState<Note>();
+
   const [isMusicLoading, setMusicLoading] = useState<boolean>();
   const [isMusicReady, setMusicReady] = useState<boolean>();
   const [audioUri, setAudioUri] = useState<string>();
@@ -111,21 +111,15 @@ const Score = () => {
 
   const onClickRefresh = useCallback(() => {
     console.log('refresh');
-    setNotes([]);
-    setNotes(_song.notes);
     setSelectedNote(undefined);
+    setNotes([]);
+    setNotes([..._song.notes]);
   }, []);
   const onClickAdd = useCallback(() => {
     if (selectedNote) {
-      const index = selectedNote.index
-      const newNote = selectedNote.copy();      
-      notes.splice(index, 0, newNote);
-      for (let i = index; i < notes.length; i++) {
-        notes[i].index = i;
-      }
-      setSelectedNote(newNote);
+      setAddNote(selectedNote.copy());
     }
-  }, [selectedNote, notes]);
+  }, [selectedNote]);
   const onClickRemove = useCallback(() => {
     if (selectedNote) {
       const index = selectedNote.index
@@ -136,28 +130,76 @@ const Score = () => {
       setSelectedNote(notes[index]);
     }
   }, [selectedNote, notes]);
-
-  useEffect(() => {
+  const onChangePitch = useCallback((evt: any) => {
+    const val = parseInt(evt.target.value);
+    if (isNumber(val)) {
+      setSelectedNote(selectedNote?.setPitch(val));
+    }
+  }, [selectedNote]);
+  const onWheelPitch = useCallback((evt: any) => {
+    evt.stopPropagation();
     if (selectedNote) {
-      const prev = notes.splice(selectedNote.index, 1, selectedNote); // dhpark: replace selected note
-      const diff = selectedNote.duration.length - prev[0].duration.length;
-      console.log('selectedNote:', selectedNote, 'prev:', prev)
-      for (let i = selectedNote.index + 1; i < notes.length; i++) {
+      if (evt.deltaY > 0 && selectedNote.pitch.code < highestPitch) {
+        setSelectedNote(selectedNote?.higher());
+      } else if (evt.deltaY < 0 && selectedNote.pitch.code > lowestPitch) {
+        setSelectedNote(selectedNote?.lower());
+      }
+    }
+  }, [selectedNote, highestPitch, lowestPitch]);
+  const onChangeDuration = useCallback((evt: any) => {
+    const val = parseInt(evt.target.value);
+    if (selectedNote && isNumber(val)) {
+      const newNote = selectedNote.setDuration(val);
+      const diff = newNote.duration.length - selectedNote.duration.length;
+      for (let i = newNote.index + 1; i < notes.length; i++) {
         notes[i].start += diff;
       }
+      setSelectedNote(newNote);
+    }
+  }, [selectedNote, notes]);
+  const onWheelDuration = useCallback((evt: any) => {
+    evt.stopPropagation();
+    if (selectedNote) {
+      let newNote;
+      if (evt.deltaY > 0 && selectedNote.duration.length < Duration.MAX) {
+        newNote = selectedNote.longer();
+      } else if (evt.deltaY < 0 && selectedNote.duration.length > Duration.MIN) {
+        newNote = selectedNote.shorter();
+      }
+      if (newNote) {
+        const diff = newNote.duration.length - selectedNote.duration.length;
+        for (let i = newNote.index + 1; i < notes.length; i++) {
+          notes[i].start += diff;
+        }
+        setSelectedNote(newNote);
+      }
+    }
+  }, [selectedNote, notes]);
+
+
+  // dhpark: USEEFFECT -----------------------------------------
+  useEffect(() => {
+    if (selectedNote) {
+      notes.splice(selectedNote.index, 1, selectedNote);
       setNotes([...notes]);
-    } else {
     }
   }, [selectedNote]);
 
   useEffect(() => {
-    setSong(new Song(notes, config));
-  }, [notes, config]);
+    if (addNote) {
+      const index = addNote.index;
+      notes.splice(index, 0, addNote);
+      for (let i = index + 1; i < notes.length; i++) {
+        notes[i].index = i;
+        notes[i].start += addNote.duration.length;
+      }
+      setAddNote(undefined);
+    }
+  }, [addNote]);
 
   useEffect(() => {
-    // TODO: refresh board
-    // console.log('song:', song);
-  }, [song]);
+    setSong(new Song(notes, config));
+  }, [notes, config]);
 
   return (
     <Page>
@@ -172,6 +214,9 @@ const Score = () => {
           <IconButton secondary name='refresh' onClick={onClickRefresh} />
           <IconButton secondary name='plus' onClick={onClickAdd} />
           <IconButton secondary name='minus' onClick={onClickRemove} />
+          <IconButton secondary name='song' onClick={() => {
+            console.log(notes)
+          }} />
         </NoteButtonGroup>
         <SelectedNote language={language}
           note={selectedNote}
@@ -216,22 +261,8 @@ const Score = () => {
           text={selectedPitch?.name ?? ''}
           value={selectedPitch?.code}
           disabled={selectedNote?.isRest}
-          onChange={(evt) => {
-            const val = parseInt(evt.target.value);
-            if (isNumber(val)) {
-              setSelectedNote(selectedNote?.setPitch(val));
-            }
-          }}
-          onMouseWheel={(evt) => {
-            evt.stopPropagation();
-            if (selectedNote) {
-              if (evt.deltaY > 0 && selectedNote.pitch.code < highestPitch) {
-                setSelectedNote(selectedNote?.higher());
-              } else if (evt.deltaY < 0 && selectedNote.pitch.code > lowestPitch) {
-                setSelectedNote(selectedNote?.lower());
-              }
-            }
-          }}
+          onChange={onChangePitch}
+          onMouseWheel={onWheelPitch}
         />
         <CheckboxGroup label='쉼표'
           isChecked={selectedNote?.isRest ?? false}
@@ -247,23 +278,8 @@ const Score = () => {
           min={Duration.MIN} max={Duration.MAX} step={1}
           text={selectedDuration?.fraction ?? ''}
           value={selectedDuration?.length}
-          onChange={(evt) => {
-            const val = parseInt(evt.target.value);
-            if (isNumber(val)) {
-              console.log('durationSlider>> val:', val, ', selectedNote:', selectedNote);
-              setSelectedNote(selectedNote?.setDuration(val));
-            }
-          }}
-          onMouseWheel={(evt) => {
-            evt.stopPropagation();
-            if (selectedNote) {
-              if (evt.deltaY > 0 && selectedNote.duration.length < Duration.MAX) {
-                setSelectedNote(selectedNote?.longer());
-              } else if (evt.deltaY < 0 && selectedNote.duration.length > Duration.MIN) {
-                setSelectedNote(selectedNote?.shorter());
-              }
-            }
-          }}
+          onChange={onChangeDuration}
+          onMouseWheel={onWheelDuration}
         />
       </Section>
 

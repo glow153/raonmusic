@@ -64,14 +64,26 @@ export class Note {
   }
 
   static fromJson(obj: any, index?: number) {
-    return new Note(
-      index ?? 0,
-      obj.phoneme,
-      Pitch.fromCode(obj.pitch),
-      Duration.fromLength(obj.duration),
-      obj.start ?? 0,
-      (obj.pitch < 0 || obj.isRest === true) ? true : false
-    );
+    // dhpark: SP인 경우는 deserialize 대상에서 아예 제외되므로 여기서는 AP(-2)인 경우와 아닌 경우만 deserialize하면 됨
+    if (obj.pitch === -2) {
+      return new Note(
+        index ?? 0,
+        obj.phoneme,
+        Pitch.fromCode(obj.pitch),
+        Duration.fromLength(obj.duration),
+        obj.start ?? 0,
+        true
+      );
+    } else {
+      return new Note(
+        index ?? 0,
+        obj.phoneme,
+        Pitch.fromCode(obj.pitch),
+        Duration.fromLength(obj.duration),
+        obj.start ?? 0,
+        (obj.pitch < 0 || obj.isRest === true) ? true : false
+      );
+    }
   }
 
   public get obj() {

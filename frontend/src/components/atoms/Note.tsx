@@ -70,7 +70,7 @@ const Note = ({
   }, [note]);
 
   useEffect(() => {
-    console.log(`id:${id}, x:${x}, y:${y}, `);
+    // console.log(`id:${id}, x:${x}, y:${y}`);
   }, []);
 
   return (

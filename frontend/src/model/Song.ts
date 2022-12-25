@@ -95,7 +95,7 @@ export class Song {
 
   static fromJson(song?: any) {
     if (song) {
-      // 1. start position
+      // 1. set start position
       let elapsed = 0;
       for (let i = 0; i < song.notes.length; i++) {
         if (i > 0) {
@@ -107,7 +107,7 @@ export class Song {
 
       // 2. instantiate note (without SP)
       const notes = song.notes
-        .filter((n: any) => n.phoneme !== 'SP')
+        .filter((n: any) => n.pitch !== -1)
         .map((n: any, i: number) => Note.fromJson(n, i));
 
       const config = Config.fromJson(song.config);
@@ -121,20 +121,27 @@ export class Song {
     // 1. create note objects
     const noteObjs = this.notes.map(n => n.obj);
 
-    // 2. fill blank with 'SP'
-    // 2.1 if there is SP in between notes
     for (let i = 1; i < this.notes.length; i++) {
       const prevEnd = this.notes[i-1].end;
       const currStart = this.notes[i].start;
+
       if (prevEnd + 1 < currStart) {
+        // 2. if there is SP in between notes
         noteObjs.splice(i, 0, {
           phoneme: 'SP',
           pitch: -1,
           duration: currStart - prevEnd - 1
         });
+      } else if (this.notes[i].isRest) {
+        // 3. if a note is rest, replace with AP
+        noteObjs.splice(i, 1, {
+          phoneme: 'AP',
+          pitch: -2,
+          duration: noteObjs[i].duration
+        });
       }
     }
-    // 2.2 if first note is SP
+    // 4. if first note is SP, add SP
     if (this.notes[0].start !== 0) {
       noteObjs.splice(0, 0, {
         phoneme: 'SP',
@@ -143,10 +150,7 @@ export class Song {
       });
     }
 
-    // 3. create lyric
-    //TODO: 가사 원문을 가지고 있어야 함
-
-    // 4. serialize
+    // 3. serialize
     return JSON.stringify({
       notes: noteObjs,
       config: this.config.obj
