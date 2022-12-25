@@ -2,6 +2,7 @@ import { Key, Tempo, Time } from ".";
 import { Pitch } from "../Pitch";
 
 interface ConfigParam {
+  lyric?: string;
   tempo?: Tempo;
   key?: Key;
   time?: Time;
@@ -12,6 +13,7 @@ interface ConfigParam {
 }
 
 export class Config {
+  public lyric: string;
   public tempo: Tempo;
   public key: Key;
   public time: Time;
@@ -20,7 +22,17 @@ export class Config {
   public lowestPitch: Pitch;
   public highestPitch: Pitch;
 
-  constructor({tempo, key, time, measures, lang, lowestPitch, highestPitch}: ConfigParam = {}) {
+  constructor({
+    lyric,
+    tempo,
+    key,
+    time,
+    measures,
+    lang,
+    lowestPitch,
+    highestPitch
+  }: ConfigParam = {}) {
+    this.lyric = lyric ?? '';
     this.tempo = tempo ?? new Tempo();
     this.key = key ?? new Key();
     this.time = time ?? new Time();
@@ -32,6 +44,7 @@ export class Config {
 
   public static fromJson(config: any) {
     return new Config({
+      lyric: config.lyric,
       tempo: Tempo.fromJson(config.tempo),
       measures: config.measures,
       key: Key.fromJson(config.key),
@@ -42,8 +55,9 @@ export class Config {
     });
   }
 
-  public get obj() {
+  public get obj(): any {
     return {
+      lyric: this.lyric,
       tempo: this.tempo.obj,
       key: this.key.obj,
       time: this.time.obj,

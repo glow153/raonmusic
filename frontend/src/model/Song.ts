@@ -95,7 +95,7 @@ export class Song {
 
   static fromJson(song?: any) {
     if (song) {
-      // 1. start position
+      // 1. set start position
       let elapsed = 0;
       for (let i = 0; i < song.notes.length; i++) {
         if (i > 0) {
@@ -143,10 +143,7 @@ export class Song {
       });
     }
 
-    // 3. create lyric
-    //TODO: 가사 원문을 가지고 있어야 함
-
-    // 4. serialize
+    // 3. serialize
     return JSON.stringify({
       notes: noteObjs,
       config: this.config.obj

@@ -117,11 +117,12 @@ const Score = () => {
   }, []);
   const onClickAdd = useCallback(() => {
     if (selectedNote) {
-      const index = selectedNote.index
-      const newNote = selectedNote.copy();      
+      const index = selectedNote.index;
+      const newNote = selectedNote.copy();
       notes.splice(index, 0, newNote);
-      for (let i = index; i < notes.length; i++) {
+      for (let i = index + 1; i < notes.length; i++) {
         notes[i].index = i;
+        notes[i].start += newNote.duration.length;
       }
       setSelectedNote(newNote);
     }
@@ -141,12 +142,10 @@ const Score = () => {
     if (selectedNote) {
       const prev = notes.splice(selectedNote.index, 1, selectedNote); // dhpark: replace selected note
       const diff = selectedNote.duration.length - prev[0].duration.length;
-      console.log('selectedNote:', selectedNote, 'prev:', prev)
       for (let i = selectedNote.index + 1; i < notes.length; i++) {
         notes[i].start += diff;
       }
       setNotes([...notes]);
-    } else {
     }
   }, [selectedNote]);
 
