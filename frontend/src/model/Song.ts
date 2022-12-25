@@ -107,7 +107,7 @@ export class Song {
 
       // 2. instantiate note (without SP)
       const notes = song.notes
-        .filter((n: any) => n.phoneme !== 'SP')
+        .filter((n: any) => n.pitch !== -1)
         .map((n: any, i: number) => Note.fromJson(n, i));
 
       const config = Config.fromJson(song.config);
@@ -136,7 +136,7 @@ export class Song {
         // 3. if a note is rest, replace with AP
         noteObjs.splice(i, 1, {
           phoneme: 'AP',
-          pitch: -1,
+          pitch: -2,
           duration: noteObjs[i].duration
         });
       }
