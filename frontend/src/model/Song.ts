@@ -121,20 +121,27 @@ export class Song {
     // 1. create note objects
     const noteObjs = this.notes.map(n => n.obj);
 
-    // 2. fill blank with 'SP'
-    // 2.1 if there is SP in between notes
     for (let i = 1; i < this.notes.length; i++) {
       const prevEnd = this.notes[i-1].end;
       const currStart = this.notes[i].start;
+
       if (prevEnd + 1 < currStart) {
+        // 2. if there is SP in between notes
         noteObjs.splice(i, 0, {
           phoneme: 'SP',
           pitch: -1,
           duration: currStart - prevEnd - 1
         });
+      } else if (this.notes[i].isRest) {
+        // 3. if a note is rest, replace with AP
+        noteObjs.splice(i, 1, {
+          phoneme: 'AP',
+          pitch: -1,
+          duration: noteObjs[i].duration
+        });
       }
     }
-    // 2.2 if first note is SP
+    // 4. if first note is SP, add SP
     if (this.notes[0].start !== 0) {
       noteObjs.splice(0, 0, {
         phoneme: 'SP',

@@ -97,8 +97,6 @@ const Score = () => {
   const [selectedNote, setSelectedNote] = useState<Note>();
   const [addNote, setAddNote] = useState<Note>();
 
-  const [durationOfLastSelectedNote, setDurationOfLastSelectedNote] = useState<number>();
-  const selectedNoteIndex = useMemo<number | undefined>(() => selectedNote?.index, [selectedNote]);
   const [isMusicLoading, setMusicLoading] = useState<boolean>();
   const [isMusicReady, setMusicReady] = useState<boolean>();
   const [audioUri, setAudioUri] = useState<string>();
