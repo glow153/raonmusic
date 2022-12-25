@@ -162,10 +162,18 @@ const Score = () => {
   const onWheelDuration = useCallback((evt: any) => {
     evt.stopPropagation();
     if (selectedNote) {
+      let newNote;
       if (evt.deltaY > 0 && selectedNote.duration.length < Duration.MAX) {
-        setSelectedNote(selectedNote?.longer());
+        newNote = selectedNote.longer();
       } else if (evt.deltaY < 0 && selectedNote.duration.length > Duration.MIN) {
-        setSelectedNote(selectedNote?.shorter());
+        newNote = selectedNote.shorter();
+      }
+      if (newNote) {
+        const diff = newNote.duration.length - selectedNote.duration.length;
+        for (let i = newNote.index + 1; i < notes.length; i++) {
+          notes[i].start += diff;
+        }
+        setSelectedNote(newNote);
       }
     }
   }, [selectedNote, notes]);
@@ -194,11 +202,6 @@ const Score = () => {
   useEffect(() => {
     setSong(new Song(notes, config));
   }, [notes, config]);
-
-  useEffect(() => {
-    // TODO: refresh board
-    // console.log('song:', song);
-  }, [song]);
 
   return (
     <Page>
