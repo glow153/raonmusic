@@ -45,6 +45,18 @@ export class Note {
   public shorter(amount: number = 1) {
     return new Note(this.index, this.phoneme, this.pitch, this.duration.shorter(amount), this.start, this.isRest);
   }
+
+  public setStart(position: number) {
+    return new Note(this.index, this.phoneme, this.pitch, this.duration, position, this.isRest);
+  }
+
+  public goLeft(amount: number = 1) {
+    return this.setStart(this.start - amount);
+  }
+
+  public goRight(amount: number = 1) {
+    return this.setStart(this.start + amount);
+  }
   
   public toggleRest() {
     return new Note(this.index, this.phoneme, this.pitch, this.duration, this.start, !this.isRest);
@@ -53,7 +65,6 @@ export class Note {
   public copy() {
     return new Note(this.index, this.phoneme, this.pitch, this.duration, this.start, this.isRest);
   }
-
 
   public equals(note?: Note): boolean {
     return this.index === note?.index
@@ -88,7 +99,7 @@ export class Note {
 
   public get obj() {
     return {
-      phoneme: this.phoneme,
+      phoneme: this.phoneme?.trim(),
       pitch: this.pitch.obj,
       duration: this.duration.obj,
     };

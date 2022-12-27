@@ -68,7 +68,17 @@ const Section = styled.section<SectionProp>`
   ${p => p.marginTop ? `margin-top: ${p.marginTop}px` : ''}
 `;
 
-
+const splitLyric = (lyric?: string): (string[] | undefined) => {
+  const splitted = lyric?.trim().replace(/ +/g, ' ').split('');
+  if (splitted) {
+    for (let i = 1; i < splitted.length; i++) {
+      if (splitted[i] === ' ') {
+        splitted.splice(i-1, 2, splitted[i-1]+splitted[i]);
+      }
+    }
+  }
+  return splitted;
+};
 
 const initSong = (param: Params<string>, location: any) => {
   const lang = param.lang;
@@ -81,7 +91,7 @@ const initSong = (param: Params<string>, location: any) => {
     : lang === 'cn2' ? _song_example_cn2
     : undefined
   ) : new Song(
-    lyric?.replace(/ /g, '').split('').map((w: string, i: number) => {
+    splitLyric(lyric)?.map((w: string, i: number) => {
       return new Note(i, w, Pitch.C2, Duration.Unit, i);
     })
   );
@@ -94,7 +104,7 @@ const Score = () => {
   const [song, setSong] = useState<Song>(_song);
   const [notes, setNotes] = useState<Note[]>(_song.notes);
   const [config, setConfig] = useState<Config>(_song.config);
-  const [selectedNote, setSelectedNote] = useState<Note>();
+  const [selectedNote, selectNote] = useState<Note>();
   const [addNote, setAddNote] = useState<Note>();
 
   const [isMusicLoading, setMusicLoading] = useState<boolean>();
@@ -102,6 +112,7 @@ const Score = () => {
   const [audioUri, setAudioUri] = useState<string>();
   const selectedPitch = useMemo<Pitch | undefined>(() => selectedNote?.pitch, [selectedNote]);
   const selectedDuration = useMemo<Duration | undefined>(() => selectedNote?.duration, [selectedNote]);
+  const selectedNoteInputRef = useRef<HTMLInputElement>(null);
   const stageRef = useRef<any>();
   const lowestPitch = useMemo<number>(() => config.lowestPitch.code, [config]);
   const highestPitch = useMemo<number>(() => config.highestPitch.code, [config]);
@@ -111,7 +122,7 @@ const Score = () => {
 
   const onClickRefresh = useCallback(() => {
     console.log('refresh');
-    setSelectedNote(undefined);
+    selectNote(undefined);
     setAddNote(undefined);
     setNotes([]);
     let elapsed = 0;
@@ -137,22 +148,22 @@ const Score = () => {
       for (let i = index; i < notes.length; i++) {
         notes[i].index = i;
       }
-      setSelectedNote(notes[index]);
+      selectNote(notes[index]);
     }
   }, [selectedNote, notes]);
   const onChangePitch = useCallback((evt: any) => {
     const val = parseInt(evt.target.value);
     if (isNumber(val)) {
-      setSelectedNote(selectedNote?.setPitch(val));
+      selectNote(selectedNote?.setPitch(val));
     }
   }, [selectedNote]);
   const onWheelPitch = useCallback((evt: any) => {
     evt.stopPropagation();
     if (selectedNote) {
       if (evt.deltaY > 0 && selectedNote.pitch.code < highestPitch) {
-        setSelectedNote(selectedNote?.higher());
+        selectNote(selectedNote?.higher());
       } else if (evt.deltaY < 0 && selectedNote.pitch.code > lowestPitch) {
-        setSelectedNote(selectedNote?.lower());
+        selectNote(selectedNote?.lower());
       }
     }
   }, [selectedNote, highestPitch, lowestPitch]);
@@ -164,7 +175,7 @@ const Score = () => {
       for (let i = newNote.index + 1; i < notes.length; i++) {
         notes[i].start += diff;
       }
-      setSelectedNote(newNote);
+      selectNote(newNote);
     }
   }, [selectedNote, notes]);
   const onWheelDuration = useCallback((evt: any) => {
@@ -181,7 +192,7 @@ const Score = () => {
         for (let i = newNote.index + 1; i < notes.length; i++) {
           notes[i].start += diff;
         }
-        setSelectedNote(newNote);
+        selectNote(newNote);
       }
     }
   }, [selectedNote, notes]);
@@ -191,6 +202,7 @@ const Score = () => {
   useEffect(() => {
     if (selectedNote) {
       notes.splice(selectedNote.index, 1, selectedNote);
+      selectedNoteInputRef.current?.focus();
       setNotes([...notes]);
     }
   }, [selectedNote]);
@@ -223,14 +235,16 @@ const Score = () => {
       <Section spaceBetween flexEnd>
         <NoteButtonGroup>
           <IconButton secondary name='refresh' onClick={onClickRefresh} />
-          <IconButton secondary name='plus' onClick={onClickAdd} />
-          <IconButton secondary name='minus' onClick={onClickRemove} />
+          <IconButton secondary name='plus' onClick={onClickAdd} disabled={!selectedNote} />
+          <IconButton secondary name='minus' onClick={onClickRemove} disabled={!selectedNote} />
         </NoteButtonGroup>
-        <SelectedNote language={language}
+        <SelectedNote
+          ref={selectedNoteInputRef}
+          language={language}
           note={selectedNote}
           onChange={(e) => {
             if (selectedNote) {
-              setSelectedNote(selectedNote.setPhoneme(e.target.value));
+              selectNote(selectedNote.setPhoneme(e.target.value));
             }
           }}
           readonly={!selectedNote || (selectedNote.isRest ?? false)}
@@ -258,8 +272,9 @@ const Score = () => {
       <Board
         song={song}
         stageRef={stageRef}
+        selectedNote={selectedNote}
         onSelectNote={(note) => {
-          setSelectedNote(note);
+          selectNote(note);
         }}
       />
       
@@ -268,24 +283,25 @@ const Score = () => {
           min={lowestPitch} max={highestPitch} step={1}
           text={selectedPitch?.name ?? ''}
           value={selectedPitch?.code}
-          disabled={selectedNote?.isRest}
+          disabled={selectedNote?.isRest || !selectedNote}
           onChange={onChangePitch}
           onMouseWheel={onWheelPitch}
         />
         <CheckboxGroup label='쉼표'
           isChecked={selectedNote?.isRest ?? false}
           onClick={(e) => {
-            console.log('on clicked checkbox:', e);
-            setSelectedNote(selectedNote?.toggleRest());
+            // console.log('on clicked checkbox:', e);
+            selectNote(selectedNote?.toggleRest());
           }}
           onChange={(e)=>{
-            console.log('on changed checkbox:', e.target.checked, ', e:', e);
+            // console.log('on changed checkbox:', e.target.checked, ', e:', e);
           }}
         />
         <InputSlider id='durationSlider' label='길이'
           min={Duration.MIN} max={Duration.MAX} step={1}
           text={selectedDuration?.fraction ?? ''}
           value={selectedDuration?.length}
+          disabled={!selectedNote}
           onChange={onChangeDuration}
           onMouseWheel={onWheelDuration}
         />

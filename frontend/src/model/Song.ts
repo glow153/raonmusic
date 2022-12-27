@@ -141,6 +141,7 @@ export class Song {
         });
       }
     }
+
     // 4. if first note is SP, add SP
     if (this.notes[0].start !== 0) {
       noteObjs.splice(0, 0, {
@@ -150,10 +151,14 @@ export class Song {
       });
     }
 
+    // 5. concatenate lyric
+    const configObj = this.config.obj;
+    configObj.lyric = this.notes.map(n => n.phoneme).join('');
+
     // 3. serialize
     return JSON.stringify({
       notes: noteObjs,
-      config: this.config.obj
+      config: configObj
     });
   }
 }

@@ -4,7 +4,12 @@ import { Colors } from "../../constants/color";
 import { Note as NoteModel } from "../../model";
 import Input from "./Input";
 
-const SelectedNoteContainer = styled(Input)<{language?: string}>`
+interface StyledInputProp {
+  ref: any;
+  autoComplete: string;
+  language?: string;
+}
+const SelectedNoteInput = styled(Input)<StyledInputProp>`
   width: 125px;
   height: 125px;
   font-family: ${p => p.language === 'cn' ? "'Ma Shan Zheng'" : 'BMJua'};
@@ -24,19 +29,22 @@ const SelectedNoteContainer = styled(Input)<{language?: string}>`
 
 interface Prop extends InputProp {
   note?: NoteModel;
+  ref: any;
   language?: string;
 }
 
 const SelectedNote = ({
   note,
+  ref,
   ...props
 }: Prop) => {
   return (
-    <SelectedNoteContainer {...props}
+    <SelectedNoteInput {...props} ref={ref}
       value={note ? (
-        note.isRest ? '~' : note.phoneme
+        note.isRest ? '~' : note.phoneme?.trim() ?? ''
       ) : ''}
       maxLength={1}
+      autoComplete="off"
     />
   );
 };

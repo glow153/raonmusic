@@ -52,18 +52,13 @@ const Note = ({
   const height = useMemo<number>(() => gridCellSize, [gridCellSize]);
   const radius = useMemo<number>(() => Math.round(gridCellSize / 3), [gridCellSize]);
   const fontSize = useMemo<number>(() => Math.round(gridCellSize * 0.7), [gridCellSize]);
-  
   const [isHover, setHover] = useState<boolean>(false);
-  const [isDragging, setDragging] = useState<boolean>(false);
-  const [dragStartY, setDragStartY] = useState<number>(0);
  
   const onSelect = useCallback((note: NoteModel) => {
     tryCall(_onSelect, note);
   }, [note]);
   const onMouseDown = useCallback((e: any) => {
     onSelect(note);
-    setDragStartY(e.evt.offsetY);
-    setDragging(true);
   }, [note]);
   const onHover = useCallback(() => {setHover(true);}, []);
   const onHoverOut = useCallback(() => {setHover(false);}, []);
@@ -73,54 +68,25 @@ const Note = ({
   }, []);
 
   return (
-    <>
-      <Group id={id}
-        onMouseDown={onMouseDown} onMouseOver={onHover} onMouseOut={onHoverOut}
-      >
-        <Rect x={x} y={y} width={width} height={height}
-          cornerRadius={radius}
-          fill={note.isRest
-            ? (isHover ? Colors.grayHover : Colors.gray)
-            : (isHover ? Colors.primaryHover : Colors.primary)
-          }
-        />
-        <Text id={`${id}_txt`} x={x} y={y} width={width} height={height}
-          align='center' verticalAlign='middle'
-          fontFamily={language === 'cn' ? 'Ma Shan Zheng' : 'BMJua'} fontSize={fontSize}
-          text={note.isRest ? '~' : note.phoneme}
-        />
-      </Group>
-      {isSelected && (
-        <Rect id={`selector`} name={`NoteSelector`}
-          x={x} y={y}
-          width={width} height={height}
-          fill='transparent' stroke='#ed0e0eaa'
-          strokeWidth={selectBorderWidth}
-          onMouseDown={onMouseDown}
-          onMouseOver={() => {setHover(true);}}
-          onMouseOut={() => {
-            setHover(false);
-            setDragging(false);
-          }}
-          onMouseMove={({evt}) => {
-            if (isDragging) {
-              const dy = dragStartY - evt.offsetY;
-              console.log(`mouse dragging: y=${y}, dragStartY=${dragStartY}, evt.offsetY=${evt.offsetY}, dy=${dy}`);
-              if (dy > dragThreshold) {
-                onSelect(note.higher());
-                setDragStartY(evt.offsetY - 15);
-              } else if (dy < -dragThreshold) {
-                onSelect(note.lower());
-                setDragStartY(evt.offsetY + 15);
-              }
-            }
-          }}
-          onMouseUp={(evt) => {
-            setDragging(false);
-          }}
-        />
-      )}
-    </>
+    <Group id={id}
+      onMouseDown={onMouseDown}
+      onMouseOver={onHover}
+      onMouseOut={onHoverOut}
+      onTouchStart={onMouseDown}
+    >
+      <Rect x={x} y={y} width={width} height={height}
+        cornerRadius={radius}
+        fill={note.isRest
+          ? (isHover ? Colors.grayHover : Colors.gray)
+          : (isHover ? Colors.primaryHover : Colors.primary)
+        }
+      />
+      <Text id={`${id}-txt`} x={x} y={y} width={width} height={height}
+        align='center' verticalAlign='middle'
+        fontFamily={language === 'cn' ? 'Ma Shan Zheng' : 'BMJua'} fontSize={fontSize}
+        text={note.isRest ? '~' : note.phoneme}
+      />
+    </Group>
   );
 };
 
