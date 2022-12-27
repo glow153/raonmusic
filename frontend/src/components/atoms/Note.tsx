@@ -1,12 +1,12 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
-import { Rect, Text } from 'react-konva';
+import { Group, Rect, Text } from 'react-konva';
 import { Colors } from '../../constants/color';
 import { Note as NoteModel } from '../../model/Note';
 import { tryCall } from '../../util';
 
 interface Prop {
   id: string;
-  left: number;
+  start: number;
   note: NoteModel;
   gridCellSize?: number;
   gridHeight?: number;
@@ -23,7 +23,7 @@ const dragThreshold = 14;
 
 const Note = ({
   id,
-  left,
+  start,
   note,
   gridCellSize = 0,
   gridHeight = 0,
@@ -46,14 +46,12 @@ const Note = ({
     }
   }, [note, _prevPitch]);
   const duration = useMemo<number>(() => note.duration?.length ?? 1, [note]);
-  const x = useMemo<number>(() => left * gridCellSize + gridPadding, [left, note, gridCellSize, gridPadding]);
+  const x = useMemo<number>(() => start * gridCellSize + gridPadding, [start, note, gridCellSize, gridPadding]);
   const y = useMemo<number>(() => gridHeight - ((relativePitch + 1) * gridCellSize - gridPadding), [gridHeight, relativePitch, gridCellSize, gridPadding]);
   const width = useMemo<number>(() => gridCellSize * duration, [gridCellSize, duration]);
   const height = useMemo<number>(() => gridCellSize, [gridCellSize]);
   const radius = useMemo<number>(() => Math.round(gridCellSize / 3), [gridCellSize]);
   const fontSize = useMemo<number>(() => Math.round(gridCellSize * 0.7), [gridCellSize]);
-  const xText = useMemo<number>(() => x + (width-fontSize)/2, [x, width]);
-  const yText = useMemo<number>(() => y + (height-fontSize)/2, [y, gridCellSize]);
   
   const [isHover, setHover] = useState<boolean>(false);
   const [isDragging, setDragging] = useState<boolean>(false);
@@ -62,12 +60,13 @@ const Note = ({
   const onSelect = useCallback((note: NoteModel) => {
     tryCall(_onSelect, note);
   }, [note]);
-  
   const onMouseDown = useCallback((e: any) => {
     onSelect(note);
     setDragStartY(e.evt.offsetY);
     setDragging(true);
   }, [note]);
+  const onHover = useCallback(() => {setHover(true);}, []);
+  const onHoverOut = useCallback(() => {setHover(false);}, []);
 
   useEffect(() => {
     // console.log(`id:${id}, x:${x}, y:${y}`);
@@ -75,25 +74,25 @@ const Note = ({
 
   return (
     <>
-      <Rect id={id} x={x} y={y} width={width} height={height}
-        cornerRadius={radius}
-        fill={note.isRest
-          ? (isHover ? Colors.grayHover : Colors.gray)
-          : (isHover ? Colors.primaryHover : Colors.primary)
-        }
-        onMouseDown={onMouseDown}
-        onMouseOver={() => {setHover(true);}}
-        onMouseOut={() => {setHover(false);}}
-      />
-      <Text id={`${id}_txt`} x={xText} y={yText}
-        fontFamily={language === 'cn' ? 'Ma Shan Zheng' : 'BMJua'} fontSize={fontSize}
-        text={note.isRest ? '~' : note.phoneme}
-        onMouseDown={onMouseDown}
-        onMouseOver={() => {setHover(true);}}
-        onMouseOut={() => {setHover(false);}}
-      />
+      <Group id={id}
+        onMouseDown={onMouseDown} onMouseOver={onHover} onMouseOut={onHoverOut}
+      >
+        <Rect x={x} y={y} width={width} height={height}
+          cornerRadius={radius}
+          fill={note.isRest
+            ? (isHover ? Colors.grayHover : Colors.gray)
+            : (isHover ? Colors.primaryHover : Colors.primary)
+          }
+        />
+        <Text id={`${id}_txt`} x={x} y={y} width={width} height={height}
+          align='center' verticalAlign='middle'
+          fontFamily={language === 'cn' ? 'Ma Shan Zheng' : 'BMJua'} fontSize={fontSize}
+          text={note.isRest ? '~' : note.phoneme}
+        />
+      </Group>
       {isSelected && (
-        <Rect x={x} y={y}
+        <Rect id={`selector`} name={`NoteSelector`}
+          x={x} y={y}
           width={width} height={height}
           fill='transparent' stroke='#ed0e0eaa'
           strokeWidth={selectBorderWidth}

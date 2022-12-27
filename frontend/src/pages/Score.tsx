@@ -85,14 +85,14 @@ const initSong = (param: Params<string>, location: any) => {
       return new Note(i, w, Pitch.C2, Duration.Unit, i);
     })
   );
-}
+};
 
 const Score = () => {
   const params = useParams();
   const location = useLocation();
   const _song = initSong(params, location);
   const [song, setSong] = useState<Song>(_song);
-  const [notes, setNotes] = useState<Note[]>([..._song.notes]);
+  const [notes, setNotes] = useState<Note[]>(_song.notes);
   const [config, setConfig] = useState<Config>(_song.config);
   const [selectedNote, setSelectedNote] = useState<Note>();
   const [addNote, setAddNote] = useState<Note>();
@@ -112,9 +112,19 @@ const Score = () => {
   const onClickRefresh = useCallback(() => {
     console.log('refresh');
     setSelectedNote(undefined);
+    setAddNote(undefined);
     setNotes([]);
-    setNotes([..._song.notes]);
-  }, []);
+    let elapsed = 0;
+    const _notes = [..._song.notes];
+    for (let i = 0; i < _notes.length; i++) {
+      if (i > 0) {
+        const prev = _notes[i-1];
+        elapsed += (prev.duration.length);
+      }
+      _notes[i].start = elapsed;
+    }
+    setNotes(_notes);
+  }, [_song, notes]);
   const onClickAdd = useCallback(() => {
     if (selectedNote) {
       setAddNote(selectedNote.copy());
@@ -198,6 +208,7 @@ const Score = () => {
   }, [addNote]);
 
   useEffect(() => {
+    console.log(notes);
     setSong(new Song(notes, config));
   }, [notes, config]);
 
@@ -214,9 +225,6 @@ const Score = () => {
           <IconButton secondary name='refresh' onClick={onClickRefresh} />
           <IconButton secondary name='plus' onClick={onClickAdd} />
           <IconButton secondary name='minus' onClick={onClickRemove} />
-          <IconButton secondary name='song' onClick={() => {
-            console.log(notes)
-          }} />
         </NoteButtonGroup>
         <SelectedNote language={language}
           note={selectedNote}

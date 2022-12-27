@@ -68,6 +68,7 @@ const Board = ({
       setSelectedNoteIndex(index);
     }
 
+    re.target.attrs
   }, []);
   const onClickGrid = useCallback((evt: any) => {
     console.log('onClickGrid> evt:', evt);
@@ -102,7 +103,7 @@ const Board = ({
                 gridCellSize={cellSize}
                 gridHeight={boardHeight}
                 gridPadding={padding}
-                left={note.start}
+                start={note.start}
                 prevPitch={note.isRest ? prevPitch : undefined}
                 lowestPitch={lowestPitch}
                 isSelected={i === selectedNoteIndex}
