@@ -1,10 +1,10 @@
-import { BrowserRouter, Route, Routes } from 'react-router-dom';
+import { BrowserRouter } from 'react-router-dom';
 import './App.css';
+import { AnimatedRoutes } from './layout';
 import { Root } from './layout/root';
 import { Footer } from './layout/root/footer';
 import { Header } from './layout/root/header';
 import { Main } from './layout/root/main';
-import { About, Home, Repair, Score } from './pages';
 
 const App = () => {
   return (
@@ -12,14 +12,7 @@ const App = () => {
       <Root>
         <Header />
         <Main>
-          <Routes>
-            <Route path='/' element={<Home />} />
-            <Route path='/about' element={<About />} />
-            <Route path='/score/' element={<Score />} />
-            <Route path='/example/:lang' element={<Score />} />
-            <Route path='/repair' element={<Repair />} />
-            <Route path='/*' element={<Repair />} />
-          </Routes>
+          <AnimatedRoutes />
         </Main>
         <Footer />
       </Root>

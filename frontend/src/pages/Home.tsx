@@ -2,7 +2,7 @@ import { useCallback, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
 import { Button, Input, Link } from '../components/atoms';
-import { Page } from '../components/templates';
+import { AnimatedPage } from '../components/templates';
 
 interface TitleProp {
   marginTop?: number;
@@ -62,7 +62,7 @@ const Home = () => {
   }, [urlExample]);
   
   return (
-    <Page>
+    <AnimatedPage>
       <Title marginTop={200}>아무 문장으로 나만의 노래를 만들어봐요</Title>
       <Text marginTop={36} textAlign='center'>라온 뮤직은 학습에 지친 아이들을 위해 힐링 되고 재미 있는 공부 환경을 제공해드립니다.</Text>
       <Section>
@@ -104,7 +104,7 @@ const Home = () => {
           <Input value='Chinese Eminem' style={{paddingLeft: 90, paddingRight: 30, paddingTop: 22, paddingBottom: 22, flex: 1}} readonly />
         </Link>
       </Section>
-    </Page>
+    </AnimatedPage>
   );
 };
 
