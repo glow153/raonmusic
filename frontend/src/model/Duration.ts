@@ -5,6 +5,7 @@ interface DurationParam {
   name?: string;
   length?: number;
   fraction?: string;
+  sign?: number;
 }
 
 export class Duration {
@@ -15,12 +16,14 @@ export class Duration {
   public name: string;
   public length: number;
   public fraction: string;
+  public sign: number;
 
   constructor({id, name, length, fraction}: DurationParam = {}) {
     this.id = id ?? 4;
     this.name = name ?? "quarter note";
     this.length = length ?? 4;
     this.fraction = fraction ?? "1/4";
+    this.sign = parseInt(this.fraction.split('/')[1]);
   }
 
   static get Unit () {
@@ -35,6 +38,11 @@ export class Duration {
     );
     const duration = _durationCodes.find(d => d.length === length);
     return new Duration(duration);
+  }
+
+  static fromTimeSignature(lower: number = 4) {
+    const target = _durationCodes.find(d => d.fraction === `1/${lower}`);
+    return target ? new Duration(target) : undefined;
   }
 
   public setLength(length: number) {

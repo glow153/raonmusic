@@ -7,3 +7,5 @@ export { default as IconLabelButton } from './IconLabelButton';
 export { default as InputGroup } from './InputGroup';
 export type { Prop as InputGroupProp } from './InputGroup';
 export { default as NavButton } from './NavButton';
+export { default as NoteSelector } from './NoteSelector';
+

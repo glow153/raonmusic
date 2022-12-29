@@ -5,7 +5,7 @@ import styled from 'styled-components';
 import { Link, SelectedNote } from '../components/atoms';
 import { CheckboxGroup, ConfigButton, IconButton, IconLabelButton } from '../components/molecules';
 import { Board, InputSlider } from '../components/organisms';
-import { Page } from '../components/templates';
+import { AnimatedPage } from '../components/templates';
 import { Colors } from '../constants/color';
 import _song_example_cn2 from '../constants/song-example-cn-2.json';
 import _song_example_cn from '../constants/song-example-cn.json';
@@ -68,7 +68,17 @@ const Section = styled.section<SectionProp>`
   ${p => p.marginTop ? `margin-top: ${p.marginTop}px` : ''}
 `;
 
-
+const splitLyric = (lyric?: string): (string[] | undefined) => {
+  const splitted = lyric?.trim().replace(/ +/g, ' ').split('');
+  if (splitted) {
+    for (let i = 1; i < splitted.length; i++) {
+      if (splitted[i] === ' ') {
+        splitted.splice(i-1, 2, splitted[i-1]+splitted[i]);
+      }
+    }
+  }
+  return splitted;
+};
 
 const initSong = (param: Params<string>, location: any) => {
   const lang = param.lang;
@@ -81,128 +91,202 @@ const initSong = (param: Params<string>, location: any) => {
     : lang === 'cn2' ? _song_example_cn2
     : undefined
   ) : new Song(
-    lyric?.replace(/ /g, '').split('').map((w: string, i: number) => {
+    splitLyric(lyric)?.map((w: string, i: number) => {
       return new Note(i, w, Pitch.C2, Duration.Unit, i);
     })
   );
-}
+};
 
-const Score = () => {
+const adjustNotes = (notes: Note[]) => {
+  for (let i = 0; i < notes.length - 1; i++) {
+    const curr = notes[i];
+    const next = notes[i + 1];
+
+    // 1. reset index
+    curr.index = i;
+
+    // 2. calc diff and pull back notes
+    if (curr.end + 1 > next.start) {
+      const diff = curr.end - next.start + 1;
+      next.start += diff;
+    }
+  }
+
+  // 3. reset index of last note
+  notes[notes.length - 1].index = notes.length - 1;
+  return notes;
+};
+
+const Sheet = ({
+  cellSize: _cellSize = 30,
+}) => {
   const params = useParams();
   const location = useLocation();
   const _song = initSong(params, location);
   const [song, setSong] = useState<Song>(_song);
-  const [notes, setNotes] = useState<Note[]>([..._song.notes]);
+  const [notes, setNotes] = useState<Note[]>(_song.notes);
   const [config, setConfig] = useState<Config>(_song.config);
-  const [selectedNote, setSelectedNote] = useState<Note>();
+  const [selectedNote, selectNote] = useState<Note>();
+  const [cellSize, setCellSize] = useState<number>(_cellSize);
   const [addNote, setAddNote] = useState<Note>();
-
+  const [changedNote, setChangedNote] = useState<Note>();
+  const [deleteNote, setDeleteNote] = useState<Note>();
+  const selectedPitch = useMemo<Pitch | undefined>(() => selectedNote?.pitch, [selectedNote]);
+  const selectedDuration = useMemo<Duration | undefined>(() => selectedNote?.duration, [selectedNote]);
+  const language = useMemo<string>(() => config.lang ?? 'ko', [config]);
+  const lowestPitch = useMemo<number>(() => config.lowestPitch.code, [config]);
+  const highestPitch = useMemo<number>(() => config.highestPitch.code, [config]);
+  
   const [isMusicLoading, setMusicLoading] = useState<boolean>();
   const [isMusicReady, setMusicReady] = useState<boolean>();
   const [audioUri, setAudioUri] = useState<string>();
-  const selectedPitch = useMemo<Pitch | undefined>(() => selectedNote?.pitch, [selectedNote]);
-  const selectedDuration = useMemo<Duration | undefined>(() => selectedNote?.duration, [selectedNote]);
-  const stageRef = useRef<any>();
-  const lowestPitch = useMemo<number>(() => config.lowestPitch.code, [config]);
-  const highestPitch = useMemo<number>(() => config.highestPitch.code, [config]);
-  const language = useMemo<string>(() => config.lang ?? 'ko', [config]);
   const audioSrc = useMemo<string | undefined>(() => audioUri ? (url + audioUri) : undefined, [audioUri]);
+  const selectedNoteInputRef = useRef<HTMLInputElement>();
+  const stageRef = useRef<any>();
   const [isPlaying, togglePlaying] = useAudio(audioSrc);
 
   const onClickRefresh = useCallback(() => {
     console.log('refresh');
-    setSelectedNote(undefined);
+    selectNote(undefined);
+    setAddNote(undefined);
     setNotes([]);
     setNotes([..._song.notes]);
-  }, []);
+  }, [_song, notes]);
+
   const onClickAdd = useCallback(() => {
     if (selectedNote) {
-      setAddNote(selectedNote.copy());
+      const newNote = selectedNote.copy();
+      // newNote.start = newNote.end + 1;
+      setAddNote(newNote);
     }
   }, [selectedNote]);
+
   const onClickRemove = useCallback(() => {
     if (selectedNote) {
-      const index = selectedNote.index
-      notes.splice(index, 1);
-      for (let i = index; i < notes.length; i++) {
-        notes[i].index = i;
-      }
-      setSelectedNote(notes[index]);
+      setDeleteNote(selectedNote);
     }
   }, [selectedNote, notes]);
+
   const onChangePitch = useCallback((evt: any) => {
     const val = parseInt(evt.target.value);
-    if (isNumber(val)) {
-      setSelectedNote(selectedNote?.setPitch(val));
+    if (selectedNote && isNumber(val)) {
+      setChangedNote(selectedNote.setPitch(val));
     }
   }, [selectedNote]);
+
   const onWheelPitch = useCallback((evt: any) => {
     evt.stopPropagation();
     if (selectedNote) {
       if (evt.deltaY > 0 && selectedNote.pitch.code < highestPitch) {
-        setSelectedNote(selectedNote?.higher());
+        setChangedNote(selectedNote.higher());
       } else if (evt.deltaY < 0 && selectedNote.pitch.code > lowestPitch) {
-        setSelectedNote(selectedNote?.lower());
+        setChangedNote(selectedNote.lower());
       }
     }
   }, [selectedNote, highestPitch, lowestPitch]);
+
   const onChangeDuration = useCallback((evt: any) => {
     const val = parseInt(evt.target.value);
     if (selectedNote && isNumber(val)) {
       const newNote = selectedNote.setDuration(val);
-      const diff = newNote.duration.length - selectedNote.duration.length;
-      for (let i = newNote.index + 1; i < notes.length; i++) {
-        notes[i].start += diff;
-      }
-      setSelectedNote(newNote);
+      setChangedNote(newNote);
     }
   }, [selectedNote, notes]);
+  
   const onWheelDuration = useCallback((evt: any) => {
-    evt.stopPropagation();
     if (selectedNote) {
-      let newNote;
       if (evt.deltaY > 0 && selectedNote.duration.length < Duration.MAX) {
-        newNote = selectedNote.longer();
+        setChangedNote(selectedNote.longer());
       } else if (evt.deltaY < 0 && selectedNote.duration.length > Duration.MIN) {
-        newNote = selectedNote.shorter();
-      }
-      if (newNote) {
-        const diff = newNote.duration.length - selectedNote.duration.length;
-        for (let i = newNote.index + 1; i < notes.length; i++) {
-          notes[i].start += diff;
-        }
-        setSelectedNote(newNote);
+        setChangedNote(selectedNote.shorter());
       }
     }
   }, [selectedNote, notes]);
 
+  const onClickGenerateMusic = useCallback(() => {
+    setMusicLoading(!isMusicLoading);
+    console.log(song.toJson());
+
+    fetch(generateUrl, {
+      method: 'POST',
+      headers: {
+        'content-type': 'application/json',
+      },
+      body: song.toJson()
+    })
+    .then((res) => res.json())
+    .then((res) => {
+      console.log(res);
+      if (res.result === 'true' && isString(res.song)) {
+        setAudioUri(res.song);
+        setMusicLoading(false);
+        setMusicReady(true);
+      }
+    })
+    .catch((e) => {
+      console.error(e);
+      setAudioUri(undefined);
+      setMusicLoading(false);
+      setMusicReady(false);
+    });
+  }, [song]);
+
+  const onZoomIn = useCallback(() => {
+    setCellSize(cellSize + 10);
+  }, [cellSize]);
+  const onZoomOut = useCallback(() => {
+    setCellSize(cellSize - 10);
+  }, [cellSize]);
+  
 
   // dhpark: USEEFFECT -----------------------------------------
+  // 1. selecting note
   useEffect(() => {
     if (selectedNote) {
       notes.splice(selectedNote.index, 1, selectedNote);
-      setNotes([...notes]);
+      setNotes([...adjustNotes(notes)]);
+      selectedNoteInputRef.current?.focus();
     }
   }, [selectedNote]);
 
+  // 2. adding note
   useEffect(() => {
     if (addNote) {
-      const index = addNote.index;
-      notes.splice(index, 0, addNote);
-      for (let i = index + 1; i < notes.length; i++) {
-        notes[i].index = i;
-        notes[i].start += addNote.duration.length;
-      }
+      console.log('add Note:', addNote);
+      notes.splice(addNote.index, 0, addNote);      
+      selectNote(addNote);
       setAddNote(undefined);
     }
   }, [addNote]);
 
+  // 3. changing note
   useEffect(() => {
+    if (changedNote) {
+      console.log('change Note:', changedNote);
+      notes.splice(changedNote.index, 1, changedNote);      
+      selectNote(changedNote);
+      setChangedNote(undefined);
+    }
+  }, [changedNote]);
+
+  useEffect(() => {
+    if (deleteNote) {
+      const index = notes.findIndex(n => n.equals(deleteNote));
+      if (index >= 0) {
+        notes.splice(index, 1);
+      }
+      selectNote(notes[index]);
+      setDeleteNote(undefined);
+    }
+  }, [deleteNote]);
+
+  useEffect(() => {
+    console.log(notes);
     setSong(new Song(notes, config));
   }, [notes, config]);
 
   return (
-    <Page>
+    <AnimatedPage>
       <Topbar>
         <Link to='/'>
           <IconButton name='home' />
@@ -212,17 +296,20 @@ const Score = () => {
       <Section spaceBetween flexEnd>
         <NoteButtonGroup>
           <IconButton secondary name='refresh' onClick={onClickRefresh} />
-          <IconButton secondary name='plus' onClick={onClickAdd} />
-          <IconButton secondary name='minus' onClick={onClickRemove} />
-          <IconButton secondary name='song' onClick={() => {
-            console.log(notes)
-          }} />
+          <IconButton secondary name='plus' onClick={onClickAdd} disabled={!selectedNote} />
+          <IconButton secondary name='minus' onClick={onClickRemove} disabled={!selectedNote} />
+          {/*
+          <IconButton secondary name='zoomin' onClick={onZoomIn} />
+          <IconButton secondary name='zoomout' onClick={onZoomOut} />
+          */}
         </NoteButtonGroup>
-        <SelectedNote language={language}
+        <SelectedNote
+          inputRef={selectedNoteInputRef}
+          language={language}
           note={selectedNote}
           onChange={(e) => {
             if (selectedNote) {
-              setSelectedNote(selectedNote.setPhoneme(e.target.value));
+              selectNote(selectedNote.setPhoneme(e.target.value));
             }
           }}
           readonly={!selectedNote || (selectedNote.isRest ?? false)}
@@ -248,11 +335,13 @@ const Score = () => {
       </Section>
       
       <Board
-        song={song}
+        notes={notes}
+        config={config}
         stageRef={stageRef}
-        onSelectNote={(note) => {
-          setSelectedNote(note);
-        }}
+        cellSize={cellSize}
+        selectedNote={selectedNote}
+        selectNoteAction={selectNote}
+        addNoteAction={setAddNote}
       />
       
       <Section marginTop={30} spaceBetween>
@@ -260,24 +349,25 @@ const Score = () => {
           min={lowestPitch} max={highestPitch} step={1}
           text={selectedPitch?.name ?? ''}
           value={selectedPitch?.code}
-          disabled={selectedNote?.isRest}
+          disabled={selectedNote?.isRest || !selectedNote}
           onChange={onChangePitch}
           onMouseWheel={onWheelPitch}
         />
         <CheckboxGroup label='쉼표'
           isChecked={selectedNote?.isRest ?? false}
           onClick={(e) => {
-            console.log('on clicked checkbox:', e);
-            setSelectedNote(selectedNote?.toggleRest());
+            // console.log('on clicked checkbox:', e);
+            selectNote(selectedNote?.toggleRest());
           }}
-          onChange={(e)=>{
-            console.log('on changed checkbox:', e.target.checked, ', e:', e);
+          onChange={(e) => {
+            // console.log('on changed checkbox:', e.target.checked, ', e:', e);
           }}
         />
         <InputSlider id='durationSlider' label='길이'
           min={Duration.MIN} max={Duration.MAX} step={1}
           text={selectedDuration?.fraction ?? ''}
           value={selectedDuration?.length}
+          disabled={!selectedNote}
           onChange={onChangeDuration}
           onMouseWheel={onWheelDuration}
         />
@@ -288,33 +378,7 @@ const Score = () => {
           name='song' label='노래 생성'
           iconBackground={Colors.primary}
           loading={isMusicLoading}
-          onClick={() => {
-            setMusicLoading(!isMusicLoading);
-            console.log(song.toJson());
-
-            fetch(generateUrl, {
-              method: 'POST',
-              headers: {
-                'content-type': 'application/json',
-              },
-              body: song.toJson()
-            })
-            .then((res) => res.json())
-            .then((res) => {
-              console.log(res);
-              if (res.result === 'true' && isString(res.song)) {
-                setAudioUri(res.song);
-                setMusicLoading(false);
-                setMusicReady(true);
-              }
-            })
-            .catch((e) => {
-              console.error(e);
-              setAudioUri(undefined);
-              setMusicLoading(false);
-              setMusicReady(false);
-            });
-          }}
+          onClick={onClickGenerateMusic}
         />
         {isMusicReady ? (
           <IconLabelButton lightgreen
@@ -329,8 +393,8 @@ const Score = () => {
           />
         ) : null}
       </Section>
-    </Page>
+    </AnimatedPage>
   );
 };
 
-export default React.memo(Score);
+export default React.memo(Sheet);

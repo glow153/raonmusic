@@ -4,11 +4,14 @@ export class Song {
   public notes: Note[];
   private _elapsed: number[] = [];
   public config: Config;
-  public get totalDuration() {
+  public get length() {
     return this.notes
       .map(note => note.duration?.length ?? 0)
       .reduce((a, b) => a + b, 0)
     ;
+  }
+  public get maxDuration() {
+    return this.config.maxDuration;
   }
 
   constructor(notes?: Note[], config?: Config) {
@@ -19,78 +22,6 @@ export class Song {
 
   private initElapsed() {
     this._elapsed = this.notes.map(n => n.start);
-  }
-
-  public elapsed(index: number) {
-    return this._elapsed[index];
-  }
-
-  public duplicate(index: number) {
-    if (0 <= index && index < this.notes.length) {
-      this.notes?.splice(index, 0, this.notes[index].copy());
-      for (let i = index; i < this.notes.length; i++) {
-        this.notes[i].index = i;
-      }
-    } else {
-      debugger;
-    }
-    return this.notes;
-  }
-  
-  public delete(index: number) {
-    if (0 <= index && index < this.notes.length) {
-      this.notes?.splice(index, 1);
-      for (let i = index; i < this.notes.length; i++) {
-        this.notes[i].index = i;
-      }
-    } else {
-      debugger;
-    }
-    return this.notes;
-  }
-
-  public setPitch(index: number, value: number) {
-    const targetNote = this.notes[index];
-    this.notes.splice(index, 1, targetNote.setPitch(value));
-    return [...this.notes];
-  }
-  public lower(index: number) {
-    const targetNote = this.notes[index];
-    this.notes.splice(index, 1, targetNote.lower());
-    return [...this.notes];
-  }
-  public higher(index: number) {
-    const targetNote = this.notes[index];
-    this.notes.splice(index, 1, targetNote.higher());
-    return [...this.notes];
-  }
-
-  public setDuration(index: any, amount: number) {
-    const targetNote = this.notes[index];
-    const originalDuration = targetNote.duration.length;
-    const diff = amount - originalDuration;
-    console.log('targetNote:',targetNote,', diff:', diff)
-    this.notes.splice(index, 1, targetNote.setDuration(amount));
-    for (let i = index + 1; i < this.notes.length; i++) {
-      this.notes[i].start += diff;
-    }
-    return [...this.notes];
-  }
-  public shorter(index: number, amount: number = 1) {
-    const targetNote = this.notes[index];
-    this.notes.splice(index, 1, targetNote.shorter(amount));
-    for (let i = index + 1; i < this.notes.length; i++) {
-      this.notes[i].start -= amount;
-    }
-    return [...this.notes];
-  }
-  public longer(index: number, amount: number = 1) {
-    const targetNote = this.notes[index];
-    this.notes.splice(index, 1, targetNote.longer(amount));
-    for (let i = index + 1; i < this.notes.length; i++) {
-      this.notes[i].start += amount;
-    }
-    return [...this.notes];
   }
 
   static fromJson(song?: any) {
@@ -141,6 +72,7 @@ export class Song {
         });
       }
     }
+
     // 4. if first note is SP, add SP
     if (this.notes[0].start !== 0) {
       noteObjs.splice(0, 0, {
@@ -150,10 +82,14 @@ export class Song {
       });
     }
 
+    // 5. concatenate lyric
+    const configObj = this.config.obj;
+    configObj.lyric = this.notes.map(n => n.phoneme).join('');
+
     // 3. serialize
     return JSON.stringify({
       notes: noteObjs,
-      config: this.config.obj
+      config: configObj
     });
   }
 }

@@ -1,8 +1,9 @@
+import { AnimatedPage } from "../components/templates";
 
 
 const About = () => {
   return (
-    <div>
+    <AnimatedPage>
       <div className="main_ct1">
         <p>
           APPLICABLE AI
@@ -73,7 +74,7 @@ const About = () => {
           </ul>
         </div>
       </div>
-    </div>
+    </AnimatedPage>
   );
 };
 

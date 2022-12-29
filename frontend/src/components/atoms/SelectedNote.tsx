@@ -1,10 +1,19 @@
+import { forwardRef } from "react";
 import styled from "styled-components";
 import { InputProp } from ".";
 import { Colors } from "../../constants/color";
 import { Note as NoteModel } from "../../model";
 import Input from "./Input";
 
-const SelectedNoteContainer = styled(Input)<{language?: string}>`
+interface StyledInputProp {
+  type?: string;
+  value?: any;
+  maxLength?: number;
+  innerRef: any;
+  autoComplete: string;
+  language?: string;
+}
+const StyledInput = styled(Input)<any>`
   width: 125px;
   height: 125px;
   font-family: ${p => p.language === 'cn' ? "'Ma Shan Zheng'" : 'BMJua'};
@@ -22,21 +31,33 @@ const SelectedNoteContainer = styled(Input)<{language?: string}>`
   }
 `;
 
+const SelectedNoteInput = forwardRef(({
+  type = 'text',
+  ...props
+}: StyledInputProp, ref) => {
+  return (
+    <StyledInput type={type} {...props} ref={ref} />
+  );
+});
+
 interface Prop extends InputProp {
   note?: NoteModel;
+  inputRef: any;
   language?: string;
 }
 
 const SelectedNote = ({
   note,
+  inputRef,
   ...props
 }: Prop) => {
   return (
-    <SelectedNoteContainer {...props}
+    <SelectedNoteInput {...props} innerRef={inputRef}
       value={note ? (
-        note.isRest ? '~' : note.phoneme
+        note.isRest ? '~' : note.phoneme?.trim() ?? ''
       ) : ''}
       maxLength={1}
+      autoComplete="off"
     />
   );
 };

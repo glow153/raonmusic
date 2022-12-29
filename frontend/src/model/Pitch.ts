@@ -4,7 +4,7 @@ interface PitchParam {
   code?: number;
   sharpName?: string;
   flatName?: string;
-  mode?: PitchMode;
+  mode?: PitchMode ;
 }
 
 export enum PitchMode {
@@ -18,12 +18,15 @@ export class Pitch implements PitchParam {
   public code: number;
   private _sharpName: string;
   private _flatName: string;
-  public mode: PitchMode;
+  public mode: PitchMode = PitchMode.SHARP;
   public get name() {
-    return this.mode === PitchMode.SHARP ? this._sharpName : this._flatName;
+    return (this.mode === PitchMode.SHARP ? this._sharpName : this._flatName);
   }
   public get shorterName() {
     return this.name.substring(0, this.name.length - 1);
+  }
+  public get isBlack() {
+    return this._sharpName.includes('#');
   }
 
   constructor({code, sharpName, flatName, mode}: PitchParam = {}) {
@@ -44,7 +47,7 @@ export class Pitch implements PitchParam {
     if (mode) {
       pitch.mode = mode;
     } else if (pitch.name.includes('#')) {
-      pitch.mode = PitchMode.FLAT;
+      pitch.mode = PitchMode.SHARP;
     }
     return pitch;
   }
