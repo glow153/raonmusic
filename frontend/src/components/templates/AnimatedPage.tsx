@@ -20,12 +20,12 @@ const Page = ({
   children,
   animationConfig: _animationConfig,
 }: Prop) => {
-  const animationConfig = _animationConfig ?? {
+  const animationConfig = Object.assign({
     initial: { opacity: 0 },
     animate: { opacity: 1 },
     exit: { opacity: 0 },
     transition: { duration: 0.5 },
-  };
+  }, _animationConfig);
 
   return (
     <Section

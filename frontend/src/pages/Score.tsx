@@ -5,7 +5,7 @@ import styled from 'styled-components';
 import { Link, SelectedNote } from '../components/atoms';
 import { CheckboxGroup, ConfigButton, IconButton, IconLabelButton } from '../components/molecules';
 import { Board, InputSlider } from '../components/organisms';
-import { Page } from '../components/templates';
+import { AnimatedPage } from '../components/templates';
 import { Colors } from '../constants/color';
 import _song_example_cn2 from '../constants/song-example-cn-2.json';
 import _song_example_cn from '../constants/song-example-cn.json';
@@ -97,7 +97,29 @@ const initSong = (param: Params<string>, location: any) => {
   );
 };
 
-const Score = () => {
+const adjustNotes = (notes: Note[]) => {
+  for (let i = 0; i < notes.length - 1; i++) {
+    const curr = notes[i];
+    const next = notes[i + 1];
+
+    // 1. reset index
+    curr.index = i;
+
+    // 2. calc diff and pull back notes
+    if (curr.end + 1 > next.start) {
+      const diff = curr.end - next.start + 1;
+      next.start += diff;
+    }
+  }
+
+  // 3. reset index of last note
+  notes[notes.length - 1].index = notes.length - 1;
+  return notes;
+};
+
+const Score = ({
+  cellSize: _cellSize = 30,
+}) => {
   const params = useParams();
   const location = useLocation();
   const _song = initSong(params, location);
@@ -105,19 +127,22 @@ const Score = () => {
   const [notes, setNotes] = useState<Note[]>(_song.notes);
   const [config, setConfig] = useState<Config>(_song.config);
   const [selectedNote, selectNote] = useState<Note>();
+  const [cellSize, setCellSize] = useState<number>(_cellSize);
   const [addNote, setAddNote] = useState<Note>();
-
+  const [changedNote, setChangedNote] = useState<Note>();
+  const [deleteNote, setDeleteNote] = useState<Note>();
+  const selectedPitch = useMemo<Pitch | undefined>(() => selectedNote?.pitch, [selectedNote]);
+  const selectedDuration = useMemo<Duration | undefined>(() => selectedNote?.duration, [selectedNote]);
+  const language = useMemo<string>(() => config.lang ?? 'ko', [config]);
+  const lowestPitch = useMemo<number>(() => config.lowestPitch.code, [config]);
+  const highestPitch = useMemo<number>(() => config.highestPitch.code, [config]);
+  
   const [isMusicLoading, setMusicLoading] = useState<boolean>();
   const [isMusicReady, setMusicReady] = useState<boolean>();
   const [audioUri, setAudioUri] = useState<string>();
-  const selectedPitch = useMemo<Pitch | undefined>(() => selectedNote?.pitch, [selectedNote]);
-  const selectedDuration = useMemo<Duration | undefined>(() => selectedNote?.duration, [selectedNote]);
-  const selectedNoteInputRef = useRef<HTMLInputElement>(null);
-  const stageRef = useRef<any>();
-  const lowestPitch = useMemo<number>(() => config.lowestPitch.code, [config]);
-  const highestPitch = useMemo<number>(() => config.highestPitch.code, [config]);
-  const language = useMemo<string>(() => config.lang ?? 'ko', [config]);
   const audioSrc = useMemo<string | undefined>(() => audioUri ? (url + audioUri) : undefined, [audioUri]);
+  const selectedNoteInputRef = useRef<HTMLInputElement>();
+  const stageRef = useRef<any>();
   const [isPlaying, togglePlaying] = useAudio(audioSrc);
 
   const onClickRefresh = useCallback(() => {
@@ -125,22 +150,17 @@ const Score = () => {
     selectNote(undefined);
     setAddNote(undefined);
     setNotes([]);
-    let elapsed = 0;
-    const _notes = [..._song.notes];
-    for (let i = 0; i < _notes.length; i++) {
-      if (i > 0) {
-        const prev = _notes[i-1];
-        elapsed += (prev.duration.length);
-      }
-      _notes[i].start = elapsed;
-    }
-    setNotes(_notes);
+    setNotes([..._song.notes]);
   }, [_song, notes]);
+
   const onClickAdd = useCallback(() => {
     if (selectedNote) {
-      setAddNote(selectedNote.copy());
+      const newNote = selectedNote.copy();
+      // newNote.start = newNote.end + 1;
+      setAddNote(newNote);
     }
   }, [selectedNote]);
+
   const onClickRemove = useCallback(() => {
     if (selectedNote) {
       const index = selectedNote.index
@@ -151,73 +171,109 @@ const Score = () => {
       selectNote(notes[index]);
     }
   }, [selectedNote, notes]);
+
   const onChangePitch = useCallback((evt: any) => {
     const val = parseInt(evt.target.value);
-    if (isNumber(val)) {
-      selectNote(selectedNote?.setPitch(val));
+    if (selectedNote && isNumber(val)) {
+      setChangedNote(selectedNote.setPitch(val));
     }
   }, [selectedNote]);
+
   const onWheelPitch = useCallback((evt: any) => {
     evt.stopPropagation();
     if (selectedNote) {
       if (evt.deltaY > 0 && selectedNote.pitch.code < highestPitch) {
-        selectNote(selectedNote?.higher());
+        setChangedNote(selectedNote.higher());
       } else if (evt.deltaY < 0 && selectedNote.pitch.code > lowestPitch) {
-        selectNote(selectedNote?.lower());
+        setChangedNote(selectedNote.lower());
       }
     }
   }, [selectedNote, highestPitch, lowestPitch]);
+
   const onChangeDuration = useCallback((evt: any) => {
     const val = parseInt(evt.target.value);
     if (selectedNote && isNumber(val)) {
       const newNote = selectedNote.setDuration(val);
-      const diff = newNote.duration.length - selectedNote.duration.length;
-      for (let i = newNote.index + 1; i < notes.length; i++) {
-        notes[i].start += diff;
-      }
-      selectNote(newNote);
+      setChangedNote(newNote);
     }
   }, [selectedNote, notes]);
+  
   const onWheelDuration = useCallback((evt: any) => {
-    evt.stopPropagation();
     if (selectedNote) {
-      let newNote;
       if (evt.deltaY > 0 && selectedNote.duration.length < Duration.MAX) {
-        newNote = selectedNote.longer();
+        setChangedNote(selectedNote.longer());
       } else if (evt.deltaY < 0 && selectedNote.duration.length > Duration.MIN) {
-        newNote = selectedNote.shorter();
-      }
-      if (newNote) {
-        const diff = newNote.duration.length - selectedNote.duration.length;
-        for (let i = newNote.index + 1; i < notes.length; i++) {
-          notes[i].start += diff;
-        }
-        selectNote(newNote);
+        setChangedNote(selectedNote.shorter());
       }
     }
   }, [selectedNote, notes]);
 
+  const onClickGenerateMusic = useCallback(() => {
+    setMusicLoading(!isMusicLoading);
+    console.log(song.toJson());
+
+    fetch(generateUrl, {
+      method: 'POST',
+      headers: {
+        'content-type': 'application/json',
+      },
+      body: song.toJson()
+    })
+    .then((res) => res.json())
+    .then((res) => {
+      console.log(res);
+      if (res.result === 'true' && isString(res.song)) {
+        setAudioUri(res.song);
+        setMusicLoading(false);
+        setMusicReady(true);
+      }
+    })
+    .catch((e) => {
+      console.error(e);
+      setAudioUri(undefined);
+      setMusicLoading(false);
+      setMusicReady(false);
+    });
+  }, [song]);
+
+  
 
   // dhpark: USEEFFECT -----------------------------------------
+  // 1. selecting note
   useEffect(() => {
     if (selectedNote) {
       notes.splice(selectedNote.index, 1, selectedNote);
+      setNotes([...adjustNotes(notes)]);
       selectedNoteInputRef.current?.focus();
-      setNotes([...notes]);
     }
   }, [selectedNote]);
 
+  // 2. adding note
   useEffect(() => {
     if (addNote) {
-      const index = addNote.index;
-      notes.splice(index, 0, addNote);
-      for (let i = index + 1; i < notes.length; i++) {
-        notes[i].index = i;
-        notes[i].start += addNote.duration.length;
-      }
+      console.log('add Note:', addNote);
+      notes.splice(addNote.index, 0, addNote);      
+      selectNote(addNote);
       setAddNote(undefined);
     }
   }, [addNote]);
+
+  // 3. changing note
+  useEffect(() => {
+    if (changedNote) {
+      console.log('change Note:', changedNote);
+      notes.splice(changedNote.index, 1, changedNote);      
+      selectNote(changedNote);
+      setChangedNote(undefined);
+    }
+  }, [changedNote]);
+
+  useEffect(() => {
+    if (deleteNote) {
+
+      setDeleteNote(undefined);
+    }
+  }, [deleteNote]);
 
   useEffect(() => {
     console.log(notes);
@@ -225,7 +281,7 @@ const Score = () => {
   }, [notes, config]);
 
   return (
-    <Page>
+    <AnimatedPage>
       <Topbar>
         <Link to='/'>
           <IconButton name='home' />
@@ -239,7 +295,7 @@ const Score = () => {
           <IconButton secondary name='minus' onClick={onClickRemove} disabled={!selectedNote} />
         </NoteButtonGroup>
         <SelectedNote
-          ref={selectedNoteInputRef}
+          inputRef={selectedNoteInputRef}
           language={language}
           note={selectedNote}
           onChange={(e) => {
@@ -270,12 +326,13 @@ const Score = () => {
       </Section>
       
       <Board
-        song={song}
+        notes={notes}
+        config={config}
         stageRef={stageRef}
+        cellSize={cellSize}
         selectedNote={selectedNote}
-        onSelectNote={(note) => {
-          selectNote(note);
-        }}
+        selectNoteAction={selectNote}
+        addNoteAction={setAddNote}
       />
       
       <Section marginTop={30} spaceBetween>
@@ -293,7 +350,7 @@ const Score = () => {
             // console.log('on clicked checkbox:', e);
             selectNote(selectedNote?.toggleRest());
           }}
-          onChange={(e)=>{
+          onChange={(e) => {
             // console.log('on changed checkbox:', e.target.checked, ', e:', e);
           }}
         />
@@ -312,33 +369,7 @@ const Score = () => {
           name='song' label='노래 생성'
           iconBackground={Colors.primary}
           loading={isMusicLoading}
-          onClick={() => {
-            setMusicLoading(!isMusicLoading);
-            console.log(song.toJson());
-
-            fetch(generateUrl, {
-              method: 'POST',
-              headers: {
-                'content-type': 'application/json',
-              },
-              body: song.toJson()
-            })
-            .then((res) => res.json())
-            .then((res) => {
-              console.log(res);
-              if (res.result === 'true' && isString(res.song)) {
-                setAudioUri(res.song);
-                setMusicLoading(false);
-                setMusicReady(true);
-              }
-            })
-            .catch((e) => {
-              console.error(e);
-              setAudioUri(undefined);
-              setMusicLoading(false);
-              setMusicReady(false);
-            });
-          }}
+          onClick={onClickGenerateMusic}
         />
         {isMusicReady ? (
           <IconLabelButton lightgreen
@@ -353,7 +384,7 @@ const Score = () => {
           />
         ) : null}
       </Section>
-    </Page>
+    </AnimatedPage>
   );
 };
 

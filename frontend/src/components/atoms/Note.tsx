@@ -8,9 +8,12 @@ interface Prop {
   id: string;
   start: number;
   note: NoteModel;
-  gridCellSize?: number;
-  gridHeight?: number;
-  gridPadding?: number;
+  gridInfo: {
+    cellSize: number;
+    height: number;
+    padding: number;
+    pitchLabelSize: number;
+  };
   prevPitch?: number;
   isSelected?: boolean;
   lowestPitch: number;
@@ -25,17 +28,20 @@ const Note = ({
   id,
   start,
   note,
-  gridCellSize = 0,
-  gridHeight = 0,
-  gridPadding = 0,
+  gridInfo,
   prevPitch: _prevPitch,
   isSelected = false,
   lowestPitch,
   onSelect: _onSelect,
-  onClick: _onClick,
   language,
 }: Prop) => {
-  const selectBorderWidth = 5;
+  const {
+    cellSize: gridCellSize,
+    height: gridHeight,
+    padding: gridPadding,
+    pitchLabelSize
+  } = gridInfo;
+  
   const relativePitch = useMemo<number>(() => {
     if (_prevPitch && _prevPitch >= lowestPitch) {
       return _prevPitch - lowestPitch;
@@ -46,7 +52,7 @@ const Note = ({
     }
   }, [note, _prevPitch]);
   const duration = useMemo<number>(() => note.duration?.length ?? 1, [note]);
-  const x = useMemo<number>(() => start * gridCellSize + gridPadding, [start, note, gridCellSize, gridPadding]);
+  const x = useMemo<number>(() => pitchLabelSize + gridPadding + start * gridCellSize, [start, note, gridCellSize, gridPadding]);
   const y = useMemo<number>(() => gridHeight - ((relativePitch + 1) * gridCellSize - gridPadding), [gridHeight, relativePitch, gridCellSize, gridPadding]);
   const width = useMemo<number>(() => gridCellSize * duration, [gridCellSize, duration]);
   const height = useMemo<number>(() => gridCellSize, [gridCellSize]);

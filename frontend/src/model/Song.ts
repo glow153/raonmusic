@@ -4,11 +4,14 @@ export class Song {
   public notes: Note[];
   private _elapsed: number[] = [];
   public config: Config;
-  public get totalDuration() {
+  public get length() {
     return this.notes
       .map(note => note.duration?.length ?? 0)
       .reduce((a, b) => a + b, 0)
     ;
+  }
+  public get maxDuration() {
+    return this.config.maxDuration;
   }
 
   constructor(notes?: Note[], config?: Config) {
@@ -92,7 +95,7 @@ export class Song {
     }
     return [...this.notes];
   }
-
+  
   static fromJson(song?: any) {
     if (song) {
       // 1. set start position

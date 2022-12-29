@@ -1,4 +1,4 @@
-import { Pitch } from "../Pitch";
+import { Pitch, PitchMode } from "../Pitch";
 
 export enum Tone {
   MAJOR, MINOR
@@ -14,6 +14,9 @@ export class Key {
   constructor(pitch?: Pitch, tone?: Tone) {
     this.pitch = pitch ?? Pitch.C2;
     this._tone = tone ?? Tone.MAJOR;
+    if (this.pitch.isBlack) {
+      this.pitch.mode = PitchMode.FLAT;
+    }
   }
 
   static fromJson(key: any) {

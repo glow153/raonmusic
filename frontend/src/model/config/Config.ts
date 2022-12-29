@@ -22,6 +22,14 @@ export class Config {
   public lowestPitch: Pitch;
   public highestPitch: Pitch;
 
+  public get maxDuration() {
+    return this.measures * this.time.lengthPerMeasure;
+  }
+
+  public get defaultDuration() {
+    return this.time._lower;
+  }
+
   constructor({
     lyric,
     tempo,

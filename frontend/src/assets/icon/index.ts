@@ -5,6 +5,8 @@ import IcPlay from './play.svg';
 import IcPlus from './plus.svg';
 import IcRefresh from './refresh.svg';
 import IcSong from './song.svg';
+import IcZoomIn from './zoomin.svg';
+import IcZoomOut from './zoomout.svg';
 
 type t = {
   [index: string]: any;
@@ -15,6 +17,8 @@ type t = {
   song: any;
   play: any;
   pause: any;
+  zoomin: any;
+  zoomout: any;
 }
 
 const m: t = {
@@ -25,6 +29,8 @@ const m: t = {
   song: IcSong,
   play: IcPlay,
   pause: IcPause,
+  zoomin: IcZoomIn,
+  zoomout: IcZoomOut,
 };
 
 export default m;

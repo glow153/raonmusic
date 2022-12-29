@@ -97,6 +97,12 @@ export class Note {
     }
   }
 
+  public static default(index: number, pitch: number, duration: number, start: number) {
+    return new Note(
+      index, '-', Pitch.fromCode(pitch), Duration.fromLength(duration), start
+    );
+  }
+
   public get obj() {
     return {
       phoneme: this.phoneme?.trim(),

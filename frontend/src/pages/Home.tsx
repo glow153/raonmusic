@@ -7,7 +7,6 @@ import { AnimatedPage } from '../components/templates';
 interface TitleProp {
   marginTop?: number;
 }
-
 const Title = styled.div<TitleProp>`
   margin-top: ${p => p.marginTop}px;
   font-size: 40px;
@@ -21,7 +20,6 @@ interface TextProp {
   marginTop?: number;
   textAlign?: string;
 }
-
 const Text = styled.p<TextProp>`
   margin-top: ${p => p.marginTop}px;
   font-size: 20px;

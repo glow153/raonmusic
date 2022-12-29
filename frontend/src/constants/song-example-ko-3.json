@@ -1,22 +1,23 @@
 {
   "notes": [
     {"phoneme":"여","pitch":24,"duration":4},
-    {"phoneme":"수","pitch":26,"duration":2},
+    {"phoneme":"수 ","pitch":26,"duration":2},
     {"phoneme":"밤","pitch":29,"duration":4},
     {"phoneme":"바","pitch":36,"duration":2},
-    {"phoneme":"다","pitch":33,"duration":10},
-    {"phoneme":"이","pitch":24,"duration":2},
+    {"phoneme":"다 ","pitch":33,"duration":10},
+    {"phoneme":"이 ","pitch":24,"duration":2},
     {"phoneme":"조","pitch":24,"duration":4},
     {"phoneme":"명","pitch":26,"duration":2},
-    {"phoneme":"에","pitch":29,"duration":4},
+    {"phoneme":"에 ","pitch":29,"duration":4},
     {"phoneme":"담","pitch":36,"duration":2},
-    {"phoneme":"긴","pitch":33,"duration":12},
+    {"phoneme":"긴 ","pitch":33,"duration":12},
     {"phoneme":"아","pitch":24,"duration":4},
     {"phoneme":"름","pitch":26,"duration":2},
     {"phoneme":"다","pitch":29,"duration":4},
     {"phoneme":"운","pitch":36,"duration":2}
   ],
   "config": {
+    "lyric": "여수 밤바다 이 조명에 담긴 아름다운",
     "tempo": {"count": 60, "beat": 4},
     "key": {"pitch": 5, "tone": 0},
     "measures": 4,

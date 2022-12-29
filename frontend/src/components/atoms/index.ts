@@ -12,4 +12,5 @@ export { default as SelectedNote } from './SelectedNote';
 export { default as Slider } from './Slider';
 export type { Prop as SliderProp } from './Slider';
 export { default as Spinner } from './Spinner';
+export { default as StretchHandle } from './StretchHandle';
 
