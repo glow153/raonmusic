@@ -1,37 +1,22 @@
-import { useState } from "react";
 import { Group, Rect } from "react-konva";
+import { NoteSelector as NoteSelectorModel } from '../../model/NoteSelector';
 import { StretchHandle } from "../atoms";
 
+interface Prop {
+  model: NoteSelectorModel;
+  stretchable: boolean;
+  borderWidth?: number;
+}
+
 const NoteSelector = ({
-  dimension,
+  model,
   stretchable,
   borderWidth = 5,
-  onCanvasMouseDown,
-  onCanvasMouseMove: _onCanvasMouseMove,
-  onCanvasMouseUp,
-  onStretchLeft,
-  onStretchRight,
-}: any) => {
-  const [isLeftDragging, setDraggingLeft] = useState<boolean>(false);
-  const [isRightDragging, setDraggingRight] = useState<boolean>(false);
-  const {x, y, width: w, height: h} = dimension;
+}: Prop) => {
+  const {x, y, width: w, height: h} = model;
 
-  const onCanvasMouseMove = (re: any) => {
-    if (isLeftDragging) {
-      const offsetX = re.evt.offsetX;
-    } else if (isRightDragging) {
-
-    } else {
-      _onCanvasMouseMove(re);
-    }
-  };
-
-  return ( // dhpark: Note Selector shape
-    <Group id={`noteselector-grp`} name={`NoteSelectorGroup`}
-      onMouseDown={onCanvasMouseDown}
-      onMouseMove={onCanvasMouseMove}
-      onMouseUp={onCanvasMouseUp}
-    >
+  return (
+    <Group id={`noteselector-grp`} name={`NoteSelectorGroup`}>
       <Rect id={`noteselector`} name={`NoteSelector`}
         x={x} y={y}
         width={w} height={h}
@@ -41,14 +26,10 @@ const NoteSelector = ({
       {stretchable ? (
         <>
           <StretchHandle id='noteselector-stretch-handle-left' x={x} y={y-2}
-            direction='v' weight={7}
-            length={h+4}
-            onStretch={onStretchLeft}
-            />
+            direction='v' weight={7} length={h+4}
+          />
           <StretchHandle id='noteselector-stretch-handle-right' x={x + w} y={y-2}
-            direction='v' weight={7}
-            length={h+4}
-            onStretch={onStretchRight}
+            direction='v' weight={7} length={h+4}
           />
         </>
       ) : null}

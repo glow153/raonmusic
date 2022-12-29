@@ -67,6 +67,11 @@ body {
   max-width: 1000px;
   flex-grow: 1;
 }
+@media screen and (max-width: 600px) {
+  #app {
+    width: 100%;
+  }
+}
 
 code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',

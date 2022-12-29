@@ -17,7 +17,7 @@
   ],
   "config": {
     "tempo": {"count": 70, "beat": 4},
-    "key": {"pitch": 0, "tone": 0},
+    "key": {"pitch": 12, "tone": 0},
     "time": {"upper": 4, "lower": 4},
     "lang": "ko"
   }

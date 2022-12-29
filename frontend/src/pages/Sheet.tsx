@@ -117,7 +117,7 @@ const adjustNotes = (notes: Note[]) => {
   return notes;
 };
 
-const Score = ({
+const Sheet = ({
   cellSize: _cellSize = 30,
 }) => {
   const params = useParams();
@@ -163,12 +163,7 @@ const Score = ({
 
   const onClickRemove = useCallback(() => {
     if (selectedNote) {
-      const index = selectedNote.index
-      notes.splice(index, 1);
-      for (let i = index; i < notes.length; i++) {
-        notes[i].index = i;
-      }
-      selectNote(notes[index]);
+      setDeleteNote(selectedNote);
     }
   }, [selectedNote, notes]);
 
@@ -236,6 +231,12 @@ const Score = ({
     });
   }, [song]);
 
+  const onZoomIn = useCallback(() => {
+    setCellSize(cellSize + 10);
+  }, [cellSize]);
+  const onZoomOut = useCallback(() => {
+    setCellSize(cellSize - 10);
+  }, [cellSize]);
   
 
   // dhpark: USEEFFECT -----------------------------------------
@@ -270,7 +271,11 @@ const Score = ({
 
   useEffect(() => {
     if (deleteNote) {
-
+      const index = notes.findIndex(n => n.equals(deleteNote));
+      if (index >= 0) {
+        notes.splice(index, 1);
+      }
+      selectNote(notes[index]);
       setDeleteNote(undefined);
     }
   }, [deleteNote]);
@@ -293,6 +298,10 @@ const Score = ({
           <IconButton secondary name='refresh' onClick={onClickRefresh} />
           <IconButton secondary name='plus' onClick={onClickAdd} disabled={!selectedNote} />
           <IconButton secondary name='minus' onClick={onClickRemove} disabled={!selectedNote} />
+          {/*
+          <IconButton secondary name='zoomin' onClick={onZoomIn} />
+          <IconButton secondary name='zoomout' onClick={onZoomOut} />
+          */}
         </NoteButtonGroup>
         <SelectedNote
           inputRef={selectedNoteInputRef}
@@ -388,4 +397,4 @@ const Score = ({
   );
 };
 
-export default React.memo(Score);
+export default React.memo(Sheet);

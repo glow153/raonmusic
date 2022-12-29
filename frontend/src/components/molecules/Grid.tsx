@@ -13,6 +13,8 @@ interface Prop {
   length: number;
   height: number;
   padding: number;
+  stageWidth: number;
+  stageHeight: number;
   onClick: (evt: KonvaEventObject<MouseEvent>) => void;
   onDblClickInner: (evt: KonvaEventObject<MouseEvent>) => void;
 }
@@ -24,12 +26,12 @@ const Grid = ({
   length,
   height,
   padding,
+  stageWidth,
+  stageHeight,
   onClick,
   onDblClickInner,
 }: Prop) => {
-  const stageWidth = useMemo(() => pitchLabelSize + height + (length * cellSize) + (padding * 2), [height, length, cellSize, padding]);
-  const stageHeight = useMemo(() => height + (padding * 2), [height, padding]);
-  const innerGridWidth = useMemo(() => height + (length * cellSize), [height, length, cellSize]);
+  const innerGridWidth = useMemo(() => (length * cellSize), [height, length, cellSize]);
   const innerGridHeight = useMemo(() => height, [height]);
   const paddingLeft = useMemo(() => pitchLabelSize + padding, [padding, pitchLabelSize]);
   const highestPitch = useMemo<number>(() => config.highestPitch.code, [config]);
@@ -42,7 +44,7 @@ const Grid = ({
         fill='#f2f2f2'
       />
       <Rect key='lower-padding'
-        x={0} y={stageHeight - padding} width={stageWidth} height={cellSize}
+        x={0} y={stageHeight - padding} width={stageWidth} height={padding}
         fill='#f2f2f2'
       />
       {seq((highestPitch - lowestPitch) + 2).map((n) => {

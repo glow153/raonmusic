@@ -1,4 +1,5 @@
 import styled from 'styled-components';
+import { Colors } from '../../constants/color';
 import { Button, ButtonProp, Icon } from '../atoms';
 
 const ButtonContainer = styled(Button)`
@@ -10,16 +11,20 @@ const ButtonContainer = styled(Button)`
 
 interface Prop extends ButtonProp {
   name: string;
+  color?: string;
+  iconStyle?: any;
 }
 
 const IconButton = ({
   children,
   name,
+  color = Colors.textDefault,
+  iconStyle,
   ...props
 }: Prop) => {
   return (
     <ButtonContainer {...props}>
-      <Icon name={name} />
+      <Icon name={name} style={iconStyle} fill={color} />
     </ButtonContainer>
   );
 };
