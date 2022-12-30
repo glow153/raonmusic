@@ -52,7 +52,7 @@ const LeftLabel = styled.span`
 
 const Home = () => {
   const [lyric, setLyric] = useState<string>();
-  const urlExample = useMemo<string>(() => lyric ? `/score?lyric=${lyric}` : '/score', [lyric]);
+  const urlExample = useMemo<string>(() => lyric ? `/sheet?lyric=${lyric}` : '/sheet', [lyric]);
   const navigate = useNavigate();
 
   const onClick = useCallback(() => {

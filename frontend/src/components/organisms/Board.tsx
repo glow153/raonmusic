@@ -1,5 +1,5 @@
 import { KonvaEventObject } from 'konva/lib/Node';
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import React, { useCallback, useMemo, useState } from 'react';
 import { Layer, Stage } from 'react-konva';
 import styled from 'styled-components';
 import { Colors } from '../../constants/color';
@@ -76,6 +76,7 @@ interface Prop {
   padding?: number;
   stageRef: any;
   selectedNote?: NoteModel;
+  noteSelector?: NoteSelectorModel;
   selectNoteAction: (note?: NoteModel) => void;
   addNoteAction: (note?: NoteModel) => void;
 }
@@ -88,6 +89,7 @@ const Board = ({
   pitchLabelSize = 30,
   stageRef,
   selectedNote,
+  noteSelector,
   selectNoteAction,
   addNoteAction,
 }: Prop) => {
@@ -100,7 +102,6 @@ const Board = ({
   const stageWidth = useMemo<number>(() => pitchLabelSize + (maxDuration * cellSize) + (padding * 2), [config]);
   const stageHeight = useMemo<number>(() => gridHeight + (padding * 2), [config]);
 
-  const [noteSelector, setNoteSelector] = useState<NoteSelectorModel>();
   const [isDragging, setDragging] = useState<boolean>(false);
   const [isStretchingLeft, setStretchingLeft] = useState<boolean>(false);
   const [isStretchingRight, setStretchingRight] = useState<boolean>(false);
@@ -118,16 +119,12 @@ const Board = ({
       if (shapeId.split('-')[1] === 'stretch') {
         setStretchPos(re.evt.offsetX);
         if (shapeId.split('-')[3] === 'left') {
-          console.log('stretching left: fase -> true');
           setStretchingLeft(true);
         } else if (shapeId.split('-')[3] === 'right') {
-          console.log('stretching right: false -> true');
           setStretchingRight(true);
         }
       }
       setDragging(true);
-    } else {
-      setDragging(false);
     }
   };
 
@@ -136,7 +133,6 @@ const Board = ({
     if (selectedNote && noteSelector) {
       if (isStretchingLeft) {
         const diff = noteSelector.x - re.evt.offsetX;
-        console.log(`onCanvasMouseMove: stretching left: offsetX=${re.evt.offsetX}, stretchPos=${stretchPos}, diff=${diff}`);
         if (diff > Math.round(cellSize / 2)) {
           newNote = selectedNote?.longer().goLeft();
           setStretchPos(re.evt.offsetX);
@@ -146,7 +142,6 @@ const Board = ({
         }
       } else if (isStretchingRight) {
         const diff = re.evt.offsetX - noteSelector.right;
-        console.log(`onCanvasMouseMove: stretching right: offsetX=${re.evt.offsetX}, stretchPos=${stretchPos}, diff=${diff}`);
         if (diff > Math.round(cellSize / 2)) {
           newNote = selectedNote?.longer().goLeft();
         } else if (diff < -Math.round(cellSize / 2)) {
@@ -201,12 +196,10 @@ const Board = ({
   const onCanvasMouseUp = useCallback((re: any) => {
     setDragging(false);
     if (isStretchingLeft) {
-      console.log('stretching left: true -> false');
       setStretchingLeft(false);
       setStretchPos(re.evt.offsetX);
     }
     if (isStretchingRight) {
-      console.log('stretching right: true -> false');
       setStretchingRight(false);
       setStretchPos(re.evt.offsetX);
     }
@@ -237,21 +230,6 @@ const Board = ({
     }
 
   }, [notes, highestPitch]);
-
-
-
-  useEffect(() => {
-    if (selectedNote) {
-      setNoteSelector(new NoteSelectorModel(notes, config, selectedNote.index, {
-        cellSize,
-        height: gridHeight,
-        padding,
-        pitchLabelSize
-      }));
-    } else {
-      setNoteSelector(undefined);
-    }
-  }, [selectedNote]);
 
   return (
     <BoardContainer padding={padding} height={gridHeight} scrollbarWidth={10}>

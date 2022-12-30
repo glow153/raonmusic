@@ -8,22 +8,23 @@ export class NoteSelector {
   public get right() { return this.x + this.width; }
   public get bottom() { return this.y + this.height; }
 
-  constructor(notes: Note[], config: Config, noteIndex: number, gridInfo: any) {
-    const note = notes[noteIndex];
+  constructor(notes: Note[], config: Config, selectedNote: Note, gridInfo: any) {
+    console.log('NoteSelector>> notes:', notes, ', config:', config, ', selectedNote:', selectedNote, ', gridInfo:', gridInfo);
     const {
       cellSize: gridCellSize,
-      height: gridHeight,
       padding: gridPadding,
       pitchLabelSize
     } = gridInfo;
-
-    const prev = notes[noteIndex - 1];
+    
+    const prev = notes[selectedNote.index - 1];
     const lowestPitch = config.lowestPitch.code;
-    const relativePitch = (note.isRest ? prev.pitch.code : note.pitch.code) - lowestPitch;
+    const highestPitch = config.highestPitch.code;
+    const gridHeight = ((highestPitch - lowestPitch) + 1) * gridCellSize;
+    const relativePitch = (selectedNote.isRest ? prev.pitch.code : selectedNote.pitch.code) - lowestPitch;
 
-    this.x = pitchLabelSize + gridPadding + note.start * gridCellSize;
+    this.x = pitchLabelSize + gridPadding + selectedNote.start * gridCellSize;
     this.y = gridHeight - ((relativePitch + 1) * gridCellSize - gridPadding);
-    this.width = gridCellSize * note.duration.length;
+    this.width = gridCellSize * selectedNote.duration.length;
     this.height = gridCellSize;
   }
 }

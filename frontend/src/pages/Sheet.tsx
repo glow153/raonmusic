@@ -16,6 +16,7 @@ import { useAudio } from '../hooks';
 import { Config, Tone } from '../model/config';
 import { Duration } from '../model/Duration';
 import { Note } from '../model/Note';
+import { NoteSelector } from '../model/NoteSelector';
 import { Pitch } from '../model/Pitch';
 import { Song } from '../model/Song';
 import { isNumber, isString } from '../util';
@@ -117,26 +118,31 @@ const adjustNotes = (notes: Note[]) => {
   return notes;
 };
 
-const Sheet = ({
-  cellSize: _cellSize = 30,
-}) => {
+const Sheet = () => {
   const params = useParams();
   const location = useLocation();
+
   const _song = initSong(params, location);
   const [song, setSong] = useState<Song>(_song);
   const [notes, setNotes] = useState<Note[]>(_song.notes);
   const [config, setConfig] = useState<Config>(_song.config);
   const [selectedNote, selectNote] = useState<Note>();
-  const [cellSize, setCellSize] = useState<number>(_cellSize);
+
+  const [cellSize, setCellSize] = useState<number>(30);
+  const [gridPadding, setGridPadding] = useState<number>(16);
+  const [pitchLabelSize, setPitchLabelSize] = useState<number>(30);
+
   const [addNote, setAddNote] = useState<Note>();
   const [changedNote, setChangedNote] = useState<Note>();
   const [deleteNote, setDeleteNote] = useState<Note>();
+
   const selectedPitch = useMemo<Pitch | undefined>(() => selectedNote?.pitch, [selectedNote]);
   const selectedDuration = useMemo<Duration | undefined>(() => selectedNote?.duration, [selectedNote]);
   const language = useMemo<string>(() => config.lang ?? 'ko', [config]);
   const lowestPitch = useMemo<number>(() => config.lowestPitch.code, [config]);
   const highestPitch = useMemo<number>(() => config.highestPitch.code, [config]);
-  
+
+  const [noteSelector, setNoteSelector] = useState<NoteSelector>();
   const [isMusicLoading, setMusicLoading] = useState<boolean>();
   const [isMusicReady, setMusicReady] = useState<boolean>();
   const [audioUri, setAudioUri] = useState<string>();
@@ -145,6 +151,7 @@ const Sheet = ({
   const stageRef = useRef<any>();
   const [isPlaying, togglePlaying] = useAudio(audioSrc);
 
+  //#region useCallbacks
   const onClickRefresh = useCallback(() => {
     console.log('refresh');
     selectNote(undefined);
@@ -237,15 +244,23 @@ const Sheet = ({
   const onZoomOut = useCallback(() => {
     setCellSize(cellSize - 10);
   }, [cellSize]);
-  
+  //#endregion
 
-  // dhpark: USEEFFECT -----------------------------------------
+  // #region useEffects
   // 1. selecting note
   useEffect(() => {
     if (selectedNote) {
       notes.splice(selectedNote.index, 1, selectedNote);
-      setNotes([...adjustNotes(notes)]);
+      const newNotes = [...adjustNotes(notes)];
+      setNotes(newNotes);
+      setNoteSelector(new NoteSelector(newNotes, config, selectedNote, {
+        cellSize: cellSize,
+        padding: gridPadding,
+        pitchLabelSize: pitchLabelSize,
+      }));
       selectedNoteInputRef.current?.focus();
+    } else {
+      setNoteSelector(undefined);
     }
   }, [selectedNote]);
 
@@ -284,6 +299,7 @@ const Sheet = ({
     console.log(notes);
     setSong(new Song(notes, config));
   }, [notes, config]);
+  //#endregion
 
   return (
     <AnimatedPage>
@@ -340,6 +356,7 @@ const Sheet = ({
         stageRef={stageRef}
         cellSize={cellSize}
         selectedNote={selectedNote}
+        noteSelector={noteSelector}
         selectNoteAction={selectNote}
         addNoteAction={setAddNote}
       />
