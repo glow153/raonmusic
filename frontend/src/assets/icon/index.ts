@@ -1,3 +1,4 @@
+import IcEmpty from './empty.svg';
 import IcHome from './home.svg';
 import IcMinus from './minus.svg';
 import IcPause from './pause.svg';
@@ -10,6 +11,7 @@ import IcZoomOut from './zoomout.svg';
 
 type t = {
   [index: string]: any;
+  empty: any;
   home: any;
   refresh: any;
   plus: any;
@@ -22,6 +24,7 @@ type t = {
 }
 
 const m: t = {
+  empty: IcEmpty,
   home: IcHome,
   refresh: IcRefresh,
   plus: IcPlus,

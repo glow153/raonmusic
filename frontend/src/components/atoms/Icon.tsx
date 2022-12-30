@@ -20,7 +20,7 @@ const Icon = ({
   width: _width,
   height: _height,
 }: Prop) => {
-  const IconComp = Icons[name];
+  const IconComp = Icons?.[name] ?? Icons['empty'];
   const width = _width ?? size;
   const height = _height ?? size;
   const sizeProps = {

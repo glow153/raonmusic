@@ -10,6 +10,7 @@ export const Colors = {
   
   gray: '#e8e8e8',
   grayHover: '#f0f0f0',
+  darker: '#d0d0d0',
   strong: '#e6ac30',
   strongHover: '#f2c86d',
   

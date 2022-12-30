@@ -9,7 +9,7 @@ export class NoteSelector {
   public get bottom() { return this.y + this.height; }
 
   constructor(notes: Note[], config: Config, selectedNote: Note, gridInfo: any) {
-    console.log('NoteSelector>> notes:', notes, ', config:', config, ', selectedNote:', selectedNote, ', gridInfo:', gridInfo);
+    // console.log('NoteSelector>> notes:', notes, ', config:', config, ', selectedNote:', selectedNote, ', gridInfo:', gridInfo);
     const {
       cellSize: gridCellSize,
       padding: gridPadding,
@@ -26,5 +26,9 @@ export class NoteSelector {
     this.y = gridHeight - ((relativePitch + 1) * gridCellSize - gridPadding);
     this.width = gridCellSize * selectedNote.duration.length;
     this.height = gridCellSize;
+  }
+
+  public get obj() {
+    return JSON.stringify({x: this.x, y: this.y, width: this.width, height: this.height});
   }
 }

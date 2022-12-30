@@ -114,7 +114,9 @@ const adjustNotes = (notes: Note[]) => {
   }
 
   // 3. reset index of last note
-  notes[notes.length - 1].index = notes.length - 1;
+  if (notes[notes.length - 1]) {
+    notes[notes.length - 1].index = notes.length - 1;
+  }
   return notes;
 };
 
@@ -129,7 +131,7 @@ const Sheet = () => {
   const [selectedNote, selectNote] = useState<Note>();
 
   const [cellSize, setCellSize] = useState<number>(30);
-  const [gridPadding, setGridPadding] = useState<number>(16);
+  const [gridPadding, setGridPadding] = useState<number>(20);
   const [pitchLabelSize, setPitchLabelSize] = useState<number>(30);
 
   const [addNote, setAddNote] = useState<Note>();
@@ -152,6 +154,9 @@ const Sheet = () => {
   const [isPlaying, togglePlaying] = useAudio(audioSrc);
 
   //#region useCallbacks
+  /**
+   * refresh 버튼 클릭시 호출되는 callback function입니다.
+   */
   const onClickRefresh = useCallback(() => {
     console.log('refresh');
     selectNote(undefined);
@@ -160,6 +165,9 @@ const Sheet = () => {
     setNotes([..._song.notes]);
   }, [_song, notes]);
 
+  /**
+   * '+' 버튼 클릭시 호출되는 callback function입니다.
+   */
   const onClickAdd = useCallback(() => {
     if (selectedNote) {
       const newNote = selectedNote.copy();
@@ -168,12 +176,18 @@ const Sheet = () => {
     }
   }, [selectedNote]);
 
+  /**
+   * '-' 버튼 클릭시 호출되는 callback function입니다.
+   */
   const onClickRemove = useCallback(() => {
     if (selectedNote) {
       setDeleteNote(selectedNote);
     }
   }, [selectedNote, notes]);
 
+  /**
+   * 피치 슬라이드
+   */
   const onChangePitch = useCallback((evt: any) => {
     const val = parseInt(evt.target.value);
     if (selectedNote && isNumber(val)) {
@@ -246,6 +260,8 @@ const Sheet = () => {
   }, [cellSize]);
   //#endregion
 
+
+
   // #region useEffects
   // 1. selecting note
   useEffect(() => {
@@ -260,6 +276,7 @@ const Sheet = () => {
       }));
       selectedNoteInputRef.current?.focus();
     } else {
+      setNotes([...adjustNotes(notes)]);
       setNoteSelector(undefined);
     }
   }, [selectedNote]);
@@ -274,23 +291,11 @@ const Sheet = () => {
     }
   }, [addNote]);
 
-  // 3. changing note
-  useEffect(() => {
-    if (changedNote) {
-      console.log('change Note:', changedNote);
-      notes.splice(changedNote.index, 1, changedNote);      
-      selectNote(changedNote);
-      setChangedNote(undefined);
-    }
-  }, [changedNote]);
-
+  // 3. delete note
   useEffect(() => {
     if (deleteNote) {
-      const index = notes.findIndex(n => n.equals(deleteNote));
-      if (index >= 0) {
-        notes.splice(index, 1);
-      }
-      selectNote(notes[index]);
+      notes.splice(deleteNote.index, 1);
+      selectNote(notes[deleteNote.index - 1]);
       setDeleteNote(undefined);
     }
   }, [deleteNote]);
@@ -300,6 +305,8 @@ const Sheet = () => {
     setSong(new Song(notes, config));
   }, [notes, config]);
   //#endregion
+
+
 
   return (
     <AnimatedPage>
@@ -355,10 +362,13 @@ const Sheet = () => {
         config={config}
         stageRef={stageRef}
         cellSize={cellSize}
+        gridPadding={gridPadding}
+        pitchLabelSize={pitchLabelSize}
         selectedNote={selectedNote}
         noteSelector={noteSelector}
         selectNoteAction={selectNote}
         addNoteAction={setAddNote}
+        changeNoteAction={setChangedNote}
       />
       
       <Section marginTop={30} spaceBetween>
@@ -409,6 +419,9 @@ const Sheet = () => {
             }}
           />
         ) : null}
+      </Section>
+      <Section>
+        <p>⚠️ 곡의 길이가 10초 이상인 경우 정상적으로 생성되지 않을 수 있습니다.</p>
       </Section>
     </AnimatedPage>
   );
