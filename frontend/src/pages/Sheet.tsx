@@ -114,7 +114,9 @@ const adjustNotes = (notes: Note[]) => {
   }
 
   // 3. reset index of last note
-  notes[notes.length - 1].index = notes.length - 1;
+  if (notes[notes.length - 1]) {
+    notes[notes.length - 1].index = notes.length - 1;
+  }
   return notes;
 };
 

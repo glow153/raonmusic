@@ -79,7 +79,7 @@ export class Note {
     if (obj.pitch === -2) {
       return new Note(
         index ?? 0,
-        obj.phoneme,
+        '',
         Pitch.fromCode(obj.pitch),
         Duration.fromLength(obj.duration),
         obj.start ?? 0,

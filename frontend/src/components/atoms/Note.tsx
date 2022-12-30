@@ -86,7 +86,7 @@ const Note = ({
           ? (isHover ? Colors.grayHover : Colors.gray)
           : (isHover ? Colors.primaryHover : Colors.primary)
         }
-        stroke={Colors.strong} strokeWidth={0.75}
+        stroke={note.isRest ? Colors.darker : Colors.strong} strokeWidth={0.75}
       />
       <Text id={`${id}-txt`} x={x} y={y} width={width} height={height}
         align='center' verticalAlign='middle'

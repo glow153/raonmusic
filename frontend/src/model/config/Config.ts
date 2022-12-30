@@ -1,6 +1,9 @@
 import { Key, Tempo, Time } from ".";
 import { Pitch } from "../Pitch";
 
+const DEFAULT_LOWEST_PITCH = 24;
+const DEFAULT_HIGHEST_PITCH = 36;
+
 interface ConfigParam {
   lyric?: string;
   tempo?: Tempo;
@@ -46,8 +49,8 @@ export class Config {
     this.time = time ?? new Time();
     this.measures = measures ?? 4;
     this.lang = lang ?? 'ko';
-    this.lowestPitch = lowestPitch ?? Pitch.fromCode(24); // C2
-    this.highestPitch = highestPitch ?? Pitch.fromCode(36); // C3
+    this.lowestPitch = lowestPitch ?? Pitch.fromCode(DEFAULT_LOWEST_PITCH); // C2
+    this.highestPitch = highestPitch ?? Pitch.fromCode(DEFAULT_HIGHEST_PITCH); // C3
   }
 
   public static fromJson(config: any) {
@@ -58,8 +61,8 @@ export class Config {
       key: Key.fromJson(config.key),
       time: Time.fromJson(config.time),
       lang: config.lang,
-      lowestPitch: Pitch.fromCode(config['lowestPitch'] ?? 24),
-      highestPitch: Pitch.fromCode(config['highestPitch'] ?? 36),
+      lowestPitch: Pitch.fromCode(config['lowestPitch'] ?? DEFAULT_LOWEST_PITCH),
+      highestPitch: Pitch.fromCode(config['highestPitch'] ?? DEFAULT_HIGHEST_PITCH),
     });
   }
 
