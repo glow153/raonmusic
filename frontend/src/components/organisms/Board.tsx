@@ -11,16 +11,16 @@ import { NoteSelector } from '../molecules';
 import Grid from '../molecules/Grid';
 
 interface BoardContainerProp {
-  padding: number;
+  width: number;
   height: number;
   scrollbarWidth: number;
 }
 const BoardContainer = styled.div<BoardContainerProp>`
   margin-top: 25px;
-  max-width: 1000px;
-  height: ${p => p.height + (p.padding * 2) + p.scrollbarWidth}px;
+  max-width: ${p => p.width}px;
+  height: ${p => p.height + p.scrollbarWidth}px;
   overflow: scroll;
-  border: 1px solid #dfdfdf;
+  border: 1px solid #dedede;
   border-radius: ${p => p.scrollbarWidth}px;
   &::-webkit-scrollbar {
     width: ${p => p.scrollbarWidth}px;
@@ -41,6 +41,7 @@ const getIndexFromNoteId = (noteId: string) => {
 }
 
 const getIndexFromStartPos = (notes: NoteModel[], config: Config, startPos: number): number => {
+  const songLength = notes.map(n => n.duration?.length ?? 0).reduce((d1, d2) => d1 + d2, 0);
   if (notes.length > 0) {
     // 1. 맨 앞
     if (startPos < notes[0].start) {
@@ -57,8 +58,9 @@ const getIndexFromStartPos = (notes: NoteModel[], config: Config, startPos: numb
     }
 
     // 3. 맨 끝
-    if (startPos <= config.maxDuration) {
-      return notes.length;
+    // console.log(`getIndexFromStartPos>> startPos:${startPos}, songLength:${songLength}`);
+    if (songLength <= startPos && startPos <= config.maxDuration) {
+      return notes.length; // 맨 끝에 새로 추가
     } else {
       return -1;
     }
@@ -71,9 +73,11 @@ const getIndexFromStartPos = (notes: NoteModel[], config: Config, startPos: numb
 interface Prop {
   notes: NoteModel[];
   config: Config;
-  cellSize?: number;
-  pitchLabelSize?: number;
-  padding?: number;
+  canvasWidth?: number;
+  canvasHeight?: number;
+  cellSize: number;
+  gridPadding: number;
+  pitchLabelSize: number;
   stageRef: any;
   selectedNote?: NoteModel;
   noteSelector?: NoteSelectorModel;
@@ -85,9 +89,11 @@ interface Prop {
 const Board = ({
   notes,
   config,
-  cellSize = 30,
-  padding = 16,
-  pitchLabelSize = 30,
+  canvasWidth = 1000,
+  canvasHeight: _canvasHeight,
+  cellSize,
+  gridPadding,
+  pitchLabelSize,
   stageRef,
   selectedNote,
   noteSelector,
@@ -95,15 +101,18 @@ const Board = ({
   addNoteAction,
   changeNoteAction,
 }: Prop) => {
-  const selectedNoteIndex = useMemo<number | undefined>(() => selectedNote?.index, [selectedNote]);
   const maxDuration = useMemo<number>(() => config.maxDuration, [config]);
   const language = useMemo<string>(() => config.lang, [config]);
   const highestPitch = useMemo<number>(() => config.highestPitch.code, [config]);
   const lowestPitch = useMemo<number>(() => config.lowestPitch.code, [config]);
-  const gridHeight = useMemo<number>(() => ((highestPitch - lowestPitch) + 1) * cellSize, [config]);
-  const stageWidth = useMemo<number>(() => pitchLabelSize + (maxDuration * cellSize) + (padding * 2), [config]);
-  const stageHeight = useMemo<number>(() => gridHeight + (padding * 2), [config]);
+  
+  const gridHeight = useMemo<number>(() => ((highestPitch - lowestPitch) + 1) * cellSize, [config, cellSize]);
+  const stageWidth = useMemo<number>(() => pitchLabelSize + (maxDuration * cellSize) + (gridPadding * 2), [config, pitchLabelSize, cellSize]);
+  const stageHeight = useMemo<number>(() => gridHeight + (gridPadding * 2), [config, gridPadding]);
+  const [canvasHeight, setCanvasHeight] = useState<number>(_canvasHeight ?? stageHeight);
+  
   const threshold = useMemo<number>(() => Math.round(cellSize / 2), [cellSize]);
+  const paddingLeft = useMemo<number>(() => pitchLabelSize + gridPadding, [pitchLabelSize, gridPadding]);
 
   const [isDragging, setDragging] = useState<boolean>(false);
   const [isStretchingLeft, setStretchingLeft] = useState<boolean>(false);
@@ -115,7 +124,7 @@ const Board = ({
    */
   const onCanvasMouseDown = useCallback((ke: KonvaEventObject<MouseEvent>) => {
     const attr = ke.target.attrs;
-    console.log('onClickCanvas> re:', ke, ', attr:', attr);
+    // console.log('onClickCanvas> ke:', ke, ', attr:', attr);
     const shapeId = attr.id;
     if (shapeId?.startsWith('note-')) {
       // 1. 클릭한 shape가 note인 경우
@@ -130,8 +139,9 @@ const Board = ({
         } else if (shapeId.split('-')[3] === 'right') {
           setStretchingRight(true);
         }
+      } else {
+        setDragging(true);
       }
-      setDragging(true);
     }
   }, [notes]);
 
@@ -140,35 +150,59 @@ const Board = ({
    * @param ke {KonvaEventObject<MouseEvent>} konva mouse event
    */
   const onCanvasMouseMove = useCallback((ke: KonvaEventObject<MouseEvent>) => {
-    if (isDragging && selectedNote && noteSelector) { // 드래그 중인 경우
+    if (selectedNote && noteSelector) { // 드래그 중인 경우
       let newNote = selectedNote;
-      const {x, y, width: w, height: h, right, bottom} = noteSelector;
+      const {x: left, y: top, right, bottom} = noteSelector;
       const {offsetX, offsetY} = ke.evt;
-      console.log(`onCanvasMouseMove>>>>>> noteSelector:${noteSelector.obj} , offsetX:${offsetX}`);
-
+      
       if (isStretchingLeft) {
         // 1. 왼쪽 핸들을 늘리고 있는 경우
-        const diff = x - offsetX;
+        const diff = left - offsetX;
+        const prevNote = notes[newNote.index - 1];
+        const prevEnd = (prevNote ? (prevNote.end + 1) * cellSize : 0) + paddingLeft;
+        console.log(`is stretching left: prevEnd:${prevEnd}, x:${left}, offsetX:${offsetX}`);
+
         if (diff > threshold) {
-          newNote = newNote.longer().goLeft();
+          // 1.1 왼쪽 핸들을 왼쪽 방향으로 (늘어남)
+          if (prevEnd < offsetX) {
+            newNote = newNote.longer().goLeft();
+          } else {
+            // 이전 노트나 곡 맨 앞에 막혔다면 무시
+          }
         } else if (diff < -threshold) {
-          newNote = newNote.shorter().goRight();
+          // 1.2 왼쪽 핸들을 오른쪽 방향으로 (줄어듬)
+          if (newNote.duration.length > 1) {
+            newNote = newNote.shorter().goRight();
+          } else {
+            // 노트의 길이가 최소길이라면 무시
+          }
         }
       } else if (isStretchingRight) {
         // 2. 오른쪽 핸들을 늘리고 있는 경우
         const diff = offsetX - right;
+        const nextNote = notes[newNote.index + 1];
+        const nextStart = nextNote?.start ?? stageWidth;
+        console.log(`is stretching right: x:${left}, offsetX:${offsetX}, nextStart:${nextStart}`);
+
         if (diff > threshold) {
-          newNote = newNote.longer().goLeft();
+          // 2.1 오른쪽 핸들을 오른쪽 방향으로 (늘어남)
+          newNote = newNote.longer();
         } else if (diff < -threshold) {
-          newNote = newNote.shorter();
+          // 2.1 오른쪽 핸들을 왼쪽 방향으로 (줄어듬)
+          if (newNote.duration.length > 1) {
+            newNote = newNote.shorter();
+          } else {
+            // 노트의 길이가 최소길이라면 무시
+          }
         }
-      } else {
-        // 3. note를 움직이는 경우
+      } else if (isDragging) {
+        // 3. note를 드래그하여 움직이는 경우
         if (0 < offsetY && offsetY < stageHeight) {
+          console.log(`is dragging: noteSelector:${noteSelector.obj}, offsetY:${offsetY}`);
           // 3.1 Y축 이동 -> pitch
-          if (y - offsetY > 0) {
+          if (top - offsetY > 0) {
             // 3.1.1 pitch up
-            if (y - offsetY > threshold) {
+            if (top - offsetY > threshold) {
               newNote = newNote.higher();
             }
           } else if (offsetY - bottom > 0) {
@@ -181,10 +215,11 @@ const Board = ({
   
         // 3.2 X축 이동 -> start position
         if (0 < offsetX && offsetX < stageWidth) {
-          if (x - offsetX > 0 && newNote.index >= 0) {
+          console.log(`is dragging: noteSelector:${noteSelector.obj}, offsetX:${offsetX}`);
+          if (left - offsetX > 0 && newNote.index >= 0) {
             // 3.2.1 go left
             const prevNote = notes[newNote.index - 1];
-            if (x - offsetX > threshold && (prevNote?.end ?? 0) < newNote.start) {
+            if (left - offsetX > threshold && (prevNote?.end ?? 0) < newNote.start) {
               newNote = newNote.goLeft();
             }
           } else if (offsetX - right > 0 && newNote.index < notes.length) {
@@ -198,7 +233,7 @@ const Board = ({
       }
       selectNoteAction(newNote);
     }
-  }, [isStretchingLeft, isStretchingRight, selectedNote, isDragging, noteSelector, stageWidth]);
+  }, [isStretchingLeft, isStretchingRight, selectedNote, isDragging, noteSelector, stageWidth, stageHeight, notes]);
 
   /**
    * 캔버스에서 마우스 클릭을 뗀 경우 호출되는 callback function입니다.
@@ -230,8 +265,8 @@ const Board = ({
   const onDblClickInnerGrid = useCallback((ke: KonvaEventObject<MouseEvent>) => {
     const startPos = Math.floor((ke.evt.offsetX - ke.target.attrs.x) / cellSize);
     const pitch = highestPitch - Math.floor((ke.evt.offsetY - ke.target.attrs.y) / cellSize);
-    console.log(`dbl click: startPos=${startPos}, pitch=${pitch}`);
     const index = getIndexFromStartPos(notes, config, startPos);
+    console.log(`dbl click: startPos=${startPos}, pitch=${pitch}, index=${index}`);
 
     if (index >= 0) {
       if (notes.length > 0) {
@@ -242,10 +277,10 @@ const Board = ({
       }
     }
 
-  }, [notes, highestPitch]);
+  }, [notes, cellSize, highestPitch]);
 
   return (
-    <BoardContainer padding={padding} height={gridHeight} scrollbarWidth={10}>
+    <BoardContainer width={canvasWidth} height={canvasHeight} scrollbarWidth={10}>
       <Stage width={stageWidth} height={stageHeight} ref={stageRef}
         onMouseDown={onCanvasMouseDown}
         onMouseMove={onCanvasMouseMove}
@@ -256,7 +291,7 @@ const Board = ({
             config={config}
             cellSize={cellSize}
             pitchLabelSize={pitchLabelSize}
-            padding={padding}
+            padding={gridPadding}
             length={maxDuration}
             height={gridHeight}
             stageWidth={stageWidth}
@@ -269,11 +304,11 @@ const Board = ({
             return (
               <Note id={`note-${i}`} key={`note-${i}`}
                 note={note}
-                gridInfo={{ cellSize, height: gridHeight, padding, pitchLabelSize }}
+                gridInfo={{ cellSize, height: gridHeight, padding: gridPadding, pitchLabelSize }}
                 start={note.start}
                 prevPitch={note.isRest ? prevPitch : undefined}
                 lowestPitch={lowestPitch}
-                isSelected={i === selectedNoteIndex}
+                isSelected={i === selectedNote?.index}
                 language={language}
                 onSelect={selectNoteAction}
               />

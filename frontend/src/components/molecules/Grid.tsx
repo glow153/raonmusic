@@ -59,7 +59,7 @@ const Grid = ({
               x={0} y={padding}
               points={[0, dy, stageWidth, dy]}
               stroke={isOctave ? Colors.strong : Colors.primary}
-              strokeWidth={isOctave ? 2 : 1}
+              strokeWidth={isOctave ? 3 : 0.5}
             />
             {currentPitch.isBlack ? ( // black note
               <Rect
@@ -81,15 +81,15 @@ const Grid = ({
       })}
       {seq(length + 1).map((n, i) => {
         const dx = n * cellSize;
-        const isMeasure = i % 32 === 0;
-        const isHalfMeasure = i % 16 === 0;
+        const isMeasure = i % config.time.lengthPerMeasure === 0;
+        const isHalfMeasure = i % Math.round(config.time.lengthPerMeasure / 2) === 0;
         return (
           <Fragment key={`vfrg-${i}`}>
             <Line key={`vline-${i}`}    // 세로선
               x={paddingLeft} y={0}
               points={[dx, 0, dx, stageHeight]}
-              stroke={(isMeasure || isHalfMeasure) ? Colors.strong : Colors.primary}
-              strokeWidth={isMeasure ? 3 : isHalfMeasure ? 2 : 1}
+              stroke={isMeasure ? Colors.strong : isHalfMeasure ? Colors.primary + '70' : Colors.primary}
+              strokeWidth={(isMeasure || isHalfMeasure) ? 3 : 0.5}
             />
             {/* {(n%2 === 0 && n !== length)? ( // dhpark: stripe
               <Rect
