@@ -15,8 +15,8 @@ interface Prop {
   padding: number;
   stageWidth: number;
   stageHeight: number;
-  onClick: (evt: KonvaEventObject<MouseEvent>) => void;
-  onDblClickInner: (evt: KonvaEventObject<MouseEvent>) => void;
+  onClick: (ke: KonvaEventObject<MouseEvent>) => void;
+  onDblClickInner: (ke: KonvaEventObject<MouseEvent>) => void;
 }
 
 const Grid = ({
@@ -49,7 +49,7 @@ const Grid = ({
       />
       {seq((highestPitch - lowestPitch) + 2).map((n) => {
         const dy = n * cellSize;
-        const currentPitch = Pitch.fromCode(highestPitch - n);
+        const currentPitch = Pitch.fromCode(highestPitch - n, config.key.pitch.mode);
         const isOctave = (currentPitch.code % 12) === ((config.key.pitch.code - 1) % 12);
         const isOctaveLabel = (currentPitch.code % 12) === (config.key.pitch.code % 12);
 
@@ -73,7 +73,7 @@ const Grid = ({
                 x={5} y={padding + dy} width={pitchLabelSize} height={cellSize}
                 align='left' verticalAlign='middle' fontFamily='Noto Sans KR'
                 fontSize={20} fontStyle={isOctaveLabel ? 'bolder' : undefined}
-                text={Pitch.fromCode(highestPitch - n).shorterName}
+                text={isOctaveLabel ? currentPitch.name : currentPitch.shorterName}
               />
             ) : null}
           </Fragment>

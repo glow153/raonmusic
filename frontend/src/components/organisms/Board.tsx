@@ -79,6 +79,7 @@ interface Prop {
   noteSelector?: NoteSelectorModel;
   selectNoteAction: (note?: NoteModel) => void;
   addNoteAction: (note?: NoteModel) => void;
+  changeNoteAction: (note?: NoteModel) => void;
 }
 
 const Board = ({
@@ -92,6 +93,7 @@ const Board = ({
   noteSelector,
   selectNoteAction,
   addNoteAction,
+  changeNoteAction,
 }: Prop) => {
   const selectedNoteIndex = useMemo<number | undefined>(() => selectedNote?.index, [selectedNote]);
   const maxDuration = useMemo<number>(() => config.maxDuration, [config]);
@@ -101,23 +103,28 @@ const Board = ({
   const gridHeight = useMemo<number>(() => ((highestPitch - lowestPitch) + 1) * cellSize, [config]);
   const stageWidth = useMemo<number>(() => pitchLabelSize + (maxDuration * cellSize) + (padding * 2), [config]);
   const stageHeight = useMemo<number>(() => gridHeight + (padding * 2), [config]);
+  const threshold = useMemo<number>(() => Math.round(cellSize / 2), [cellSize]);
 
   const [isDragging, setDragging] = useState<boolean>(false);
   const [isStretchingLeft, setStretchingLeft] = useState<boolean>(false);
   const [isStretchingRight, setStretchingRight] = useState<boolean>(false);
-  const [stretchPos, setStretchPos] = useState<number>(0);
 
-  const onCanvasMouseDown = (re: KonvaEventObject<MouseEvent>) => {
-    const attr = re.target.attrs;
-    console.log('onClickCanvas> re:', re, ', attr:', attr);
+  /**
+   * 캔버스에서 마우스를 클릭한 경우 호출되는 callback function입니다.
+   * @param ke {KonvaEventObject<MouseEvent>} konva mouse event
+   */
+  const onCanvasMouseDown = useCallback((ke: KonvaEventObject<MouseEvent>) => {
+    const attr = ke.target.attrs;
+    console.log('onClickCanvas> re:', ke, ', attr:', attr);
     const shapeId = attr.id;
     if (shapeId?.startsWith('note-')) {
+      // 1. 클릭한 shape가 note인 경우
       const index = getIndexFromNoteId(shapeId);
       selectNoteAction(notes[index]);
       setDragging(true);
     } else if (shapeId?.startsWith('noteselector')) {
+      // 2. 클릭한 shape가 note selector인 경우
       if (shapeId.split('-')[1] === 'stretch') {
-        setStretchPos(re.evt.offsetX);
         if (shapeId.split('-')[3] === 'left') {
           setStretchingLeft(true);
         } else if (shapeId.split('-')[3] === 'right') {
@@ -126,97 +133,103 @@ const Board = ({
       }
       setDragging(true);
     }
-  };
+  }, [notes]);
 
-  const onCanvasMouseMove = useCallback((re: KonvaEventObject<MouseEvent>) => {
-    let newNote;
-    if (selectedNote && noteSelector) {
+  /**
+   * 캔버스에서 마우스를 움직이는 경우 호출되는 callback function입니다.
+   * @param ke {KonvaEventObject<MouseEvent>} konva mouse event
+   */
+  const onCanvasMouseMove = useCallback((ke: KonvaEventObject<MouseEvent>) => {
+    if (isDragging && selectedNote && noteSelector) { // 드래그 중인 경우
+      let newNote = selectedNote;
+      const {x, y, width: w, height: h, right, bottom} = noteSelector;
+      const {offsetX, offsetY} = ke.evt;
+      console.log(`onCanvasMouseMove>>>>>> noteSelector:${noteSelector.obj} , offsetX:${offsetX}`);
+
       if (isStretchingLeft) {
-        const diff = noteSelector.x - re.evt.offsetX;
-        if (diff > Math.round(cellSize / 2)) {
-          newNote = selectedNote?.longer().goLeft();
-          setStretchPos(re.evt.offsetX);
-        } else if (diff < -Math.round(cellSize / 2)) {
-          newNote = selectedNote?.shorter().goRight();
-          setStretchPos(re.evt.offsetX);
+        // 1. 왼쪽 핸들을 늘리고 있는 경우
+        const diff = x - offsetX;
+        if (diff > threshold) {
+          newNote = newNote.longer().goLeft();
+        } else if (diff < -threshold) {
+          newNote = newNote.shorter().goRight();
         }
       } else if (isStretchingRight) {
-        const diff = re.evt.offsetX - noteSelector.right;
-        if (diff > Math.round(cellSize / 2)) {
-          newNote = selectedNote?.longer().goLeft();
-        } else if (diff < -Math.round(cellSize / 2)) {
-          newNote = selectedNote?.shorter();
-          setStretchPos(re.evt.offsetX);
+        // 2. 오른쪽 핸들을 늘리고 있는 경우
+        const diff = offsetX - right;
+        if (diff > threshold) {
+          newNote = newNote.longer().goLeft();
+        } else if (diff < -threshold) {
+          newNote = newNote.shorter();
         }
-      } else if (isDragging) {
-        const {x, y, width: w, height: h} = noteSelector;
-        
-        const {offsetX, offsetY} = re.evt;
-  
-        // 1. Y축 이동 -> pitch
+      } else {
+        // 3. note를 움직이는 경우
         if (0 < offsetY && offsetY < stageHeight) {
+          // 3.1 Y축 이동 -> pitch
           if (y - offsetY > 0) {
-            // 1.1 pitch up
-            if (y - offsetY > Math.round(h / 2)) {
-              newNote = selectedNote.higher();
+            // 3.1.1 pitch up
+            if (y - offsetY > threshold) {
+              newNote = newNote.higher();
             }
-          } else if (offsetY - (y + h) > 0) {
-            // 1.2 pitch down
-            if (offsetY - (y + h) > Math.round(h / 2)) {
-              newNote = selectedNote.lower();
+          } else if (offsetY - bottom > 0) {
+            // 3.1.2 pitch down
+            if (offsetY - bottom > threshold) {
+              newNote = newNote.lower();
             }
           }
         }
   
-        // 2. X축 이동 -> start position
-        // TODO: bug fix 필요
+        // 3.2 X축 이동 -> start position
         if (0 < offsetX && offsetX < stageWidth) {
-          if (x - offsetX > 0 && selectedNote.index > 0) {
-            // 2.1 go left
-            const prevNote = notes[selectedNote.index - 1];
-            if (x - offsetX > Math.round(cellSize / 2) && prevNote.end + 1 < selectedNote.start) {
-              newNote = selectedNote.goLeft();
+          if (x - offsetX > 0 && newNote.index >= 0) {
+            // 3.2.1 go left
+            const prevNote = notes[newNote.index - 1];
+            if (x - offsetX > threshold && (prevNote?.end ?? 0) < newNote.start) {
+              newNote = newNote.goLeft();
             }
-          } else if (offsetX - (x + w) > 0 && selectedNote.index < notes.length - 1) {
-            // 2.2 go right
-            const nextNote = notes[selectedNote.index + 1];
-            if (offsetX - (x + w) > Math.round(cellSize / 2) && selectedNote.end + 1 < nextNote.end) {
-              newNote = selectedNote.goRight();
+          } else if (offsetX - right > 0 && newNote.index < notes.length) {
+            // 3.2.2 go right
+            const nextNote = notes[newNote.index + 1];
+            if (offsetX - right > threshold && newNote.end < (nextNote?.end ?? config.maxDuration)) {
+              newNote = newNote.goRight();
             }
           }
         }
       }
-    }
-    
-    if(newNote) {
       selectNoteAction(newNote);
     }
-  }, [isStretchingLeft, isStretchingRight, stretchPos, selectedNote, isDragging, noteSelector, stageWidth]);
+  }, [isStretchingLeft, isStretchingRight, selectedNote, isDragging, noteSelector, stageWidth]);
 
-  const onCanvasMouseUp = useCallback((re: any) => {
+  /**
+   * 캔버스에서 마우스 클릭을 뗀 경우 호출되는 callback function입니다.
+   * @param ke {KonvaEventObject<MouseEvent>} konva mouse event
+   */
+  const onCanvasMouseUp = useCallback((ke: any) => {
     setDragging(false);
     if (isStretchingLeft) {
       setStretchingLeft(false);
-      setStretchPos(re.evt.offsetX);
     }
     if (isStretchingRight) {
       setStretchingRight(false);
-      setStretchPos(re.evt.offsetX);
     }
   }, [isStretchingLeft, isStretchingRight]);
   
-  const onClickGrid = useCallback((evt: any) => {
+  /**
+   * 캔버스에서 grid(노트가 아닌 여백)를 클릭한 경우 호출되는 callback function입니다.
+   * @param ke {KonvaEventObject<MouseEvent>} konva mouse event
+   */
+  const onClickGrid = useCallback((ke: any) => {
     // console.log('onClickGrid> evt:', evt);
     selectNoteAction(undefined);
   }, []);
   
   /**
    * board를 더블클릭시 노트를 추가하는 작업을 수행합니다
-   * @param re {KonvaEventObject<MouseEvent>} konva mouse event
+   * @param ke {KonvaEventObject<MouseEvent>} konva mouse event
    */
-  const onDblClickInnerGrid = useCallback((re: KonvaEventObject<MouseEvent>) => {
-    const startPos = Math.floor((re.evt.offsetX - re.target.attrs.x) / cellSize);
-    const pitch = highestPitch - Math.floor((re.evt.offsetY - re.target.attrs.y) / cellSize);
+  const onDblClickInnerGrid = useCallback((ke: KonvaEventObject<MouseEvent>) => {
+    const startPos = Math.floor((ke.evt.offsetX - ke.target.attrs.x) / cellSize);
+    const pitch = highestPitch - Math.floor((ke.evt.offsetY - ke.target.attrs.y) / cellSize);
     console.log(`dbl click: startPos=${startPos}, pitch=${pitch}`);
     const index = getIndexFromStartPos(notes, config, startPos);
 
