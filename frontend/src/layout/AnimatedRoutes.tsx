@@ -9,7 +9,7 @@ const AnimatedRoutes = () => {
     <Routes key={location.pathname} location={location}>
       <Route path='/' element={<Home />} />
       <Route path='/about' element={<About />} />
-      <Route path='/score/' element={<Sheet />} />
+      <Route path='/sheet/' element={<Sheet />} />
       <Route path='/example/:lang' element={<Sheet />} />
       <Route path='/repair' element={<Repair />} />
       <Route path='/*' element={<Repair />} />

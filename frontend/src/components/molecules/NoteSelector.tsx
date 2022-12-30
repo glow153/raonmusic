@@ -13,6 +13,7 @@ const NoteSelector = ({
   stretchable,
   borderWidth = 5,
 }: Prop) => {
+  console.log('<NoteSelector/> model:', model);
   const {x, y, width: w, height: h} = model;
 
   return (
